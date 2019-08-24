@@ -1,0 +1,8 @@
+version=1
+title=Log Extender
+description=Adds more logs for Project Zomboid Logs directory.
+description=
+description=This is a test version for server Last Day (last-day.wargm.ru).
+description=It is not recommended to be used on your own server while this line exists.
+tags=
+visibility=public
