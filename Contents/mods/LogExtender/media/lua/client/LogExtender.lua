@@ -8,14 +8,42 @@
 -- It is not recommended to be used on your own server while this line exists.
 --
 
--- playerLogFilemask is a placeholder for log file. Project Zomboid generates file
--- like this 24-08-19_18-11_player.txt.
-local playerLogFilemask = "player"
+-- playerLogFilemask is a placeholder for custom player log file. Project Zomboid generates file
+-- like this 24-08-19_18-11_player.txt at firts action and use file until next server restart.
+local playerLogFilemask = "playertest"
+
+-- mapLogFilemask is a placeholder for ingame user log file. Project Zomboid generates file
+-- like this 24-08-19_18-11_map.txt at firts action and use file until next server restart.
+local mapLogFilemask = "map"
 
 -- getLogLinePrefix generates prefix for each log lines.
 -- for ease of use, we assume that the player’s existence has been verified previously.
 local function getLogLinePrefix(player, action)
     return getCurrentUserSteamID() .. " \"" .. player:getUsername() .. "\" " .. action
+end
+
+-- TimedActionPerform overrides the original ISBaseTimedAction: perform function to gain
+-- access to player events.
+local function TimedActionPerform()
+    local originalPerform = ISBaseTimedAction.perform;
+
+    ISBaseTimedAction.perform = function(self)
+        originalPerform(self);
+
+        local player = self.character;
+
+        if player and self.Type then
+            -- Fix for bug report topic
+            -- https://theindiestone.com/forums/index.php?/topic/25683-nothing-will-be-written-to-the-log-if-you-take-generator-from-the-ground/
+            -- Create "taken" line like another lines in *_map.txt log file.
+            -- [25-08-19 16:49:39.239] 76561198204465365 "outdead" taken IsoGenerator (appliances_misc_01_0) at 10254,12759,0.
+            if self.Type == "ISTakeGenerator" then
+                local location = math.floor(player:getX()) .. "," .. math.floor(player:getY()) .. "," .. math.floor(player:getZ());
+                local message = getLogLinePrefix(player, "taken IsoGenerator") .. " (appliances_misc_01_0) at " .. location;
+                writeLog(mapLogFilemask, message);
+            end;
+        end;
+    end;
 end
 
 -- getPlayerSafehouse iterates in server safehouse list and returns
@@ -153,7 +181,7 @@ local function OnConnectedCallback()
     end
 end
 
--- OnConnectedCallback adds callback for player OnPerkLevel event.
+-- OnPerkLevelCallback adds callback for player OnPerkLevel event.
 local function OnPerkLevelCallback(player, perk, perklevel)
     if player and perk and perklevel then
         --player:Say("I Think I'm Paranoid");
@@ -169,3 +197,4 @@ local function OnGameStartCallback()
 end
 
 Events.OnGameStart.Add(OnGameStartCallback);
+Events.OnGameStart.Add(TimedActionPerform);
