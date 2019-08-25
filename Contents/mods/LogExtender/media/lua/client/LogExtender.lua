@@ -1,8 +1,10 @@
 --
--- LogExtender adds more logs for Project Zomboid Logs directory.
 -- Copyright (c) 2019 outdead.
+-- Use of this source code is governed by the Apache 2.0 license.
 --
--- This is a test version for server Last Day (last-day.wargm.ru)
+-- LogExtender adds more logs for Project Zomboid Logs directory.
+--
+-- This is a test version for server Last Day (https://last-day.wargm.ru)
 -- It is not recommended to be used on your own server while this line exists.
 --
 
