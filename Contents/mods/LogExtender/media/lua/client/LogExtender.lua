@@ -2,10 +2,7 @@
 -- Copyright (c) 2019 outdead.
 -- Use of this source code is governed by the Apache 2.0 license.
 --
--- LogExtender adds more logs for Project Zomboid Logs directory.
---
--- This is a test version for server Last Day (https://last-day.wargm.ru)
--- It is not recommended to be used on your own server while this line exists.
+-- LogExtender adds more logs to the Logs directory the Project Zomboid game.
 --
 
 -- playerLogFilemask is a placeholder for custom player log file. Project Zomboid generates file

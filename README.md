@@ -1,5 +1,5 @@
 # pz-mod-log-extender
-Log Extender mod for Project Zomboid. 
+Log Extender mod adds more logs to the Logs directory the Project Zomboid game. 
 
 ## Project Zomboid Lua mod
 [README.md](Contents/mods/LogExtender/README.md)
@@ -117,3 +117,6 @@ Survivalist:
   "Trapping": 10
 }
 ```
+
+## License
+Apache License 2.0, see [LICENCE](LICENSE)
