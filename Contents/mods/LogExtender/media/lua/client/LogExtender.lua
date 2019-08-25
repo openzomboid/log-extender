@@ -10,7 +10,7 @@
 
 -- playerLogFilemask is a placeholder for custom player log file. Project Zomboid generates file
 -- like this 24-08-19_18-11_player.txt at firts action and use file until next server restart.
-local playerLogFilemask = "playertest"
+local playerLogFilemask = "player"
 
 -- mapLogFilemask is a placeholder for ingame user log file. Project Zomboid generates file
 -- like this 24-08-19_18-11_map.txt at firts action and use file until next server restart.
