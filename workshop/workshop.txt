@@ -4,7 +4,7 @@ title=Log Extender
 description=Adds more logs to the Logs directory the Project Zomboid game.
 description=
 description=[h1]Description[/h1]
-description=The Log Extender mod is designed for Project Zomboid servers and adds log entries that helps administering the server. The mod allows you to save information about the levels of perk character, the time of his survival, the number of killed zombies and other information about the character, which, as you know, is stored on users' local computers. The mod also fixes several game bugs that are related with logging the actions of players. For example, a record is added about taking a generator from the ground. You can read more about this bugreport on [url=https://theindiestone.com/forums/index.php?/topic/25683-nothing-will-be-written-to-the-log-if-you-take-generator-from-the-ground/]theindiestone.com forum[/url].
+description=The Log Extender mod is designed for Project Zomboid servers and adds log entries that helps administering the server. The mod allows you to save information about the levels of perk character, the time of his survival, the number of killed zombies and other information about the character, which, as you know, is stored on users' local computers. The mod also fixes several game bugs that are related with logging the actions of players. For example, a record is added about taking a generator from the ground. You can read more about this bugreport on [url=https://theindiestone.com/forums/index.php?/topic/25683-nothing-will-be-written-to-the-log-if-you-take-generator-from-the-ground]theindiestone forum[/url].
 description=
 description=[h1]How to Use[/h1]
 description=The mod does not work in single player mode. Therefore, it must be installed on a dedicated Project Zomboid server.
