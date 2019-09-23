@@ -2,7 +2,7 @@
 Log Extender mod adds more logs to the Logs directory the Project Zomboid game. 
 
 ## Project Zomboid Lua mod
-[README.md](Contents/mods/LogExtender/README.md)
+[README.md](workshop/Contents/mods/LogExtender/README.md)
 
 ## Perk Types
 

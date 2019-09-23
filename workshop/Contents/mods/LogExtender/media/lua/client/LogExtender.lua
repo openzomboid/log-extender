@@ -5,47 +5,35 @@
 -- LogExtender adds more logs to the Logs directory the Project Zomboid game.
 --
 
--- playerLogFilemask is a placeholder for custom player log file. Project Zomboid generates file
--- like this 24-08-19_18-11_player.txt at firts action and use file until next server restart.
-local playerLogFilemask = "player"
+local version = "0.2.0"
 
--- mapLogFilemask is a placeholder for ingame user log file. Project Zomboid generates file
--- like this 24-08-19_18-11_map.txt at firts action and use file until next server restart.
-local mapLogFilemask = "map"
+LogExtender = {
+    config = {
+        -- placeholders for Project Zomboid log file names.
+        -- Project Zomboid generates files like this 24-08-19_18-11_chat.txt
+        -- at firts action and use file until next server restart.
+        filemask = {
+            chat = "chat",
+            user = "user",
+            cmd = "cmd",
+            player = "player",
+            item = "item",
+            map = "map",
+            admin = "admin"
+        }
+    },
+    player = nil
+}
 
 -- getLogLinePrefix generates prefix for each log lines.
 -- for ease of use, we assume that the player’s existence has been verified previously.
-local function getLogLinePrefix(player, action)
+LogExtender.getLogLinePrefix = function(player, action)
     return getCurrentUserSteamID() .. " \"" .. player:getUsername() .. "\" " .. action
-end
-
--- TimedActionPerform overrides the original ISBaseTimedAction: perform function to gain
--- access to player events.
-local function TimedActionPerform()
-    local originalPerform = ISBaseTimedAction.perform;
-
-    ISBaseTimedAction.perform = function(self)
-        originalPerform(self);
-
-        local player = self.character;
-
-        if player and self.Type then
-            -- Fix for bug report topic
-            -- https://theindiestone.com/forums/index.php?/topic/25683-nothing-will-be-written-to-the-log-if-you-take-generator-from-the-ground/
-            -- Create "taken" line like another lines in *_map.txt log file.
-            -- [25-08-19 16:49:39.239] 76561198204465365 "outdead" taken IsoGenerator (appliances_misc_01_0) at 10254,12759,0.
-            if self.Type == "ISTakeGenerator" then
-                local location = math.floor(player:getX()) .. "," .. math.floor(player:getY()) .. "," .. math.floor(player:getZ());
-                local message = getLogLinePrefix(player, "taken IsoGenerator") .. " (appliances_misc_01_0) at " .. location;
-                writeLog(mapLogFilemask, message);
-            end;
-        end;
-    end;
 end
 
 -- getPlayerSafehouse iterates in server safehouse list and returns
 -- area coordinates of player's houses.
-local function getPlayerSafehouses(player)
+LogExtender.getPlayerSafehouses = function(player)
     if player == nil then
         return nil;
     end
@@ -81,7 +69,7 @@ local function getPlayerSafehouses(player)
 end
 
 -- getPlayerPerks returns player perks table.
-local function getPlayerPerks(player)
+LogExtender.getPlayerPerks = function(player)
     if player == nil then
         return nil;
     end
@@ -109,7 +97,7 @@ local function getPlayerPerks(player)
 end
 
 -- getPlayerStats returns some player additional info.
-local function getPlayerStats(player)
+LogExtender.getPlayerStats = function(player)
     if player == nil then
         return nil;
     end
@@ -118,30 +106,35 @@ local function getPlayerStats(player)
 
     stats.Kills = player:getZombieKills();
     stats.Survived = player:getHoursSurvived();
+    stats.Level = player:getXp():getLevel();
 
     return stats;
 end
 
 -- DumpPlayer writes player perks and safehouse coordinates to log file.
-local function DumpPlayer(player, action)
+LogExtender.DumpPlayer = function(player, action)
     if player == nil then
         return nil;
     end
 
-    local message = getLogLinePrefix(player, action);
+    local message = LogExtender.getLogLinePrefix(player, action);
 
-    local perks = getPlayerPerks(player);
-    --TODO: print an error if perks is nil?
+    local perks = LogExtender.getPlayerPerks(player);
     if perks ~= nil then
         message = message .. " perks={" .. table.concat(perks, ",") .. "}";
+    else
+        --TODO: print an error if perks is nil?
+        message = message .. " perks={}";
     end
 
-    local stats = getPlayerStats(player);
+    local stats = LogExtender.getPlayerStats(player);
     if stats ~= nil then
-        message = message .. " stats={\"kills\":" .. stats.Kills .. ",\"hours\":" .. stats.Survived .. "}";
+        message = message .. " stats={\"level\":" .. stats.Level .. ",\"kills\":" .. stats.Kills .. ",\"hours\":" .. stats.Survived .. "}";
+    else
+        message = message .. " stats={}";
     end
 
-    local safehouses = getPlayerSafehouses(player);
+    local safehouses = LogExtender.getPlayerSafehouses(player);
     if safehouses ~= nil then
         message = message .. " safehouse owner=("
         if safehouses.Owner ~= nil then
@@ -165,33 +158,60 @@ local function DumpPlayer(player, action)
         end
 
         message = message .. ")"
+    else
+        message = message .. " safehouse owner=() safehouse member=()"
     end
 
-    writeLog(playerLogFilemask, message);
+    writeLog(LogExtender.config.filemask.player, message);
 end
 
--- OnConnectedCallback adds callback for player OnConnected event.
-local function OnConnectedCallback()
+-- TimedActionPerform overrides the original ISBaseTimedAction: perform function to gain
+-- access to player events.
+LogExtender.TimedActionPerform = function()
+    local originalPerform = ISBaseTimedAction.perform;
+
+    ISBaseTimedAction.perform = function(self)
+        originalPerform(self);
+
+        local player = self.character;
+
+        if player and self.Type then
+            -- Fix for bug report topic
+            -- https://theindiestone.com/forums/index.php?/topic/25683-nothing-will-be-written-to-the-log-if-you-take-generator-from-the-ground/
+            -- Create "taken" line like another lines in *_map.txt log file.
+            -- [25-08-19 16:49:39.239] 76561198204465365 "outdead" taken IsoGenerator (appliances_misc_01_0) at 10254,12759,0.
+            if self.Type == "ISTakeGenerator" then
+                local location = math.floor(player:getX()) .. "," .. math.floor(player:getY()) .. "," .. math.floor(player:getZ());
+                local message = LogExtender.getLogLinePrefix(player, "taken IsoGenerator") .. " (appliances_misc_01_0) at " .. location;
+                writeLog(LogExtender.config.filemask.map, message);
+            end;
+        end;
+    end;
+end
+
+-- OnConnected adds callback for player OnConnected event.
+LogExtender.OnConnected = function()
     local player = getSpecificPlayer(0);
     if player then
-        DumpPlayer(player, "connected");
+        LogExtender.player = player;
+        LogExtender.DumpPlayer(player, "connected");
     end
 end
 
--- OnPerkLevelCallback adds callback for player OnPerkLevel event.
-local function OnPerkLevelCallback(player, perk, perklevel)
+-- OnPerkLevel adds callback for player OnPerkLevel global event.
+LogExtender.OnPerkLevel = function(player, perk, perklevel)
     if player and perk and perklevel then
-        --player:Say("I Think I'm Paranoid");
-        DumpPlayer(player, "levelup");
+        if instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
+            LogExtender.DumpPlayer(player, "levelup");
+        end
     end
 end
 
--- OnGameStartCallback adds callback for OnGameStart event.
-local function OnGameStartCallback()
-    OnConnectedCallback();
-
-    Events.LevelPerk.Add(OnPerkLevelCallback);
+-- OnGameStart adds callback for OnGameStart global event.
+LogExtender.OnGameStart = function()
+    LogExtender.OnConnected();
+    LogExtender.TimedActionPerform();
 end
 
-Events.OnGameStart.Add(OnGameStartCallback);
-Events.OnGameStart.Add(TimedActionPerform);
+Events.OnGameStart.Add(LogExtender.OnGameStart);
+Events.LevelPerk.Add(LogExtender.OnPerkLevel);
