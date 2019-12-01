@@ -5,11 +5,12 @@
 -- LogExtender adds more logs to the Logs directory the Project Zomboid game.
 --
 
-local version = "0.2.0"
+local version = "0.3.0"
 
-LogExtender = {
+local LogExtender = {
+    -- Contains default config values.
     config = {
-        -- placeholders for Project Zomboid log file names.
+        -- Placeholders for Project Zomboid log file names.
         -- Project Zomboid generates files like this 24-08-19_18-11_chat.txt
         -- at firts action and use file until next server restart.
         filemask = {
@@ -19,15 +20,31 @@ LogExtender = {
             player = "player",
             item = "item",
             map = "map",
-            admin = "admin"
-        }
+            admin = "admin",
+        },
+        -- Callbacks switches.
+        actions = {
+            player = {
+                connected = true,
+                levelup = true,
+                tick = true,
+                disconnected = false, -- TODO: How can I do this?
+            },
+            vehicle = {
+                enter = true,
+                exit = true,
+            },
+            time = true,
+        },
     },
-    player = nil
+    -- Store ingame player object when user is logged in.
+    player = nil,
 }
 
 -- getLogLinePrefix generates prefix for each log lines.
 -- for ease of use, we assume that the player’s existence has been verified previously.
 LogExtender.getLogLinePrefix = function(player, action)
+    -- TODO: Add ownerID.
     return getCurrentUserSteamID() .. " \"" .. player:getUsername() .. "\" " .. action
 end
 
@@ -193,7 +210,7 @@ end
 LogExtender.OnConnected = function()
     local player = getSpecificPlayer(0);
     if player then
-        LogExtender.player = player;
+        --LogExtender.player = player;
         LogExtender.DumpPlayer(player, "connected");
     end
 end
@@ -202,16 +219,64 @@ end
 LogExtender.OnPerkLevel = function(player, perk, perklevel)
     if player and perk and perklevel then
         if instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
+            -- Hide events from the log when creating a character.
+            if player:getHoursSurvived() <= 0 then return end
+
             LogExtender.DumpPlayer(player, "levelup");
         end
     end
 end
 
+-- EveryHours adds callback for EveryHours global event.
+LogExtender.EveryHours = function()
+    local player = getSpecificPlayer(0);
+    if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
+        -- Hide events from the log when creating a character.
+        if player:getHoursSurvived() <= 0 then return end
+
+        LogExtender.DumpPlayer(player, "tick");
+    end
+end
+
+-- VehicleEnter adds collback for OnEnterVehicle event.
+LogExtender.VehicleEnter = function(player)
+    if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
+        local location = math.floor(player:getX()) .. "," .. math.floor(player:getY()) .. "," .. math.floor(player:getZ());
+        local message = LogExtender.getLogLinePrefix(player, "vehicle.enter") .. " @ " .. location;
+        writeLog(LogExtender.config.filemask.cmd, message);
+    end
+end
+
+-- VehicleExit adds collback for OnExitVehicle event.
+LogExtender.VehicleExit = function(player)
+    if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
+        local location = math.floor(player:getX()) .. "," .. math.floor(player:getY()) .. "," .. math.floor(player:getZ());
+        local message = LogExtender.getLogLinePrefix(player, "vehicle.exit") .. " @ " .. location;
+        writeLog(LogExtender.config.filemask.cmd, message);
+    end
+end
+
 -- OnGameStart adds callback for OnGameStart global event.
 LogExtender.OnGameStart = function()
-    LogExtender.OnConnected();
-    LogExtender.TimedActionPerform();
+    if LogExtender.config.actions.player.connected then
+        LogExtender.OnConnected();
+    end
+
+    if LogExtender.config.actions.player.levelup then
+        Events.LevelPerk.Add(LogExtender.OnPerkLevel);
+    end
+
+    if LogExtender.config.actions.player.tick then
+        Events.EveryHours.Add(LogExtender.EveryHours);
+    end
+
+    if LogExtender.config.actions.vehicle.enter then
+        Events.OnEnterVehicle.Add(LogExtender.VehicleEnter);
+    end
+
+    if LogExtender.config.actions.vehicle.exit then
+        Events.OnExitVehicle.Add(LogExtender.VehicleExit);
+    end
 end
 
 Events.OnGameStart.Add(LogExtender.OnGameStart);
-Events.LevelPerk.Add(LogExtender.OnPerkLevel);
