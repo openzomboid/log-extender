@@ -40,8 +40,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/gorcon/rcon-cli/compare/v0.3.0...HEAD
-[v0.3.0]: https://github.com/gorcon/rcon-cli/compare/v0.2.0...v0.3.0
-[v0.2.0]: https://github.com/gorcon/rcon-cli/compare/v0.1.2...v0.2.0
-[v0.1.2]: https://github.com/gorcon/rcon-cli/compare/v0.1.1...v0.1.2
-[v0.1.1]: https://github.com/gorcon/rcon-cli/compare/v0.1.0...v0.1.1
+[Unreleased]: https://github.com/game-servers/pz-mod-log-extender/compare/v0.3.0...HEAD
+[v0.3.0]: https://github.com/game-servers/pz-mod-log-extender/compare/v0.2.0...v0.3.0
+[v0.2.0]: https://github.com/game-servers/pz-mod-log-extender/compare/v0.1.2...v0.2.0
+[v0.1.2]: https://github.com/game-servers/pz-mod-log-extender/compare/v0.1.1...v0.1.2
+[v0.1.1]: https://github.com/game-servers/pz-mod-log-extender/compare/v0.1.0...v0.1.1
