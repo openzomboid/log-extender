@@ -5,7 +5,7 @@
 -- LogExtender adds more logs to the Logs directory the Project Zomboid game.
 --
 
-local version = "0.3.0"
+local version = "0.3.1"
 
 local LogExtender = {
     -- Contains default config values.
@@ -260,6 +260,10 @@ end
 LogExtender.OnGameStart = function()
     if LogExtender.config.actions.player.connected then
         LogExtender.OnConnected();
+    end
+
+    if LogExtender.config.actions.time then
+        LogExtender.TimedActionPerform();
     end
 
     if LogExtender.config.actions.player.levelup then

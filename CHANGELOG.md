@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- Fixed "taken IsoGenerator" line in *_map.txt log file.
 
 ## [v0.3.0] - 2019-12-01
 ### Added
