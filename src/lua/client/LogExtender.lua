@@ -1,5 +1,5 @@
 --
--- Copyright (c) 2019 outdead.
+-- Copyright (c) 2021 outdead.
 -- Use of this source code is governed by the Apache 2.0 license.
 --
 -- LogExtender adds more logs to the Logs directory the Project Zomboid game.
