@@ -12,7 +12,7 @@ local LogExtender = {
     config = {
         -- Placeholders for Project Zomboid log file names.
         -- Project Zomboid generates files like this 24-08-19_18-11_chat.txt
-        -- at firts action and use file until next server restart.
+        -- at first action and use file until next server restart.
         filemask = {
             chat = "chat",
             user = "user",
