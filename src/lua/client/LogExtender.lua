@@ -5,7 +5,7 @@
 -- LogExtender adds more logs to the Logs directory the Project Zomboid game.
 --
 
-local version = "0.3.1"
+local version = "0.4.0"
 
 local LogExtender = {
     -- Contains default config values.
@@ -125,6 +125,14 @@ LogExtender.getPlayerStats = function(player)
     stats.Survived = player:getHoursSurvived();
     stats.Level = player:getXp():getLevel();
 
+    stats.Profession = "";
+    if player:getDescriptor() and player:getDescriptor():getProfession() then
+        local prof = ProfessionFactory.getProfession(player:getDescriptor():getProfession());
+        if prof then
+            stats.Profession = prof:getName();
+        end
+    end
+
     return stats;
 end
 
@@ -140,13 +148,12 @@ LogExtender.DumpPlayer = function(player, action)
     if perks ~= nil then
         message = message .. " perks={" .. table.concat(perks, ",") .. "}";
     else
-        --TODO: print an error if perks is nil?
         message = message .. " perks={}";
     end
 
     local stats = LogExtender.getPlayerStats(player);
     if stats ~= nil then
-        message = message .. " stats={\"level\":" .. stats.Level .. ",\"kills\":" .. stats.Kills .. ",\"hours\":" .. stats.Survived .. "}";
+        message = message .. ' stats={"profession":"' .. stats.Profession .. '","level":' .. stats.Level .. ',"kills":' .. stats.Kills .. ',"hours":' .. stats.Survived .. '}';
     else
         message = message .. " stats={}";
     end
@@ -173,11 +180,13 @@ LogExtender.DumpPlayer = function(player, action)
 
             message = message .. temp;
         end
-
         message = message .. ")"
     else
         message = message .. " safehouse owner=() safehouse member=()"
     end
+
+    local location = math.floor(player:getX()) .. "," .. math.floor(player:getY()) .. "," .. math.floor(player:getZ());
+    message = message .. " (" .. location .. ")"
 
     writeLog(LogExtender.config.filemask.player, message);
 end

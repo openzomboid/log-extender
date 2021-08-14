@@ -7,11 +7,15 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Fixed "taken IsoGenerator" line in *_map.txt log file.
 
+### Added
+- Added profession to player log.
+- Added coordinates to player log.
+
 ## [v0.3.0] - 2019-12-01
 ### Added
-- Add Events.OnEnterVehicle callback. Saves coordinates of the player's entry into the vehicle to {{dd-mm-yy_h-i}}_cmd.txt log file.
-- Add Events.OnExitVehicle callback. Saves player's exit coordinates from vehicle to {{dd-mm-yy_h-i}}_cmd.txt log file.
-- Add Events.EveryHours callback. Makes saving the character to {{dd-mm-yy_h-i}}_player.txt log file every one ingame hour.
+- Added Events.OnEnterVehicle callback. Saves coordinates of the player's entry into the vehicle to {{dd-mm-yy_h-i}}_cmd.txt log file.
+- Added Events.OnExitVehicle callback. Saves player's exit coordinates from vehicle to {{dd-mm-yy_h-i}}_cmd.txt log file.
+- Added Events.EveryHours callback. Makes saving the character to {{dd-mm-yy_h-i}}_player.txt log file every one ingame hour.
 
 ### Changed
 - Events can be turned on or off in the configuration of the LogExtender object.
@@ -21,7 +25,7 @@ All notable changes to this project will be documented in this file.
 
 ## [v0.2.0] - 2019-09-24
 ### Added
-- Add level to dump player stats.
+- Added level to dump player stats.
 - Start writing changelog.
 
 ### Changed
