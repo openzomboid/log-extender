@@ -48,6 +48,11 @@ LogExtender.getLogLinePrefix = function(player, action)
     return getCurrentUserSteamID() .. " \"" .. player:getUsername() .. "\" " .. action
 end
 
+-- getLocation returns players location in "x,x,z" format.
+LogExtender.getLocation = function(player)
+    return math.floor(player:getX()) .. "," .. math.floor(player:getY()) .. "," .. math.floor(player:getZ());
+end
+
 -- getPlayerSafehouse iterates in server safehouse list and returns
 -- area coordinates of player's houses.
 LogExtender.getPlayerSafehouses = function(player)
@@ -185,7 +190,7 @@ LogExtender.DumpPlayer = function(player, action)
         message = message .. " safehouse owner=() safehouse member=()"
     end
 
-    local location = math.floor(player:getX()) .. "," .. math.floor(player:getY()) .. "," .. math.floor(player:getZ());
+    local location = LogExtender.getLocation(player);
     message = message .. " (" .. location .. ")"
 
     writeLog(LogExtender.config.filemask.player, message);
@@ -202,12 +207,13 @@ LogExtender.TimedActionPerform = function()
         local player = self.character;
 
         if player and self.Type then
+            local location = LogExtender.getLocation(player);
+
             -- Fix for bug report topic
             -- https://theindiestone.com/forums/index.php?/topic/25683-nothing-will-be-written-to-the-log-if-you-take-generator-from-the-ground/
             -- Create "taken" line like another lines in *_map.txt log file.
             -- [25-08-19 16:49:39.239] 76561198204465365 "outdead" taken IsoGenerator (appliances_misc_01_0) at 10254,12759,0.
             if self.Type == "ISTakeGenerator" then
-                local location = math.floor(player:getX()) .. "," .. math.floor(player:getY()) .. "," .. math.floor(player:getZ());
                 local message = LogExtender.getLogLinePrefix(player, "taken IsoGenerator") .. " (appliances_misc_01_0) at " .. location;
                 writeLog(LogExtender.config.filemask.map, message);
             end;
@@ -220,6 +226,7 @@ LogExtender.OnConnected = function()
     local player = getSpecificPlayer(0);
     if player then
         --LogExtender.player = player;
+
         LogExtender.DumpPlayer(player, "connected");
     end
 end
@@ -250,7 +257,7 @@ end
 -- VehicleEnter adds collback for OnEnterVehicle event.
 LogExtender.VehicleEnter = function(player)
     if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
-        local location = math.floor(player:getX()) .. "," .. math.floor(player:getY()) .. "," .. math.floor(player:getZ());
+        local location = LogExtender.getLocation(player);
         local message = LogExtender.getLogLinePrefix(player, "vehicle.enter") .. " @ " .. location;
         writeLog(LogExtender.config.filemask.cmd, message);
     end
@@ -259,7 +266,7 @@ end
 -- VehicleExit adds collback for OnExitVehicle event.
 LogExtender.VehicleExit = function(player)
     if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
-        local location = math.floor(player:getX()) .. "," .. math.floor(player:getY()) .. "," .. math.floor(player:getZ());
+        local location = LogExtender.getLocation(player);
         local message = LogExtender.getLogLinePrefix(player, "vehicle.exit") .. " @ " .. location;
         writeLog(LogExtender.config.filemask.cmd, message);
     end
