@@ -23,6 +23,7 @@ local LogExtender = {
             admin = "admin",
         },
         -- Callbacks switches.
+        -- TODO: Get from server settings.
         actions = {
             player = {
                 connected = true,
@@ -129,8 +130,9 @@ LogExtender.getPlayerStats = function(player)
     stats.Kills = player:getZombieKills();
     stats.Survived = player:getHoursSurvived();
     stats.Level = player:getXp():getLevel();
-
+    stats.SkillPoints = player:getNumberOfPerksToPick();
     stats.Profession = "";
+
     if player:getDescriptor() and player:getDescriptor():getProfession() then
         local prof = ProfessionFactory.getProfession(player:getDescriptor():getProfession());
         if prof then
@@ -139,6 +141,22 @@ LogExtender.getPlayerStats = function(player)
     end
 
     return stats;
+end
+
+-- getPlayerHealth returns some player health information.
+LogExtender.getPlayerHealth = function(player)
+    if player == nil then
+        return nil;
+    end
+
+    local bd = player:getBodyDamage()
+
+    local health = {}
+
+    health.Health = bd:getOverallBodyHealth();
+    health.Infected = bd:IsInfected() and "true" or "false";
+
+    return health;
 end
 
 -- DumpPlayer writes player perks and safehouse coordinates to log file.
@@ -158,9 +176,26 @@ LogExtender.DumpPlayer = function(player, action)
 
     local stats = LogExtender.getPlayerStats(player);
     if stats ~= nil then
-        message = message .. ' stats={"profession":"' .. stats.Profession .. '","level":' .. stats.Level .. ',"kills":' .. stats.Kills .. ',"hours":' .. stats.Survived .. '}';
+        message = message .. ' stats={'
+            .. '"profession":"' .. stats.Profession .. '",'
+            .. '"level":' .. stats.Level .. ','
+            .. '"skill_points":' .. stats.SkillPoints .. ','
+            .. '"kills":' .. stats.Kills .. ','
+            .. '"hours":' .. stats.Survived
+            .. '}';
     else
         message = message .. " stats={}";
+    end
+
+    local health = LogExtender.getPlayerHealth(player)
+    if health ~= nil then
+        -- TODO: Create marshaller.
+        message = message .. ' health={'
+            .. '"health":' .. health.Health .. ','
+            .. '"infected":' .. health.Infected
+            .. '}';
+    else
+        message = message .. " health={}";
     end
 
     local safehouses = LogExtender.getPlayerSafehouses(player);
@@ -225,8 +260,6 @@ end
 LogExtender.OnConnected = function()
     local player = getSpecificPlayer(0);
     if player then
-        --LogExtender.player = player;
-
         LogExtender.DumpPlayer(player, "connected");
     end
 end
@@ -263,7 +296,7 @@ LogExtender.VehicleEnter = function(player)
     end
 end
 
--- VehicleExit adds collback for OnExitVehicle event.
+-- VehicleExit adds callback for OnExitVehicle event.
 LogExtender.VehicleExit = function(player)
     if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
         local location = LogExtender.getLocation(player);
@@ -274,6 +307,8 @@ end
 
 -- OnGameStart adds callback for OnGameStart global event.
 LogExtender.OnGameStart = function()
+    LogExtender.player = getSpecificPlayer(0);
+
     if LogExtender.config.actions.player.connected then
         LogExtender.OnConnected();
     end
