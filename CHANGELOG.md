@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - Added profession and skill points to player log in stats section.
 - Added coordinates to player log.
 - Added health level and infected information to player log.
+- Added traits to player log.
 
 ## [v0.3.0] - 2019-12-01
 ### Added

@@ -119,6 +119,27 @@ LogExtender.getPlayerPerks = function(player)
     return perks;
 end
 
+-- getPlayerTraits returns player traits table.
+LogExtender.getPlayerTraits = function(player)
+    if player == nil then
+        return nil;
+    end
+
+    local traits = {}
+
+    for i=0, player:getTraits():size() - 1 do
+        local trait = TraitFactory.getTrait(player:getTraits():get(i));
+
+        if trait then
+            table.insert(traits, '"' .. trait:getType() .. '"');
+        end
+    end
+
+    table.sort(traits);
+
+    return traits;
+end
+
 -- getPlayerStats returns some player additional info.
 LogExtender.getPlayerStats = function(player)
     if player == nil then
@@ -172,6 +193,13 @@ LogExtender.DumpPlayer = function(player, action)
         message = message .. " perks={" .. table.concat(perks, ",") .. "}";
     else
         message = message .. " perks={}";
+    end
+
+    local traits = LogExtender.getPlayerTraits(player);
+    if traits ~= nil then
+        message = message .. " traits=[" .. table.concat(traits, ",") .. "]";
+    else
+        message = message .. " traits=[]";
     end
 
     local stats = LogExtender.getPlayerStats(player);
