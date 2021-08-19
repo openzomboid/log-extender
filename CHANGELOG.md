@@ -4,12 +4,14 @@ All notable changes to this project will be documented in this file.
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [v0.4.0] - 2021-08-19
 ### Fixed
 - Fixed "taken IsoGenerator" line in *_map.txt log file.
 
 ### Added
-- Added profession and skill points to player log in stats section.
 - Added coordinates to player log.
+- Added profession and skill points to player log in stats section.
 - Added health level and infected information to player log.
 - Added traits to player log.
 
@@ -48,8 +50,9 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/game-servers/pz-mod-log-extender/compare/v0.3.0...HEAD
-[v0.3.0]: https://github.com/game-servers/pz-mod-log-extender/compare/v0.2.0...v0.3.0
-[v0.2.0]: https://github.com/game-servers/pz-mod-log-extender/compare/v0.1.2...v0.2.0
-[v0.1.2]: https://github.com/game-servers/pz-mod-log-extender/compare/v0.1.1...v0.1.2
-[v0.1.1]: https://github.com/game-servers/pz-mod-log-extender/compare/v0.1.0...v0.1.1
+[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.4.0...HEAD
+[v0.4.0]: https://github.com/openzomboid/log-extender/compare/v0.3.0...v0.4.0
+[v0.3.0]: https://github.com/openzomboid/log-extender/compare/v0.2.0...v0.3.0
+[v0.2.0]: https://github.com/openzomboid/log-extender/compare/v0.1.2...v0.2.0
+[v0.1.2]: https://github.com/openzomboid/log-extender/compare/v0.1.1...v0.1.2
+[v0.1.1]: https://github.com/openzomboid/log-extender/compare/v0.1.0...v0.1.1
