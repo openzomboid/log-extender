@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [v0.4.0] - 2021-08-19
+## [v0.4.0] - 2021-08-20
 ### Fixed
 - Fixed "taken IsoGenerator" line in *_map.txt log file.
 
