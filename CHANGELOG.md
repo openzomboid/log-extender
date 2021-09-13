@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.4.1] - 2021-09-14
+### Fixed
+- Profession is no longer written in the localization language. Used profession type instead of name.
+
 ## [v0.4.0] - 2021-08-20
 ### Fixed
 - Fixed "taken IsoGenerator" line in *_map.txt log file.
@@ -17,7 +21,7 @@ All notable changes to this project will be documented in this file.
 
 ## [v0.3.0] - 2019-12-01
 ### Added
-- Added Events.OnEnterVehicle callback. Saves coordinates of the player's entry into the vehicle to {{dd-mm-yy_h-i}}_cmd.txt log file.
+- Added Events.OnEnterVehicle callback. Save coordinates of the player's entry into the vehicle to {{dd-mm-yy_h-i}}_cmd.txt log file.
 - Added Events.OnExitVehicle callback. Saves player's exit coordinates from vehicle to {{dd-mm-yy_h-i}}_cmd.txt log file.
 - Added Events.EveryHours callback. Makes saving the character to {{dd-mm-yy_h-i}}_player.txt log file every one ingame hour.
 
@@ -25,7 +29,7 @@ All notable changes to this project will be documented in this file.
 - Events can be turned on or off in the configuration of the LogExtender object.
 
 ### Fixed
-- Removed levelup entries from the character’s creation window until the server is fully connected.
+- Removed levelup entries from the character's creation window until the server fully connected.
 
 ## [v0.2.0] - 2019-09-24
 ### Added
@@ -50,7 +54,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.4.1...HEAD
+[v0.4.1]: https://github.com/openzomboid/log-extender/compare/v0.4.0...v0.4.1
 [v0.4.0]: https://github.com/openzomboid/log-extender/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/openzomboid/log-extender/compare/v0.2.0...v0.3.0
 [v0.2.0]: https://github.com/openzomboid/log-extender/compare/v0.1.2...v0.2.0

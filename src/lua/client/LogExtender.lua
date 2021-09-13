@@ -5,7 +5,7 @@
 -- LogExtender adds more logs to the Logs directory the Project Zomboid game.
 --
 
-local version = "0.4.0"
+local version = "0.4.1"
 
 local LogExtender = {
     -- Contains default config values.
@@ -157,7 +157,7 @@ LogExtender.getPlayerStats = function(player)
     if player:getDescriptor() and player:getDescriptor():getProfession() then
         local prof = ProfessionFactory.getProfession(player:getDescriptor():getProfession());
         if prof then
-            stats.Profession = prof:getName();
+            stats.Profession = prof:getType();
         end
     end
 
