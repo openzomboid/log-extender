@@ -5,7 +5,9 @@
 -- LogExtender adds more logs to the Logs directory the Project Zomboid game.
 --
 
-local version = "0.4.1"
+local version = "0.5.0"
+
+local pzversion = string.sub(getCore():getVersionNumber(), 1, 2)
 
 local LogExtender = {
     -- Contains default config values.
@@ -151,7 +153,11 @@ LogExtender.getPlayerStats = function(player)
     stats.Kills = player:getZombieKills();
     stats.Survived = player:getHoursSurvived();
     stats.Level = player:getXp():getLevel();
-    stats.SkillPoints = player:getNumberOfPerksToPick();
+    if pzversion == "40" then
+        stats.SkillPoints = player:getNumberOfPerksToPick();
+    else
+        stats.SkillPoints = 0 -- Deprecated: Removed in 41 build.
+    end
     stats.Profession = "";
 
     if player:getDescriptor() and player:getDescriptor():getProfession() then
@@ -315,7 +321,7 @@ LogExtender.EveryHours = function()
     end
 end
 
--- VehicleEnter adds collback for OnEnterVehicle event.
+-- VehicleEnter adds callback for OnEnterVehicle event.
 LogExtender.VehicleEnter = function(player)
     if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
         local location = LogExtender.getLocation(player);

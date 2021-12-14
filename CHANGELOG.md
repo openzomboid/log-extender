@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.5.0] - 2021-12-14
+### Fixed
+- Fix for 41 mp build - remove skill points if PZ major version is 41.
+
 ## [v0.4.1] - 2021-09-14
 ### Fixed
 - Profession is no longer written in the localization language. Used profession type instead of name.
@@ -54,7 +58,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.5.0...HEAD
+[v0.5.0]: https://github.com/openzomboid/log-extender/compare/v0.4.1...v0.5.0
 [v0.4.1]: https://github.com/openzomboid/log-extender/compare/v0.4.0...v0.4.1
 [v0.4.0]: https://github.com/openzomboid/log-extender/compare/v0.3.0...v0.4.0
 [v0.3.0]: https://github.com/openzomboid/log-extender/compare/v0.2.0...v0.3.0
