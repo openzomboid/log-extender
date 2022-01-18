@@ -1,11 +1,11 @@
 --
--- Copyright (c) 2021 outdead.
+-- Copyright (c) 2022 outdead.
 -- Use of this source code is governed by the Apache 2.0 license.
 --
 -- LogExtender adds more logs to the Logs directory the Project Zomboid game.
 --
 
-local version = "0.5.0"
+local version = "0.5.1"
 
 local pzversion = string.sub(getCore():getVersionNumber(), 1, 2)
 
@@ -241,7 +241,7 @@ LogExtender.DumpPlayer = function(player, action)
         message = message .. ")";
 
         message = message .. " safehouse member=(";
-        if #safehouses.Member > 1 then
+        if #safehouses.Member > 0 then
             local temp = ""
 
             for i = 1, #safehouses.Member do

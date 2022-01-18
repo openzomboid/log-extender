@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- Fixed display of safehouse membership in player log.
 
 ## [v0.5.0] - 2021-12-14
 ### Fixed
