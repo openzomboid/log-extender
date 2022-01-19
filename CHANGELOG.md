@@ -7,6 +7,9 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Fixed display of safehouse membership in player log.
 
+### Added
+- Added new format for vehicle enter and exit events contained vehicle id and type.
+
 ## [v0.5.0] - 2021-12-14
 ### Fixed
 - Fix for 41 mp build - remove skill points if PZ major version is 41.

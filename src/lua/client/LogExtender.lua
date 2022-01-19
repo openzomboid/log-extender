@@ -19,6 +19,7 @@ local LogExtender = {
             chat = "chat",
             user = "user",
             cmd = "cmd",
+            vehicle = "vehicle",
             player = "player",
             item = "item",
             map = "map",
@@ -42,6 +43,8 @@ local LogExtender = {
     },
     -- Store ingame player object when user is logged in.
     player = nil,
+    -- Store vehicle object when user enter to it.
+    vehicle = nil,
 }
 
 -- getLogLinePrefix generates prefix for each log lines.
@@ -265,6 +268,34 @@ LogExtender.DumpPlayer = function(player, action)
     writeLog(LogExtender.config.filemask.player, message);
 end
 
+LogExtender.DumpVehicle = function(player, action, vehicle)
+    if player == nil then
+        return nil;
+    end
+
+    local message = LogExtender.getLogLinePrefix(player, action);
+
+    if vehicle then
+        local id = vehicle:getID() or "-1"; -- TODO: Maybe 0 is better.
+        local type = "unknown";
+
+        local script = vehicle:getScript();
+        if script then
+            type = script:getName() or "unknown";
+        end;
+
+        message = message .. ' vehicle={'
+            .. '"id":' .. tostring(id) .. ','
+            .. '"type":' .. type
+            .. '}';
+    end
+
+    local location = LogExtender.getLocation(player);
+    message = message .. " (" .. location .. ")"
+
+    writeLog(LogExtender.config.filemask.vehicle, message);
+end
+
 -- TimedActionPerform overrides the original ISBaseTimedAction: perform function to gain
 -- access to player events.
 LogExtender.TimedActionPerform = function()
@@ -324,18 +355,28 @@ end
 -- VehicleEnter adds callback for OnEnterVehicle event.
 LogExtender.VehicleEnter = function(player)
     if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
+        -- Deprecated: Old format. Will be removed on next updates.
         local location = LogExtender.getLocation(player);
         local message = LogExtender.getLogLinePrefix(player, "vehicle.enter") .. " @ " .. location;
         writeLog(LogExtender.config.filemask.cmd, message);
+
+        -- New format.
+        LogExtender.vehicle = player:getVehicle()
+        LogExtender.DumpVehicle(player, "enter", LogExtender.vehicle);
     end
 end
 
 -- VehicleExit adds callback for OnExitVehicle event.
 LogExtender.VehicleExit = function(player)
     if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
+        -- Deprecated: Old format. Will be removed on next updates.
         local location = LogExtender.getLocation(player);
         local message = LogExtender.getLogLinePrefix(player, "vehicle.exit") .. " @ " .. location;
         writeLog(LogExtender.config.filemask.cmd, message);
+
+        -- New format.
+        LogExtender.DumpVehicle(player, "exit", LogExtender.vehicle);
+        LogExtender.vehicle = nil
     end
 end
 
