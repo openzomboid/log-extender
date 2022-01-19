@@ -8,7 +8,8 @@ All notable changes to this project will be documented in this file.
 - Fixed display of safehouse membership in player log.
 
 ### Added
-- Added new format for vehicle enter and exit events contained vehicle id and type.
+- Added new format for vehicle enter and exit events contained vehicle id, type.
+- Added vehicle attach and detach events.
 
 ## [v0.5.0] - 2021-12-14
 ### Fixed

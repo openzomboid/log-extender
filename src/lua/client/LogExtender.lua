@@ -5,7 +5,7 @@
 -- LogExtender adds more logs to the Logs directory the Project Zomboid game.
 --
 
-local version = "0.5.1"
+local version = "0.6.0"
 
 local pzversion = string.sub(getCore():getVersionNumber(), 1, 2)
 
@@ -37,6 +37,8 @@ local LogExtender = {
             vehicle = {
                 enter = true,
                 exit = true,
+                attach = true,
+                detach = true,
             },
             time = true,
         },
@@ -45,6 +47,8 @@ local LogExtender = {
     player = nil,
     -- Store vehicle object when user enter to it.
     vehicle = nil,
+    -- Store vehicle object when user attach it.
+    vehicleAttachment = nil,
 }
 
 -- getLogLinePrefix generates prefix for each log lines.
@@ -54,9 +58,9 @@ LogExtender.getLogLinePrefix = function(player, action)
     return getCurrentUserSteamID() .. " \"" .. player:getUsername() .. "\" " .. action
 end
 
--- getLocation returns players location in "x,x,z" format.
-LogExtender.getLocation = function(player)
-    return math.floor(player:getX()) .. "," .. math.floor(player:getY()) .. "," .. math.floor(player:getZ());
+-- getLocation returns players or vehicle location in "x,x,z" format.
+LogExtender.getLocation = function(obj)
+    return math.floor(obj:getX()) .. "," .. math.floor(obj:getY()) .. "," .. math.floor(obj:getZ());
 end
 
 -- getPlayerSafehouse iterates in server safehouse list and returns
@@ -189,6 +193,32 @@ LogExtender.getPlayerHealth = function(player)
     return health;
 end
 
+LogExtender.getVehicleInfo = function(vehicle)
+    local info = {
+        ID = "0",
+        Type = "unknown",
+        Center = "10,10,0", -- Unexisting coordinate.
+    }
+
+    if vehicle == nil then
+        return info;
+    end
+
+    local id = vehicle:getID() or "0";
+    local type = "unknown";
+
+    local script = vehicle:getScript();
+    if script then
+        type = script:getName() or "unknown";
+    end;
+
+    info.ID = tostring(id);
+    info.Type = type;
+    info.Center = LogExtender.getLocation(vehicle:getCurrentSquare());
+
+    return info;
+end
+
 -- DumpPlayer writes player perks and safehouse coordinates to log file.
 LogExtender.DumpPlayer = function(player, action)
     if player == nil then
@@ -268,7 +298,7 @@ LogExtender.DumpPlayer = function(player, action)
     writeLog(LogExtender.config.filemask.player, message);
 end
 
-LogExtender.DumpVehicle = function(player, action, vehicle)
+LogExtender.DumpVehicle = function(player, action, vehicle, vehicle2)
     if player == nil then
         return nil;
     end
@@ -276,22 +306,35 @@ LogExtender.DumpVehicle = function(player, action, vehicle)
     local message = LogExtender.getLogLinePrefix(player, action);
 
     if vehicle then
-        local id = vehicle:getID() or "-1"; -- TODO: Maybe 0 is better.
-        local type = "unknown";
-
-        local script = vehicle:getScript();
-        if script then
-            type = script:getName() or "unknown";
-        end;
+        local info = LogExtender.getVehicleInfo(vehicle)
 
         message = message .. ' vehicle={'
-            .. '"id":' .. tostring(id) .. ','
-            .. '"type":' .. type
+            .. '"id":' .. info.ID .. ','
+            .. '"type":' .. info.Type .. ','
+            .. '"center":' .. info.Center
+            .. '}';
+    else
+        message = message .. " vehicle={}";
+    end
+
+    if vehicle2 then
+        local info = LogExtender.getVehicleInfo(vehicle2)
+
+        if action == 'attach' then
+            message = message .. ' to'
+        elseif action == 'detach' then
+            message = message .. ' from'
+        end
+
+        message = message .. ' vehicle={'
+            .. '"id":' .. info.ID .. ','
+            .. '"type":' .. info.Type .. ','
+            .. '"center":' .. info.Center
             .. '}';
     end
 
     local location = LogExtender.getLocation(player);
-    message = message .. " (" .. location .. ")"
+    message = message .. " at " .. location
 
     writeLog(LogExtender.config.filemask.vehicle, message);
 end
@@ -380,6 +423,38 @@ LogExtender.VehicleExit = function(player)
     end
 end
 
+-- VehicleAttach adds callback for ISAttachTrailerToVehicle event.
+LogExtender.VehicleAttach = function()
+    local originalPerform = ISAttachTrailerToVehicle.perform;
+
+    ISAttachTrailerToVehicle.perform = function(self)
+        originalPerform(self);
+
+        local player = self.character;
+
+        if player then
+            LogExtender.vehicleAttachment = self.vehicleB
+            LogExtender.DumpVehicle(player, "attach", self.vehicleA, self.vehicleB);
+        end;
+    end;
+end
+
+-- VehicleDetach adds callback for ISDetachTrailerFromVehicle event.
+LogExtender.VehicleDetach = function()
+    local originalPerform = ISDetachTrailerFromVehicle.perform;
+
+    ISDetachTrailerFromVehicle.perform = function(self)
+        originalPerform(self);
+
+        local player = self.character;
+
+        if player then
+            LogExtender.DumpVehicle(player, "detach", self.vehicle, LogExtender.vehicleAttachment);
+            LogExtender.vehicleAttachment = nil;
+        end;
+    end;
+end
+
 -- OnGameStart adds callback for OnGameStart global event.
 LogExtender.OnGameStart = function()
     LogExtender.player = getSpecificPlayer(0);
@@ -406,6 +481,14 @@ LogExtender.OnGameStart = function()
 
     if LogExtender.config.actions.vehicle.exit then
         Events.OnExitVehicle.Add(LogExtender.VehicleExit);
+    end
+
+    if LogExtender.config.actions.vehicle.attach then
+        LogExtender.VehicleAttach()
+    end
+
+    if LogExtender.config.actions.vehicle.detach then
+        LogExtender.VehicleDetach()
     end
 end
 
