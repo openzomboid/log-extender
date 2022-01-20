@@ -4,12 +4,20 @@ All notable changes to this project will be documented in this file.
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [v0.6.0] - 2022-01-20
 ### Fixed
 - Fixed display of safehouse membership in player log.
 
 ### Added
-- Added new format for vehicle enter and exit events contained vehicle id, type.
-- Added vehicle attach and detach events.
+- Added vehicle enter and exit events contained vehicle id, type and center coordinate to `_player.txt` log file.
+- Added vehicle attach and detach events to `_player.txt` log file.
+- Added owens and microwaves toggle event to `_cmd.txt` log file.
+- Added campfire added and taken events to `_map.txt` log file.
+- Added campfire light and extinguish events to `_cmd.txt` log file.
+
+### Changed
+- Vehicle enter and exit events marked as deprecated in `_cmd.txt` log file. This events will be removed in future releases.
 
 ## [v0.5.0] - 2021-12-14
 ### Fixed
@@ -64,7 +72,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.6.0...HEAD
+[v0.6.0]: https://github.com/openzomboid/log-extender/compare/v0.5.0...v0.6.0
 [v0.5.0]: https://github.com/openzomboid/log-extender/compare/v0.4.1...v0.5.0
 [v0.4.1]: https://github.com/openzomboid/log-extender/compare/v0.4.0...v0.4.1
 [v0.4.0]: https://github.com/openzomboid/log-extender/compare/v0.3.0...v0.4.0

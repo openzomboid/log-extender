@@ -352,13 +352,28 @@ LogExtender.TimedActionPerform = function()
         if player and self.Type then
             local location = LogExtender.getLocation(player);
 
-            -- Fix for bug report topic
-            -- https://theindiestone.com/forums/index.php?/topic/25683-nothing-will-be-written-to-the-log-if-you-take-generator-from-the-ground/
-            -- Create "taken" line like another lines in *_map.txt log file.
-            -- [25-08-19 16:49:39.239] 76561198204465365 "outdead" taken IsoGenerator (appliances_misc_01_0) at 10254,12759,0.
             if self.Type == "ISTakeGenerator" then
+                -- Fix for bug report topic
+                -- https://theindiestone.com/forums/index.php?/topic/25683-nothing-will-be-written-to-the-log-if-you-take-generator-from-the-ground/
+                -- Create "taken" line like another lines in *_map.txt log file.
+                -- [25-08-19 16:49:39.239] 76561198204465365 "outdead" taken IsoGenerator (appliances_misc_01_0) at 10254,12759,0.
                 local message = LogExtender.getLogLinePrefix(player, "taken IsoGenerator") .. " (appliances_misc_01_0) at " .. location;
                 writeLog(LogExtender.config.filemask.map, message);
+            elseif self.Type == "ISToggleStoveAction" then
+                local message = LogExtender.getLogLinePrefix(player, "stove.toggle") .. " @ " .. location;
+                writeLog(LogExtender.config.filemask.cmd, message);
+            elseif self.Type == "ISPlaceCampfireAction" then
+                local message = LogExtender.getLogLinePrefix(player, "added Campfire") .. " (camping_01_6) at " .. location;
+                writeLog(LogExtender.config.filemask.map, message);
+            elseif self.Type == "ISRemoveCampfireAction" then
+                local message = LogExtender.getLogLinePrefix(player, "taken Campfire") .. " (camping_01_6) at " .. location;
+                writeLog(LogExtender.config.filemask.map, message);
+            elseif (self.Type == "ISLightFromKindle" or self.Type == "ISLightFromLiterature" or self.Type == "ISLightFromPetrol") then
+                local message = LogExtender.getLogLinePrefix(player, "campfire.light") .. " @ " .. location;
+                writeLog(LogExtender.config.filemask.cmd, message);
+            elseif self.Type == "ISPutOutCampfireAction" then
+                local message = LogExtender.getLogLinePrefix(player, "campfire.extinguish") .. " @ " .. location;
+                writeLog(LogExtender.config.filemask.cmd, message);
             end;
         end;
     end;
