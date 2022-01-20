@@ -4,7 +4,7 @@
 Log Extender mod adds more logs to the Logs directory the Project Zomboid game.  
 
 ## Description
-The Log Extender mod designed for Project Zomboid servers and adds log entries that helps administering the server. The mod allows you to save information about the levels of perk character, time of his survival, number of killed zombies and other information about the character. Log Extender also adds more building and action logs such as build campfire, light and extinguish campfires, toggle owens and more actions with vehicles.
+The Log Extender mod designed for Project Zomboid servers and adds log entries that helps administering the server. The mod allows you to save information about the levels of perk character, time of his survival, number of killed zombies and other information about the character. Log Extender also adds more building and action logs such as build campfire, light and extinguish campfires, toggle ovens and more actions with vehicles.
 
 ## How to Use
 This mod does not work in single player mode. Therefore, it must be installed on a dedicated Project Zomboid server. You can see logs in Zomboid/Logs directory:

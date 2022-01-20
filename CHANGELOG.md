@@ -12,7 +12,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added vehicle enter and exit events contained vehicle id, type and center coordinate to `_player.txt` log file.
 - Added vehicle attach and detach events to `_player.txt` log file.
-- Added owens and microwaves toggle event to `_cmd.txt` log file.
+- Added ovens and microwaves toggle event to `_cmd.txt` log file.
 - Added campfire added and taken events to `_map.txt` log file.
 - Added campfire light and extinguish events to `_cmd.txt` log file.
 
