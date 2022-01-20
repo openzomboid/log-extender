@@ -40,7 +40,7 @@ There can be `connected`, `levelup` and `tick` events.
 ## Warning
 Log Extender is under development and is being tested on the server [Last Day](https://last-day.wargm.ru). You can join our server or use the mod on your own server.
 If you think you have found a bug, write about it in the [bug reporting topic](https://steamcommunity.com/workshop/filedetails/discussion/1844524972/1638668751263547005/)
-the Steam workshop or create issue in [github repository](https://github.com/game-servers/pz-mod-log-extender).
+the Steam workshop or create issue in [github repository](https://github.com/openzomboid/log-extender).
 
 ## License
 Apache License 2.0, see [LICENCE](LICENSE)
