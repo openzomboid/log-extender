@@ -1,0 +1,73 @@
+VERSION = 1,
+
+option LogExtender.PlayerConnected
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_PlayerConnected
+}
+
+option LogExtender.PlayerLevelup
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_PlayerLevelup
+}
+
+option LogExtender.PlayerTick
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_PlayerTick
+}
+
+option LogExtender.VehicleEnter
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_VehicleEnter
+}
+
+option LogExtender.VehicleExit
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_VehicleExit
+}
+
+option LogExtender.VehicleAttach
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_VehicleAttach
+}
+
+option LogExtender.VehicleDetach
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_VehicleDetach
+}
+
+option LogExtender.TimedActions
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_TimedActions
+}

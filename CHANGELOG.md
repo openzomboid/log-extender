@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Added serverside config to Sandbox options.
+
 ## [v0.6.0] - 2022-01-20
 ### Fixed
 - Fixed display of safehouse membership in player log.

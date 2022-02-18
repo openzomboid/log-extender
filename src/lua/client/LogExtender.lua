@@ -5,44 +5,27 @@
 -- LogExtender adds more logs to the Logs directory the Project Zomboid game.
 --
 
-local version = "0.6.0"
+local version = "0.7.0"
 
 local pzversion = string.sub(getCore():getVersionNumber(), 1, 2)
 
 local LogExtender = {
-    -- Contains default config values.
-    config = {
-        -- Placeholders for Project Zomboid log file names.
-        -- Project Zomboid generates files like this 24-08-19_18-11_chat.txt
-        -- at first action and use file until next server restart.
-        filemask = {
-            chat = "chat",
-            user = "user",
-            cmd = "cmd",
-            vehicle = "vehicle",
-            player = "player",
-            item = "item",
-            map = "map",
-            admin = "admin",
-        },
-        -- Callbacks switches.
-        -- TODO: Get from server settings.
-        actions = {
-            player = {
-                connected = true,
-                levelup = true,
-                tick = true,
-                disconnected = false, -- TODO: How can I do this?
-            },
-            vehicle = {
-                enter = true,
-                exit = true,
-                attach = true,
-                detach = true,
-            },
-            time = true,
-        },
+    version = version,
+
+    -- Placeholders for Project Zomboid log file names.
+    -- Project Zomboid generates files like this 24-08-19_18-11_chat.txt
+    -- at first action and use file until next server restart.
+    filemask = {
+        chat = "chat",
+        user = "user",
+        cmd = "cmd",
+        vehicle = "vehicle",
+        player = "player",
+        item = "item",
+        map = "map",
+        admin = "admin",
     },
+
     -- Store ingame player object when user is logged in.
     player = nil,
     -- Store vehicle object when user enter to it.
@@ -295,7 +278,7 @@ LogExtender.DumpPlayer = function(player, action)
     local location = LogExtender.getLocation(player);
     message = message .. " (" .. location .. ")"
 
-    writeLog(LogExtender.config.filemask.player, message);
+    writeLog(LogExtender.filemask.player, message);
 end
 
 LogExtender.DumpVehicle = function(player, action, vehicle, vehicle2)
@@ -336,7 +319,7 @@ LogExtender.DumpVehicle = function(player, action, vehicle, vehicle2)
     local location = LogExtender.getLocation(player);
     message = message .. " at " .. location
 
-    writeLog(LogExtender.config.filemask.vehicle, message);
+    writeLog(LogExtender.filemask.vehicle, message);
 end
 
 -- TimedActionPerform overrides the original ISBaseTimedAction: perform function to gain
@@ -353,27 +336,23 @@ LogExtender.TimedActionPerform = function()
             local location = LogExtender.getLocation(player);
 
             if self.Type == "ISTakeGenerator" then
-                -- Fix for bug report topic
-                -- https://theindiestone.com/forums/index.php?/topic/25683-nothing-will-be-written-to-the-log-if-you-take-generator-from-the-ground/
-                -- Create "taken" line like another lines in *_map.txt log file.
-                -- [25-08-19 16:49:39.239] 76561198204465365 "outdead" taken IsoGenerator (appliances_misc_01_0) at 10254,12759,0.
                 local message = LogExtender.getLogLinePrefix(player, "taken IsoGenerator") .. " (appliances_misc_01_0) at " .. location;
-                writeLog(LogExtender.config.filemask.map, message);
+                writeLog(LogExtender.filemask.map, message);
             elseif self.Type == "ISToggleStoveAction" then
                 local message = LogExtender.getLogLinePrefix(player, "stove.toggle") .. " @ " .. location;
-                writeLog(LogExtender.config.filemask.cmd, message);
+                writeLog(LogExtender.filemask.cmd, message);
             elseif self.Type == "ISPlaceCampfireAction" then
                 local message = LogExtender.getLogLinePrefix(player, "added Campfire") .. " (camping_01_6) at " .. location;
-                writeLog(LogExtender.config.filemask.map, message);
+                writeLog(LogExtender.filemask.map, message);
             elseif self.Type == "ISRemoveCampfireAction" then
                 local message = LogExtender.getLogLinePrefix(player, "taken Campfire") .. " (camping_01_6) at " .. location;
-                writeLog(LogExtender.config.filemask.map, message);
+                writeLog(LogExtender.filemask.map, message);
             elseif (self.Type == "ISLightFromKindle" or self.Type == "ISLightFromLiterature" or self.Type == "ISLightFromPetrol") then
                 local message = LogExtender.getLogLinePrefix(player, "campfire.light") .. " @ " .. location;
-                writeLog(LogExtender.config.filemask.cmd, message);
+                writeLog(LogExtender.filemask.cmd, message);
             elseif self.Type == "ISPutOutCampfireAction" then
                 local message = LogExtender.getLogLinePrefix(player, "campfire.extinguish") .. " @ " .. location;
-                writeLog(LogExtender.config.filemask.cmd, message);
+                writeLog(LogExtender.filemask.cmd, message);
             end;
         end;
     end;
@@ -416,7 +395,7 @@ LogExtender.VehicleEnter = function(player)
         -- Deprecated: Old format. Will be removed on next updates.
         local location = LogExtender.getLocation(player);
         local message = LogExtender.getLogLinePrefix(player, "vehicle.enter") .. " @ " .. location;
-        writeLog(LogExtender.config.filemask.cmd, message);
+        writeLog(LogExtender.filemask.cmd, message);
 
         -- New format.
         LogExtender.vehicle = player:getVehicle()
@@ -430,7 +409,7 @@ LogExtender.VehicleExit = function(player)
         -- Deprecated: Old format. Will be removed on next updates.
         local location = LogExtender.getLocation(player);
         local message = LogExtender.getLogLinePrefix(player, "vehicle.exit") .. " @ " .. location;
-        writeLog(LogExtender.config.filemask.cmd, message);
+        writeLog(LogExtender.filemask.cmd, message);
 
         -- New format.
         LogExtender.DumpVehicle(player, "exit", LogExtender.vehicle);
@@ -474,36 +453,36 @@ end
 LogExtender.OnGameStart = function()
     LogExtender.player = getSpecificPlayer(0);
 
-    if LogExtender.config.actions.player.connected then
+    if SandboxVars.LastDay.PlayerConnected then
         LogExtender.OnConnected();
     end
 
-    if LogExtender.config.actions.time then
-        LogExtender.TimedActionPerform();
-    end
-
-    if LogExtender.config.actions.player.levelup then
+    if SandboxVars.LastDay.PlayerLevelup then
         Events.LevelPerk.Add(LogExtender.OnPerkLevel);
     end
 
-    if LogExtender.config.actions.player.tick then
+    if SandboxVars.LastDay.PlayerTick then
         Events.EveryHours.Add(LogExtender.EveryHours);
     end
 
-    if LogExtender.config.actions.vehicle.enter then
+    if SandboxVars.LastDay.VehicleEnter then
         Events.OnEnterVehicle.Add(LogExtender.VehicleEnter);
     end
 
-    if LogExtender.config.actions.vehicle.exit then
+    if SandboxVars.LastDay.VehicleExit then
         Events.OnExitVehicle.Add(LogExtender.VehicleExit);
     end
 
-    if LogExtender.config.actions.vehicle.attach then
+    if SandboxVars.LastDay.VehicleAttach then
         LogExtender.VehicleAttach()
     end
 
-    if LogExtender.config.actions.vehicle.detach then
+    if SandboxVars.LastDay.VehicleDetach then
         LogExtender.VehicleDetach()
+    end
+
+    if SandboxVars.LastDay.TimedActions then
+        LogExtender.TimedActionPerform();
     end
 end
 

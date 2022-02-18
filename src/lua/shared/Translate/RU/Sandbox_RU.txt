@@ -1,0 +1,11 @@
+Sandbox_RU = {
+    Sandbox_LogExtender = "LogExtender",
+    Sandbox_PlayerConnected = "PlayerConnected",
+    Sandbox_PlayerLevelup = "PlayerLevelup",
+    Sandbox_PlayerTick = "PlayerTick",
+    Sandbox_VehicleEnter = "VehicleEnter",
+    Sandbox_VehicleExit = "VehicleExit",
+    Sandbox_VehicleAttach = "VehicleAttach",
+    Sandbox_VehicleDetach = "VehicleDetach",
+    Sandbox_TimedActions = "TimedActions",
+}
