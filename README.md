@@ -33,7 +33,7 @@ This mod does not work in single player mode. Therefore, it must be installed on
 
 ### _player.txt
 ```text
-[20-01-22 04:39:40.784] 76561190000000000 "outdead" connected perks={"Aiming":2,"Axe":0,"Blunt":0,"Cooking":0,"Doctor":0,"Electricity":0,"Farming":0,"Fishing":0,"Fitness":8,"Lightfoot":0,"LongBlade":0,"Maintenance":0,"Mechanics":10,"MetalWelding":0,"Nimble":0,"PlantScavenging":0,"Reloading":0,"SmallBlade":0,"SmallBlunt":0,"Sneak":0,"Spear":0,"Sprinting":0,"Strength":9,"Tailoring":0,"Trapping":0,"Woodwork":0} traits=["Fit","HighThirst","KeenHearing","NightVision","Organized","Outdoorsman","SlowHealer","SlowReader","Smoker","Strong","Unlucky"] stats={"profession":"unemployed","level":0,"skill_points":0,"kills":0,"hours":89.04932174393616} health={"health":100,"infected":false} safehouse owner=() safehouse member=(12698x3731 - 12714x3744) (12704,3738,0).
+[20-01-22 04:39:40.784] 76561190000000000 "outdead" connected perks={"Aiming":2,"Axe":0,"Blunt":0,"Cooking":0,"Doctor":0,"Electricity":0,"Farming":0,"Fishing":0,"Fitness":8,"Lightfoot":0,"LongBlade":0,"Maintenance":0,"Mechanics":10,"MetalWelding":0,"Nimble":0,"PlantScavenging":0,"Reloading":0,"SmallBlade":0,"SmallBlunt":0,"Sneak":0,"Spear":0,"Sprinting":0,"Strength":9,"Tailoring":0,"Trapping":0,"Woodwork":0} traits=["Fit","HighThirst","KeenHearing","NightVision","Organized","Outdoorsman","SlowHealer","SlowReader","Smoker","Strong","Unlucky"] stats={"profession":"unemployed","level":0,"skill_points":0,"kills":0,"hours":89.04} health={"health":100,"infected":false} safehouse owner=() safehouse member=(12698x3731 - 12714x3744) (12704,3738,0).
 ```
 There can be `connected`, `levelup` and `tick` events.
 
