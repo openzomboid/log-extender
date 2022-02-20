@@ -10,6 +10,10 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added serverside config to Sandbox options.
 
+### Changed
+- Field `hours` is rounded to two decimal places in stats section of `_player.txt` log file.
+- Field `health` is rounded up to the nearest integer in health section of `_player.txt` log file.
+
 ### Removed
 - Removed fields `level` and `skill_points` from `_player.txt` log file. Not actual for b41.
 - Removed deprecated Vehicle enter and exit events in `_cmd.txt` log file.

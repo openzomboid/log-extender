@@ -139,7 +139,7 @@ LogExtender.getPlayerStats = function(player)
     local stats = {}
 
     stats.Kills = player:getZombieKills();
-    stats.Survived = player:getHoursSurvived();
+    stats.Survived = math.floor(player:getHoursSurvived() * 100) / 100;
     stats.Profession = "";
 
     if player:getDescriptor() and player:getDescriptor():getProfession() then
@@ -162,7 +162,7 @@ LogExtender.getPlayerHealth = function(player)
 
     local health = {}
 
-    health.Health = bd:getOverallBodyHealth();
+    health.Health = math.floor(bd:getOverallBodyHealth());
     health.Infected = bd:IsInfected() and "true" or "false";
 
     return health;
