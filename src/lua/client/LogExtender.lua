@@ -5,6 +5,8 @@
 -- LogExtender adds more logs to the Logs directory the Project Zomboid game.
 --
 
+-- TODO: Create JSON marshaller.
+
 local version = "0.7.0"
 
 local LogExtender = {
@@ -229,7 +231,6 @@ LogExtender.DumpPlayer = function(player, action)
 
     local health = LogExtender.getPlayerHealth(player)
     if health ~= nil then
-        -- TODO: Create marshaller.
         message = message .. ' health={'
             .. '"health":' .. health.Health .. ','
             .. '"infected":' .. health.Infected
