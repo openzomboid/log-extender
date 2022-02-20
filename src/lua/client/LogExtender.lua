@@ -293,8 +293,8 @@ LogExtender.DumpVehicle = function(player, action, vehicle, vehicle2)
 
         message = message .. ' vehicle={'
             .. '"id":' .. info.ID .. ','
-            .. '"type":' .. info.Type .. ','
-            .. '"center":' .. info.Center
+            .. '"type":"' .. info.Type .. '",'
+            .. '"center":"' .. info.Center .. '"'
             .. '}';
     else
         message = message .. " vehicle={}";

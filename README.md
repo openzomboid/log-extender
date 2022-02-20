@@ -25,10 +25,10 @@ This mod does not work in single player mode. Therefore, it must be installed on
 
 ### _vehicle.txt
 ```text
-[19-01-22 17:02:05.649] 76561190000000000 "outdead" attach vehicle={"id":872,"type":VanRadio,"center":12801,3692,0} to vehicle={"id":871,"type":Van,"center":12807,3692,0} at 12804,3691,0.
-[19-01-22 17:02:09.762] 76561190000000000 "outdead" enter vehicle={"id":871,"type":Van,"center":12807,3692,0} at 12807,3691,0.
-[19-01-22 17:02:16.750] 76561190000000000 "outdead" exit vehicle={"id":871,"type":Van,"center":12807,3692,0} at 12807,3691,0.
-[19-01-22 17:02:25.635] 76561190000000000 "outdead" detach vehicle={"id":872,"type":VanRadio,"center":12801,3692,0} from vehicle={"id":871,"type":Van,"center":12807,3692,0} at 12804,3691,0.
+[19-01-22 17:02:05.649] 76561190000000000 "outdead" attach vehicle={"id":872,"type":"VanRadio","center":"12801,3692,0"} to vehicle={"id":871,"type":"Van","center":"12807,3692,0"} at 12804,3691,0.
+[19-01-22 17:02:09.762] 76561190000000000 "outdead" enter vehicle={"id":871,"type":"Van","center":"12807,3692,0"} at 12807,3691,0.
+[19-01-22 17:02:16.750] 76561190000000000 "outdead" exit vehicle={"id":871,"type":"Van","center":"12807,3692,0"} at 12807,3691,0.
+[19-01-22 17:02:25.635] 76561190000000000 "outdead" detach vehicle={"id":872,"type":"VanRadio","center":"12801,3692,0"} from vehicle={"id":871,"type":"Van","center":"12807,3692,0"} at 12804,3691,0.
 ```
 
 ### _player.txt
