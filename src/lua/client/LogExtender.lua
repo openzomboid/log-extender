@@ -7,8 +7,6 @@
 
 local version = "0.7.0"
 
-local pzversion = string.sub(getCore():getVersionNumber(), 1, 2)
-
 local LogExtender = {
     version = version,
 
@@ -142,12 +140,6 @@ LogExtender.getPlayerStats = function(player)
 
     stats.Kills = player:getZombieKills();
     stats.Survived = player:getHoursSurvived();
-    stats.Level = player:getXp():getLevel();
-    if pzversion == "40" then
-        stats.SkillPoints = player:getNumberOfPerksToPick();
-    else
-        stats.SkillPoints = 0 -- Deprecated: Removed in 41 build.
-    end
     stats.Profession = "";
 
     if player:getDescriptor() and player:getDescriptor():getProfession() then
@@ -228,8 +220,6 @@ LogExtender.DumpPlayer = function(player, action)
     if stats ~= nil then
         message = message .. ' stats={'
             .. '"profession":"' .. stats.Profession .. '",'
-            .. '"level":' .. stats.Level .. ','
-            .. '"skill_points":' .. stats.SkillPoints .. ','
             .. '"kills":' .. stats.Kills .. ','
             .. '"hours":' .. stats.Survived
             .. '}';
@@ -392,27 +382,15 @@ end
 -- VehicleEnter adds callback for OnEnterVehicle event.
 LogExtender.VehicleEnter = function(player)
     if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
-        -- Deprecated: Old format. Will be removed on next updates.
-        local location = LogExtender.getLocation(player);
-        local message = LogExtender.getLogLinePrefix(player, "vehicle.enter") .. " @ " .. location;
-        writeLog(LogExtender.filemask.cmd, message);
-
-        -- New format.
         LogExtender.vehicle = player:getVehicle()
-        LogExtender.DumpVehicle(player, "enter", LogExtender.vehicle);
+        LogExtender.DumpVehicle(player, "enter", LogExtender.vehicle, nil);
     end
 end
 
 -- VehicleExit adds callback for OnExitVehicle event.
 LogExtender.VehicleExit = function(player)
     if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
-        -- Deprecated: Old format. Will be removed on next updates.
-        local location = LogExtender.getLocation(player);
-        local message = LogExtender.getLogLinePrefix(player, "vehicle.exit") .. " @ " .. location;
-        writeLog(LogExtender.filemask.cmd, message);
-
-        -- New format.
-        LogExtender.DumpVehicle(player, "exit", LogExtender.vehicle);
+        LogExtender.DumpVehicle(player, "exit", LogExtender.vehicle, nil);
         LogExtender.vehicle = nil
     end
 end

@@ -10,6 +10,10 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added serverside config to Sandbox options.
 
+### Removed
+- Removed fields `level` and `skill_points` from `_player.txt` log file. Not actual for b41.
+- Removed deprecated Vehicle enter and exit events in `_cmd.txt` log file.
+
 ## [v0.6.0] - 2022-01-20
 ### Fixed
 - Fixed display of safehouse membership in player log.
