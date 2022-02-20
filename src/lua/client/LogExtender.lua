@@ -431,35 +431,35 @@ end
 LogExtender.OnGameStart = function()
     LogExtender.player = getSpecificPlayer(0);
 
-    if SandboxVars.LastDay.PlayerConnected then
+    if SandboxVars.LogExtender.PlayerConnected then
         LogExtender.OnConnected();
     end
 
-    if SandboxVars.LastDay.PlayerLevelup then
+    if SandboxVars.LogExtender.PlayerLevelup then
         Events.LevelPerk.Add(LogExtender.OnPerkLevel);
     end
 
-    if SandboxVars.LastDay.PlayerTick then
+    if SandboxVars.LogExtender.PlayerTick then
         Events.EveryHours.Add(LogExtender.EveryHours);
     end
 
-    if SandboxVars.LastDay.VehicleEnter then
+    if SandboxVars.LogExtender.VehicleEnter then
         Events.OnEnterVehicle.Add(LogExtender.VehicleEnter);
     end
 
-    if SandboxVars.LastDay.VehicleExit then
+    if SandboxVars.LogExtender.VehicleExit then
         Events.OnExitVehicle.Add(LogExtender.VehicleExit);
     end
 
-    if SandboxVars.LastDay.VehicleAttach then
+    if SandboxVars.LogExtender.VehicleAttach then
         LogExtender.VehicleAttach()
     end
 
-    if SandboxVars.LastDay.VehicleDetach then
+    if SandboxVars.LogExtender.VehicleDetach then
         LogExtender.VehicleDetach()
     end
 
-    if SandboxVars.LastDay.TimedActions then
+    if SandboxVars.LogExtender.TimedActions then
         LogExtender.TimedActionPerform();
     end
 end
