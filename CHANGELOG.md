@@ -51,6 +51,9 @@ All notable changes to this project will be documented in this file.
 - Added traits to player log.
 
 ## [v0.3.0] - 2019-12-01
+### Fixed
+- Removed levelup entries from the character's creation window until the server fully connected.
+
 ### Added
 - Added Events.OnEnterVehicle callback. Save coordinates of the player's entry into the vehicle to {{dd-mm-yy_h-i}}_cmd.txt log file.
 - Added Events.OnExitVehicle callback. Saves player's exit coordinates from vehicle to {{dd-mm-yy_h-i}}_cmd.txt log file.
@@ -59,19 +62,16 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Events can be turned on or off in the configuration of the LogExtender object.
 
-### Fixed
-- Removed levelup entries from the character's creation window until the server fully connected.
-
 ## [v0.2.0] - 2019-09-24
+### Fixed
+- Fix inconsistent levelup event from administrator panel #1.
+
 ### Added
 - Added level to dump player stats.
 - Start writing changelog.
 
 ### Changed
 - Code refactoring. Create a LogExtender object and define its methods.
-
-### Fixed
-- Fix inconsistent levelup event from administrator panel #1.
 
 ## [v0.1.2] - 2019-08-26
 ### Added
