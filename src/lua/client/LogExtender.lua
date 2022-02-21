@@ -170,6 +170,8 @@ LogExtender.getPlayerHealth = function(player)
     return health;
 end
 
+-- getVehicleInfo returns some vehicles information such as id, type and center
+-- coordinate.
 LogExtender.getVehicleInfo = function(vehicle)
     local info = {
         ID = "0",
@@ -272,6 +274,7 @@ LogExtender.DumpPlayer = function(player, action)
     writeLog(LogExtender.filemask.player, message);
 end
 
+-- DumpVehicle writes vehicles info to log file.
 LogExtender.DumpVehicle = function(player, action, vehicle, vehicle2)
     if player == nil then
         return nil;
