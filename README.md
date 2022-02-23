@@ -37,6 +37,14 @@ This mod does not work in single player mode. Therefore, it must be installed on
 ```
 There can be `connected`, `levelup` and `tick` events.
 
+### _safehouse.txt
+```text
+[23-02-22 17:31:51.126] 76561190000000000 "outdead" take safehouse 10909,9397,11,11 owner="outdead".
+[23-02-22 18:04:53.263] 76561190000000000 "outdead" release safehouse 10909,9397,11,11 owner="outdead" members=["rez"].
+[23-02-22 17:40:16.922] 76561190000000000 "outdead" remove player from safehouse 10909,9397,11,11 owner="outdead" target="rez".
+[23-02-22 17:39:09.932] 76561190000000000 "outdead" join to safehouse 10880,9401,8,11 owner="rez".
+```
+
 ## Warning
 Log Extender is under development and is being tested on the server [Last Day](https://last-day.wargm.ru). You can join our server or use the mod on your own server.
 If you think you have found a bug, write about it in the [bug reporting topic](https://steamcommunity.com/workshop/filedetails/discussion/1844524972/1638668751263547005/)

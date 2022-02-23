@@ -328,15 +328,6 @@ LogExtender.DumpSafehouse = function(player, action, safehouse, target)
         local area = {}
         local owner = player:getUsername()
 
-        --if instanceof(safehouse, 'IsoGridSquare') then
-        --    local zone = safehouse:getZone()
-        --    area = {
-        --        Top = zone:getX() .. "x" .. zone:getY(),
-        --        Bottom = zone:getX()+zone:getHeight() .. "x" .. zone:getY()+zone:getWidth(),
-        --        zone = zone:getX() .. "," .. zone:getY() .. "," .. zone:getHeight() .. "," .. zone:getWidth()
-        --    };
-        --end
-
         if instanceof(safehouse, 'SafeHouse') then
             owner = safehouse:getOwner();
             area = {
@@ -348,9 +339,26 @@ LogExtender.DumpSafehouse = function(player, action, safehouse, target)
 
         message = message .. ' ' .. area.zone
         message = message .. ' owner="' .. owner .. '"'
+
+        if action == "release safehouse" then
+            message = message .. ' members=['
+
+            local members = safehouse:getPlayers();
+            for j = 0, members:size() - 1 do
+                local member = members:get(j)
+
+                if member ~= owner then
+                    message = message .. '"' .. member .. '"'
+                    if j ~= members:size() - 1 then
+                        message = message .. ','
+                    end
+                end
+            end
+            message = message .. ']'
+        end
     else
-        message = message .. ' ' .. '0,0,0,0'
-        message = message .. ' owner="' .. '' .. '"'
+        message = message .. ' ' .. '0,0,0,0' -- TODO: What can I do?
+        message = message .. ' owner="' .. player:getUsername() .. '"'
     end
 
     if target ~= nil then
@@ -406,7 +414,15 @@ LogExtender.OnTakeSafeHouse = function()
         originalOnTakeSafeHouse(worldobjects, square, player)
 
         local character = getSpecificPlayer(player)
-        LogExtender.DumpSafehouse(character, "take safehouse", square, nil)
+        local safehouse = nil
+
+        local safehouseList = SafeHouse.getSafehouseList();
+        for i = 0, safehouseList:size() - 1 do
+            safehouse = safehouseList:get(i);
+            break;
+        end
+
+        LogExtender.DumpSafehouse(character, "take safehouse", safehouse, nil)
     end
 end
 
@@ -430,7 +446,15 @@ LogExtender.OnReleaseSafeHouseCommand = function()
         local command = ISChat.instance.textEntry:getText();
         if command == "/releasesafehouse" then
             local character = getSpecificPlayer(0)
-            LogExtender.DumpSafehouse(character, "release safehouse", nil, nil)
+            local safehouse = nil
+
+            local safehouseList = SafeHouse.getSafehouseList();
+            for i = 0, safehouseList:size() - 1 do
+                safehouse = safehouseList:get(i);
+                break;
+            end
+
+            LogExtender.DumpSafehouse(character, "release safehouse", safehouse, nil)
         end
 
         onCommandEnteredOriginal(self)
@@ -438,7 +462,7 @@ LogExtender.OnReleaseSafeHouseCommand = function()
 end
 
 LogExtender.OnRemovePlayerFromSafehouse = function()
-    local onCommandEnteredOriginal = ISChat.onCommandEntered;
+    local onRemovePlayerFromSafehouseOriginal = ISSafehouseUI.onRemovePlayerFromSafehouse;
 
     ISSafehouseUI.onRemovePlayerFromSafehouse = function(self, button, player)
         if button.internal == "YES" then
@@ -446,7 +470,7 @@ LogExtender.OnRemovePlayerFromSafehouse = function()
             LogExtender.DumpSafehouse(character, "remove player from safehouse", button.parent.ui.safehouse, button.parent.ui.selectedPlayer)
         end
 
-        onCommandEnteredOriginal(self, button, player)
+        onRemovePlayerFromSafehouseOriginal(self, button, player)
     end
 end
 
@@ -579,12 +603,11 @@ LogExtender.OnGameStart = function()
     end
 
     if SandboxVars.LogExtender.TakeSafeHouse then
-        --LogExtender.OnTakeSafeHouse()
+        LogExtender.OnTakeSafeHouse()
     end
 
     if SandboxVars.LogExtender.ReleaseSafeHouse then
         LogExtender.OnReleaseSafeHouse()
-        LogExtender.OnReleaseSafeHouseCommand()
     end
 
     if SandboxVars.LogExtender.RemovePlayerFromSafehouse then
@@ -594,6 +617,10 @@ LogExtender.OnGameStart = function()
     if SandboxVars.LogExtender.JoinToSafehouse then
         LogExtender.OnJoinToSafehouse()
     end
+end
+
+if SandboxVars.LogExtender.ReleaseSafeHouse then
+    LogExtender.OnReleaseSafeHouseCommand()
 end
 
 Events.OnGameStart.Add(LogExtender.OnGameStart);
