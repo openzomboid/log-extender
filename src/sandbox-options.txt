@@ -71,3 +71,39 @@ option LogExtender.TimedActions
   page = LogExtender,
   translation = LogExtender_TimedActions
 }
+
+option LogExtender.TakeSafeHouse
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_TakeSafeHouse
+}
+
+option LogExtender.ReleaseSafeHouse
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_ReleaseSafeHouse
+}
+
+option LogExtender.RemovePlayerFromSafehouse
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_RemovePlayerFromSafehouse
+}
+
+option LogExtender.JoinToSafehouse
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_JoinToSafehouse
+}

@@ -24,6 +24,7 @@ local LogExtender = {
         item = "item",
         map = "map",
         admin = "admin",
+        safehouse = "safehouse",
     },
 
     -- Store ingame player object when user is logged in.
@@ -316,6 +317,52 @@ LogExtender.DumpVehicle = function(player, action, vehicle, vehicle2)
     writeLog(LogExtender.filemask.vehicle, message);
 end
 
+LogExtender.DumpSafehouse = function(player, action, safehouse, target)
+    if player == nil then
+        return nil;
+    end
+
+    local message = LogExtender.getLogLinePrefix(player, action);
+
+    if safehouse then
+        local area = {}
+        local owner = player:getUsername()
+
+        --if instanceof(safehouse, 'IsoGridSquare') then
+        --    local zone = safehouse:getZone()
+        --    area = {
+        --        Top = zone:getX() .. "x" .. zone:getY(),
+        --        Bottom = zone:getX()+zone:getHeight() .. "x" .. zone:getY()+zone:getWidth(),
+        --        zone = zone:getX() .. "," .. zone:getY() .. "," .. zone:getHeight() .. "," .. zone:getWidth()
+        --    };
+        --end
+
+        if instanceof(safehouse, 'SafeHouse') then
+            owner = safehouse:getOwner();
+            area = {
+                Top = safehouse:getX() .. "x" .. safehouse:getY(),
+                Bottom = safehouse:getX2() .. "x" .. safehouse:getY2(),
+                zone = safehouse:getX() .. "," .. safehouse:getY() .. "," .. safehouse:getX2() - safehouse:getX() .. "," .. safehouse:getY2() - safehouse:getY()
+            };
+        end
+
+        message = message .. ' ' .. area.zone
+        message = message .. ' owner="' .. owner .. '"'
+    else
+        message = message .. ' ' .. '0,0,0,0'
+        message = message .. ' owner="' .. '' .. '"'
+    end
+
+    if target ~= nil then
+        message = message .. ' target="' .. target .. '"'
+    end
+
+    --local location = LogExtender.getLocation(player);
+    --message = message .. " @ " .. location
+
+    writeLog(LogExtender.filemask.safehouse, message);
+end
+
 -- TimedActionPerform overrides the original ISBaseTimedAction: perform function to gain
 -- access to player events.
 LogExtender.TimedActionPerform = function()
@@ -352,6 +399,70 @@ LogExtender.TimedActionPerform = function()
     end;
 end
 
+LogExtender.OnTakeSafeHouse = function()
+    local originalOnTakeSafeHouse = ISWorldObjectContextMenu.onTakeSafeHouse;
+
+    ISWorldObjectContextMenu.onTakeSafeHouse = function(worldobjects, square, player)
+        originalOnTakeSafeHouse(worldobjects, square, player)
+
+        local character = getSpecificPlayer(player)
+        LogExtender.DumpSafehouse(character, "take safehouse", square, nil)
+    end
+end
+
+LogExtender.OnReleaseSafeHouse = function()
+    local onClickOriginal = ISSafehouseUI.onClick;
+
+    ISSafehouseUI.onClick = function(self, button)
+        onClickOriginal(self, button)
+
+        if button.internal == "RELEASE" then
+            local character = getPlayerFromUsername(self.safehouse:getOwner())
+            LogExtender.DumpSafehouse(character, "release safehouse", self.safehouse, nil)
+        end
+    end
+end
+
+LogExtender.OnReleaseSafeHouseCommand = function()
+    local onCommandEnteredOriginal = ISChat.onCommandEntered;
+
+    ISChat.onCommandEntered = function(self)
+        local command = ISChat.instance.textEntry:getText();
+        if command == "/releasesafehouse" then
+            local character = getSpecificPlayer(0)
+            LogExtender.DumpSafehouse(character, "release safehouse", nil, nil)
+        end
+
+        onCommandEnteredOriginal(self)
+    end
+end
+
+LogExtender.OnRemovePlayerFromSafehouse = function()
+    local onCommandEnteredOriginal = ISChat.onCommandEntered;
+
+    ISSafehouseUI.onRemovePlayerFromSafehouse = function(self, button, player)
+        if button.internal == "YES" then
+            local character = getPlayer()
+            LogExtender.DumpSafehouse(character, "remove player from safehouse", button.parent.ui.safehouse, button.parent.ui.selectedPlayer)
+        end
+
+        onCommandEnteredOriginal(self, button, player)
+    end
+end
+
+LogExtender.OnJoinToSafehouse = function()
+    local onAnswerSafehouseInviteOriginal = ISSafehouseUI.onAnswerSafehouseInvite;
+
+    ISSafehouseUI.onAnswerSafehouseInvite = function(self, button)
+        if button.internal == "YES" then
+            local character = getPlayer()
+            LogExtender.DumpSafehouse(character, "join to safehouse", button.parent.safehouse, nil)
+        end
+
+        onAnswerSafehouseInviteOriginal(self, button)
+    end
+end
+
 -- OnConnected adds callback for player OnConnected event.
 LogExtender.OnConnected = function()
     local player = getSpecificPlayer(0);
@@ -361,8 +472,8 @@ LogExtender.OnConnected = function()
 end
 
 -- OnPerkLevel adds callback for player OnPerkLevel global event.
-LogExtender.OnPerkLevel = function(player, perk, perklevel)
-    if player and perk and perklevel then
+LogExtender.OnPerkLevel = function(player, perk, level)
+    if player and perk and level then
         if instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
             -- Hide events from the log when creating a character.
             if player:getHoursSurvived() <= 0 then return end
@@ -465,6 +576,23 @@ LogExtender.OnGameStart = function()
 
     if SandboxVars.LogExtender.TimedActions then
         LogExtender.TimedActionPerform();
+    end
+
+    if SandboxVars.LogExtender.TakeSafeHouse then
+        --LogExtender.OnTakeSafeHouse()
+    end
+
+    if SandboxVars.LogExtender.ReleaseSafeHouse then
+        LogExtender.OnReleaseSafeHouse()
+        LogExtender.OnReleaseSafeHouseCommand()
+    end
+
+    if SandboxVars.LogExtender.RemovePlayerFromSafehouse then
+        LogExtender.OnRemovePlayerFromSafehouse()
+    end
+
+    if SandboxVars.LogExtender.JoinToSafehouse then
+        LogExtender.OnJoinToSafehouse()
     end
 end
 

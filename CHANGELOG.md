@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Added serverside config to Sandbox options.
+- Added safehouse events.
 
 ### Changed
 - Field `hours` is rounded to two decimal places in stats section of `_player.txt` log file.
