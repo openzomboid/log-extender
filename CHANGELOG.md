@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.7.1] - 2022-02-24
+### Fixed
+- Fixed sefahouse detection on actions `take safehouse` and `release safehouse` by /releasesafehouse chat command.
+
 ## [v0.7.0] - 2022-02-23
 ### Fixed
 - Fixed vehicles JSON-format output.
@@ -88,7 +92,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.7.1...HEAD
+[v0.6.0]: https://github.com/openzomboid/log-extender/compare/v0.7.0...v0.7.1
 [v0.6.0]: https://github.com/openzomboid/log-extender/compare/v0.6.0...v0.7.0
 [v0.6.0]: https://github.com/openzomboid/log-extender/compare/v0.5.0...v0.6.0
 [v0.5.0]: https://github.com/openzomboid/log-extender/compare/v0.4.1...v0.5.0

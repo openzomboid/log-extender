@@ -417,9 +417,12 @@ LogExtender.OnTakeSafeHouse = function()
         local safehouse = nil
 
         local safehouseList = SafeHouse.getSafehouseList();
+        -- TODO: If player owned 2 or more safehouses we can get not relevant house.
         for i = 0, safehouseList:size() - 1 do
-            safehouse = safehouseList:get(i);
-            break;
+            if safehouseList:get(i):getOwner() == character:getUsername() then
+                safehouse = safehouseList:get(i);
+                break;
+            end
         end
 
         LogExtender.DumpSafehouse(character, "take safehouse", safehouse, nil)
@@ -449,9 +452,12 @@ LogExtender.OnReleaseSafeHouseCommand = function()
             local safehouse = nil
 
             local safehouseList = SafeHouse.getSafehouseList();
+            -- TODO: If player owned 2 or more safehouses we can get not relevant house.
             for i = 0, safehouseList:size() - 1 do
-                safehouse = safehouseList:get(i);
-                break;
+                if safehouseList:get(i):getOwner() == character:getUsername() then
+                    safehouse = safehouseList:get(i);
+                    break;
+                end
             end
 
             LogExtender.DumpSafehouse(character, "release safehouse", safehouse, nil)
