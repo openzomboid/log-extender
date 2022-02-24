@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ## [v0.7.1] - 2022-02-24
 ### Fixed
-- Fixed sefahouse detection on actions `take safehouse` and `release safehouse` by /releasesafehouse chat command.
+- Fixed safehouse detection on actions `take safehouse` and `release safehouse` by /releasesafehouse chat command.
 
 ## [v0.7.0] - 2022-02-23
 ### Fixed
