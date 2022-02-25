@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- Fixed logger for 41.66 build. `Connected` event in `_player.txt` file is still broken.
 
 ## [v0.7.1] - 2022-02-24
 ### Fixed

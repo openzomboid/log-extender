@@ -59,6 +59,8 @@ function install_release() {
     rm -r ~/Zomboid/Workshop/"${MOD_NAME}"
 
     cp -r  "release/${RELEASE_NAME}" ~/Zomboid/Workshop/"${MOD_NAME}"
+
+    rm -r "release/${RELEASE_NAME}"
 }
 
 make_release && install_release
