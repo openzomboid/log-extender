@@ -4,12 +4,14 @@ All notable changes to this project will be documented in this file.
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [v0.8.0] - 2022-02-26
 ### Fixed
 - Fixed logger for 41.66 build.
 
 ## [v0.7.1] - 2022-02-24
 ### Fixed
-- Fixed safehouse detection on actions `take safehouse` and `release safehouse` by /releasesafehouse chat command.
+- Fixed safehouse detection on actions `take safehouse` and `release safehouse` by `/releasesafehouse` chat command.
 
 ## [v0.7.0] - 2022-02-23
 ### Fixed
@@ -94,9 +96,10 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.7.1...HEAD
-[v0.6.0]: https://github.com/openzomboid/log-extender/compare/v0.7.0...v0.7.1
-[v0.6.0]: https://github.com/openzomboid/log-extender/compare/v0.6.0...v0.7.0
+[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.8.0...HEAD
+[v0.8.0]: https://github.com/openzomboid/log-extender/compare/v0.7.1...v0.8.0
+[v0.7.1]: https://github.com/openzomboid/log-extender/compare/v0.7.0...v0.7.1
+[v0.7.0]: https://github.com/openzomboid/log-extender/compare/v0.6.0...v0.7.0
 [v0.6.0]: https://github.com/openzomboid/log-extender/compare/v0.5.0...v0.6.0
 [v0.5.0]: https://github.com/openzomboid/log-extender/compare/v0.4.1...v0.5.0
 [v0.4.1]: https://github.com/openzomboid/log-extender/compare/v0.4.0...v0.4.1
