@@ -9,6 +9,8 @@
 
 local version = "0.8.0"
 
+local pzversion = getCore():getVersionNumber()
+
 LogExtenderClient = {
     version = version,
 
@@ -36,9 +38,11 @@ LogExtenderClient = {
 }
 
 LogExtenderClient.writeLog = function(filemask, message)
-    --writeLog(filemask, message);
-    --ISLogSystem.sendLog(LogExtenderClient.player, filemask, message)
-    sendClientCommand("LogExtender", "write", { mask = filemask, message = message });
+    if pzversion == "41.65" then
+        writeLog(filemask, message);
+    else
+        sendClientCommand("LogExtender", "write", { mask = filemask, message = message });
+    end
 end
 
 -- getLogLinePrefix generates prefix for each log lines.
