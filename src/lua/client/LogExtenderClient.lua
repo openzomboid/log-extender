@@ -37,7 +37,7 @@ LogExtenderClient = {
 
 LogExtenderClient.writeLog = function(filemask, message)
     --writeLog(filemask, message);
-    --ISLogSystem.sendLog(filemask, message)
+    --ISLogSystem.sendLog(LogExtenderClient.player, filemask, message)
     sendClientCommand("LogExtender", "write", { mask = filemask, message = message });
 end
 
@@ -499,11 +499,16 @@ LogExtenderClient.OnJoinToSafehouse = function()
     end
 end
 
--- OnCreatePlayerData adds callback for player OnCreatePlayerData event.
-LogExtenderClient.OnCreatePlayerData = function(id)
-    local player = getSpecificPlayer(id)
+-- OnCreatePlayer adds callback for player OnCreatePlayerData event.
+LogExtenderClient.OnCreatePlayer = function(id)
+    Events.OnTick.Add(LogExtenderClient.OnTick);
+end
+
+LogExtenderClient.OnTick = function()
+    local player = getPlayer()
     if player then
         LogExtenderClient.DumpPlayer(player, "connected");
+        Events.OnTick.Remove(LogExtenderClient.OnTick);
     end
 end
 
@@ -628,7 +633,7 @@ LogExtenderClient.OnGameStart = function()
 end
 
 if SandboxVars.LogExtender.PlayerConnected then
-    Events.OnCreatePlayer.Add(LogExtenderClient.OnCreatePlayerData);
+    Events.OnCreatePlayer.Add(LogExtenderClient.OnCreatePlayer);
 end
 
 if SandboxVars.LogExtender.ReleaseSafeHouse then

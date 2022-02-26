@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Fixed
-- Fixed logger for 41.66 build. `Connected` event in `_player.txt` file is still broken.
+- Fixed logger for 41.66 build.
 
 ## [v0.7.1] - 2022-02-24
 ### Fixed
