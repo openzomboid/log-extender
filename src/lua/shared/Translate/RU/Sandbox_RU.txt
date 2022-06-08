@@ -12,4 +12,5 @@ Sandbox_RU = {
     Sandbox_ReleaseSafeHouse = "ReleaseSafeHouse",
     Sandbox_RemovePlayerFromSafehouse = "RemovePlayerFromSafehouse",
     Sandbox_JoinToSafehouse = "JoinToSafehouse",
+    Sandbox_AdminAddItem = "AdminAddItem",
 }

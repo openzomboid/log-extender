@@ -7,7 +7,7 @@
 
 -- TODO: Create JSON marshaller.
 
-local version = "0.8.0"
+local version = "0.9.0"
 
 local pzversion = getCore():getVersionNumber()
 
@@ -38,11 +38,7 @@ LogExtenderClient = {
 }
 
 LogExtenderClient.writeLog = function(filemask, message)
-    if pzversion == "41.65" then
-        writeLog(filemask, message);
-    else
-        sendClientCommand("LogExtender", "write", { mask = filemask, message = message });
-    end
+    sendClientCommand("LogExtender", "write", { mask = filemask, message = message });
 end
 
 -- getLogLinePrefix generates prefix for each log lines.
@@ -327,6 +323,7 @@ LogExtenderClient.DumpVehicle = function(player, action, vehicle, vehicle2)
     LogExtenderClient.writeLog(LogExtenderClient.filemask.vehicle, message);
 end
 
+-- DumpSafehouse writes player's safehouse info to log file.
 LogExtenderClient.DumpSafehouse = function(player, action, safehouse, target)
     if player == nil then
         return nil;
@@ -381,6 +378,21 @@ LogExtenderClient.DumpSafehouse = function(player, action, safehouse, target)
     LogExtenderClient.writeLog(LogExtenderClient.filemask.safehouse, message);
 end
 
+-- DumpAdminItem writes admin actions with items.
+LogExtenderClient.DumpAdminItem = function(player, action, item, count, target)
+    if player == nil then
+        return nil;
+    end
+
+    local message = player:getUsername() .. " " .. action
+
+    message = message .. " " .. count .. " " .. item:getFullName()
+    message = message .. " in " .. target:getUsername() .. "'s"
+    message = message .. " inventory"
+
+    LogExtenderClient.writeLog(LogExtenderClient.filemask.admin, message);
+end
+
 -- TimedActionPerform overrides the original ISBaseTimedAction: perform function to gain
 -- access to player events.
 LogExtenderClient.TimedActionPerform = function()
@@ -417,6 +429,8 @@ LogExtenderClient.TimedActionPerform = function()
     end;
 end
 
+-- OnTakeSafeHouse rewrites original ISWorldObjectContextMenu.onTakeSafeHouse and
+-- adds logs for player take safehouse action.
 LogExtenderClient.OnTakeSafeHouse = function()
     local originalOnTakeSafeHouse = ISWorldObjectContextMenu.onTakeSafeHouse;
 
@@ -439,6 +453,8 @@ LogExtenderClient.OnTakeSafeHouse = function()
     end
 end
 
+-- OnReleaseSafeHouse rewrites original ISSafehouseUI.onClick and
+-- adds logs for player release safehouse action.
 LogExtenderClient.OnReleaseSafeHouse = function()
     local onClickOriginal = ISSafehouseUI.onClick;
 
@@ -452,6 +468,8 @@ LogExtenderClient.OnReleaseSafeHouse = function()
     end
 end
 
+-- OnReleaseSafeHouseCommand rewrites original ISChat.onCommandEntered and
+-- adds logs for player release safehouse action.
 LogExtenderClient.OnReleaseSafeHouseCommand = function()
     local onCommandEnteredOriginal = ISChat.onCommandEntered;
 
@@ -477,6 +495,8 @@ LogExtenderClient.OnReleaseSafeHouseCommand = function()
     end
 end
 
+-- OnRemovePlayerFromSafehouse rewrites original ISSafehouseUI.onRemovePlayerFromSafehouse
+-- and adds logs for remove player from safehouse action.
 LogExtenderClient.OnRemovePlayerFromSafehouse = function()
     local onRemovePlayerFromSafehouseOriginal = ISSafehouseUI.onRemovePlayerFromSafehouse;
 
@@ -490,6 +510,8 @@ LogExtenderClient.OnRemovePlayerFromSafehouse = function()
     end
 end
 
+-- OnJoinToSafehouse rewrites original ISSafehouseUI.onAnswerSafehouseInvite and
+-- adds logs for players join to safehouse action.
 LogExtenderClient.OnJoinToSafehouse = function()
     local onAnswerSafehouseInviteOriginal = ISSafehouseUI.onAnswerSafehouseInvite;
 
@@ -508,6 +530,8 @@ LogExtenderClient.OnCreatePlayer = function(id)
     Events.OnTick.Add(LogExtenderClient.OnTick);
 end
 
+-- OnTick creates and removes ticker for emulating player connected event.
+-- This is Black Magic.
 LogExtenderClient.OnTick = function()
     local player = getPlayer()
     if player then
@@ -587,6 +611,68 @@ LogExtenderClient.VehicleDetach = function()
     end;
 end
 
+-- OnAddItemsFromTable overrides original ISItemsListTable.onOptionMouseDown and
+-- ISItemsListTable.onAddItem and adds logs for additem actions.
+LogExtenderClient.OnAddItemsFromTable = function()
+    local originalOnOptionMouseDown = ISItemsListTable.onOptionMouseDown;
+    local originalOnAddItem = ISItemsListTable.onAddItem;
+    local originalCreateChildren = ISItemsListTable.createChildren;
+
+    ISItemsListTable.onOptionMouseDown = function(self, button, x, y)
+        originalOnOptionMouseDown(self, button, x, y);
+
+        if button.internal == "ADDITEM" then
+            return
+        end
+
+        local character = getSpecificPlayer(self.viewer.playerSelect.selected - 1)
+        if not character or character:isDead() then return end
+
+        local item = button.parent.datas.items[button.parent.datas.selected].item;
+        local count = 0;
+
+        if button.internal == "ADDITEM1" then
+            count = 1
+        end
+
+        if button.internal == "ADDITEM2" then
+            count = 2
+        end
+
+        if button.internal == "ADDITEM5" then
+            count = 5
+        end
+
+        LogExtenderClient.DumpAdminItem(getPlayer(), "added", item, count, character)
+    end
+
+    ISItemsListTable.onAddItem = function(self, button, item)
+        originalOnAddItem(self, button, item)
+
+        local character = getSpecificPlayer(self.viewer.playerSelect.selected - 1)
+        if not character or character:isDead() then return end
+
+        local count = tonumber(button.parent.entry:getText())
+
+        LogExtenderClient.DumpAdminItem(getPlayer(), "added", item, count, character)
+    end
+
+    local addItem = function(self, item)
+        ISItemsListTable.addItem(self, item)
+
+        local character = getSpecificPlayer(self.viewer.playerSelect.selected - 1)
+        if not character or character:isDead() then return end
+
+        LogExtenderClient.DumpAdminItem(getPlayer(), "added", item, 1, character)
+    end
+
+    ISItemsListTable.createChildren = function(self)
+        originalCreateChildren(self)
+
+        self.datas:setOnMouseDoubleClick(self, addItem)
+    end
+end
+
 -- OnGameStart adds callback for OnGameStart global event.
 LogExtenderClient.OnGameStart = function()
     LogExtenderClient.player = getPlayer();
@@ -633,6 +719,10 @@ LogExtenderClient.OnGameStart = function()
 
     if SandboxVars.LogExtender.JoinToSafehouse then
         LogExtenderClient.OnJoinToSafehouse()
+    end
+
+    if SandboxVars.LogExtender.AdminAddItem then
+        LogExtenderClient.OnAddItemsFromTable()
     end
 end
 

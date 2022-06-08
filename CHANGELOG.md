@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- Added logs for admin additem actions from ISItemsListTable panel.
+
+### Removed
+- Removed v41.65 supporting.
 
 ## [v0.8.0] - 2022-02-26
 ### Fixed

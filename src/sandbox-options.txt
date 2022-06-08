@@ -107,3 +107,12 @@ option LogExtender.JoinToSafehouse
   page = LogExtender,
   translation = LogExtender_JoinToSafehouse
 }
+
+option LogExtender.AdminAddItem
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_AdminAddItem
+}
