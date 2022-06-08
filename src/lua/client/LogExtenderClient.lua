@@ -379,14 +379,14 @@ LogExtenderClient.DumpSafehouse = function(player, action, safehouse, target)
 end
 
 -- DumpAdminItem writes admin actions with items.
-LogExtenderClient.DumpAdminItem = function(player, action, item, count, target)
+LogExtenderClient.DumpAdminItem = function(player, action, itemName, count, target)
     if player == nil then
         return nil;
     end
 
     local message = player:getUsername() .. " " .. action
 
-    message = message .. " " .. count .. " " .. item:getFullName()
+    message = message .. " " .. count .. " " .. itemName
     message = message .. " in " .. target:getUsername() .. "'s"
     message = message .. " inventory"
 
@@ -643,7 +643,7 @@ LogExtenderClient.OnAddItemsFromTable = function()
             count = 5
         end
 
-        LogExtenderClient.DumpAdminItem(getPlayer(), "added", item, count, character)
+        LogExtenderClient.DumpAdminItem(getPlayer(), "added", item:getFullName(), count, character)
     end
 
     ISItemsListTable.onAddItem = function(self, button, item)
@@ -654,7 +654,7 @@ LogExtenderClient.OnAddItemsFromTable = function()
 
         local count = tonumber(button.parent.entry:getText())
 
-        LogExtenderClient.DumpAdminItem(getPlayer(), "added", item, count, character)
+        LogExtenderClient.DumpAdminItem(getPlayer(), "added", item:getFullName(), count, character)
     end
 
     local addItem = function(self, item)
@@ -663,13 +663,34 @@ LogExtenderClient.OnAddItemsFromTable = function()
         local character = getSpecificPlayer(self.viewer.playerSelect.selected - 1)
         if not character or character:isDead() then return end
 
-        LogExtenderClient.DumpAdminItem(getPlayer(), "added", item, 1, character)
+        LogExtenderClient.DumpAdminItem(getPlayer(), "added", item:getFullName(), 1, character)
     end
 
     ISItemsListTable.createChildren = function(self)
         originalCreateChildren(self)
 
         self.datas:setOnMouseDoubleClick(self, addItem)
+    end
+end
+
+-- OnChangeItemsFromManageInventory overrides original ISPlayerStatsManageInvUI:onClick
+-- for adding logs for remove and get items actions.
+LogExtenderClient.OnChangeItemsFromManageInventory = function()
+    local originalOnClick = ISPlayerStatsManageInvUI.onClick;
+
+    ISPlayerStatsManageInvUI.onClick = function(self, button)
+        originalOnClick(self, button);
+
+        if self.selectedItem then
+            if button.internal == "REMOVE" then
+                LogExtenderClient.DumpAdminItem(getPlayer(), "removed", self.selectedItem.item.fullType, 1, self.player);
+            end
+
+            if button.internal == "GETITEM" then
+                LogExtenderClient.DumpAdminItem(getPlayer(), "removed", self.selectedItem.item.fullType, 1, self.player);
+                LogExtenderClient.DumpAdminItem(getPlayer(), "added", self.selectedItem.item.fullType, 1, getPlayer());
+            end
+        end
     end
 end
 
@@ -721,8 +742,9 @@ LogExtenderClient.OnGameStart = function()
         LogExtenderClient.OnJoinToSafehouse()
     end
 
-    if SandboxVars.LogExtender.AdminAddItem then
+    if SandboxVars.LogExtender.AdminManageItem then
         LogExtenderClient.OnAddItemsFromTable()
+        LogExtenderClient.OnChangeItemsFromManageInventory()
     end
 end
 
