@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [v0.9.0] - 2022-06-09
 ### Added
 - Added logs for admin add item actions from ISItemsListTable panel.
 - Added logs for admin remove item and get item actions from ISPlayerStatsManageInvUI panel.
@@ -103,7 +105,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.9.0...HEAD
+[v0.8.0]: https://github.com/openzomboid/log-extender/compare/v0.8.0...v0.9.0
 [v0.8.0]: https://github.com/openzomboid/log-extender/compare/v0.7.1...v0.8.0
 [v0.7.1]: https://github.com/openzomboid/log-extender/compare/v0.7.0...v0.7.1
 [v0.7.0]: https://github.com/openzomboid/log-extender/compare/v0.6.0...v0.7.0

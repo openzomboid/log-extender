@@ -45,6 +45,23 @@ There can be `connected`, `levelup` and `tick` events.
 [23-02-22 17:39:09.932] 76561190000000000 "outdead" join to safehouse 10880,9401,8,11 owner="rez".
 ```
 
+### _admin.txt
+```text
+[08-06-22 19:55:24.798] outdead added item Rope in rez_a's inventory.
+[08-06-22 19:56:09.431] outdead added item Axe in rez_a's inventory.
+[08-06-22 19:56:29.599] outdead added 1 Base.Rope in outdead's inventory.
+[08-06-22 19:56:29.599] outdead removed 1 Base.Rope in rez_a's inventory.
+[08-06-22 19:57:05.129] outdead removed 1 Base.Rope in rez_a's inventory.
+[08-06-22 19:57:27.051] outdead added 5 Base.45Clip in outdead's inventory.
+[08-06-22 19:57:32.232] outdead added 2 Base.Scotchtape in outdead's inventory.
+[08-06-22 19:57:38.289] outdead added 13 Base.Aerosolbomb in outdead's inventory.
+[08-06-22 19:57:41.223] outdead added 1 Base.Acorn in outdead's inventory.
+
+[09-06-22 02:39:28.470] outdead teleported to 10997,9643,0.
+[09-06-22 02:42:44.499] outdead teleported to 10982,9650,0.
+[09-06-22 02:43:11.187] outdead teleported to 10982,9650,0.
+```
+
 ## Warning
 Log Extender is under development and is being tested on the server [Last Day](https://last-day.wargm.ru). You can join our server or use the mod on your own server.
 If you think you have found a bug, write about it in the [bug reporting topic](https://steamcommunity.com/workshop/filedetails/discussion/1844524972/1638668751263547005/)
