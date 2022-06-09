@@ -694,6 +694,44 @@ LogExtenderClient.OnChangeItemsFromManageInventory = function()
     end
 end
 
+-- OnTeleport adds logs for teleport actions.
+LogExtenderClient.OnTeleport = function()
+    local originalOnTeleportValid = DebugContextMenu.onTeleportValid;
+    local originalISSafehousesListOnClick = ISSafehousesList.onClick;
+    local originalISMiniMapInnerOnTeleport = ISMiniMapInner.onTeleport;
+    local originalISWorldMapOnTeleport = ISWorldMap.onTeleport;
+
+    DebugContextMenu.onTeleportValid = function(button, x, y, z)
+        originalOnTeleportValid(button, x, y, z);
+
+        local message = getPlayer():getUsername() .. " teleported to " .. x .. "," .. y .. "," .. z
+        LogExtenderClient.writeLog(LogExtenderClient.filemask.admin, message);
+    end
+
+    ISSafehousesList.onClick = function(self, button)
+        originalISSafehousesListOnClick(self, button);
+
+        if button.internal == "TELEPORT" then
+            local message = getPlayer():getUsername() .. " teleported to " .. self.selectedSafehouse:getX() .. "," .. self.selectedSafehouse:getY() .. "," .. 0
+            LogExtenderClient.writeLog(LogExtenderClient.filemask.admin, message);
+        end
+    end
+
+    ISMiniMapInner.onTeleport = function(self, worldX, worldY)
+        originalISMiniMapInnerOnTeleport(self, worldX, worldY)
+
+        local message = getPlayer():getUsername() .. " teleported to " .. math.floor(worldX) .. "," .. math.floor(worldY) .. "," .. 0
+        LogExtenderClient.writeLog(LogExtenderClient.filemask.admin, message);
+    end
+
+    ISWorldMap.onTeleport = function(self, worldX, worldY)
+        originalISWorldMapOnTeleport(self, worldX, worldY)
+
+        local message = getPlayer():getUsername() .. " teleported to " .. math.floor(worldX) .. "," .. math.floor(worldY) .. "," .. 0
+        LogExtenderClient.writeLog(LogExtenderClient.filemask.admin, message);
+    end
+end
+
 -- OnGameStart adds callback for OnGameStart global event.
 LogExtenderClient.OnGameStart = function()
     LogExtenderClient.player = getPlayer();
@@ -745,6 +783,10 @@ LogExtenderClient.OnGameStart = function()
     if SandboxVars.LogExtender.AdminManageItem then
         LogExtenderClient.OnAddItemsFromTable()
         LogExtenderClient.OnChangeItemsFromManageInventory()
+    end
+
+    if SandboxVars.LogExtender.AdminTeleport then
+        LogExtenderClient.OnTeleport()
     end
 end
 

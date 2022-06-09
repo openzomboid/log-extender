@@ -5,8 +5,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 ### Added
-- Added logs for admin additem actions from ISItemsListTable panel.
-- Added logs for remove and get items actions from ISPlayerStatsManageInvUI panel.
+- Added logs for admin add item actions from ISItemsListTable panel.
+- Added logs for admin remove item and get item actions from ISPlayerStatsManageInvUI panel.
+- Added logs for admin teleports.
 
 ### Removed
 - Removed v41.65 supporting.

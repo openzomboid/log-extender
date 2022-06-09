@@ -116,3 +116,12 @@ option LogExtender.AdminManageItem
   page = LogExtender,
   translation = LogExtender_AdminManageItem
 }
+
+option LogExtender.AdminTeleport
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_AdminTeleport
+}
