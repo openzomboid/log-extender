@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- Added player hit record to pvp log file.
 
 ## [v0.9.0] - 2022-06-09
 ### Added

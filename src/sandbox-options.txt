@@ -108,6 +108,15 @@ option LogExtender.JoinToSafehouse
   translation = LogExtender_JoinToSafehouse
 }
 
+option LogExtender.HitPVP
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_HitPVP
+}
+
 option LogExtender.AdminManageItem
 {
   type = boolean,

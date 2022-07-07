@@ -7,7 +7,7 @@
 
 -- TODO: Create JSON marshaller.
 
-local version = "0.9.0"
+local version = "0.10.0"
 
 local pzversion = getCore():getVersionNumber()
 
@@ -21,10 +21,11 @@ LogExtenderClient = {
         chat = "chat",
         user = "user",
         cmd = "cmd",
-        vehicle = "vehicle",
-        player = "player",
         item = "item",
         map = "map",
+        pvp = "pvp",
+        vehicle = "vehicle",
+        player = "player",
         admin = "admin",
         safehouse = "safehouse",
     },
@@ -611,6 +612,21 @@ LogExtenderClient.VehicleDetach = function()
     end;
 end
 
+-- WeaponHitCharacter adds player hit record to pvp log file.
+-- [06-07-22 04:12:00.737] user Player1 (6823,5488,0) hit user Player2 (6822,5488,0) with Base.HuntingKnife damage 20.
+LogExtenderClient.WeaponHitCharacter = function(attacker, target, weapon, damage)
+    if attacker ~= getPlayer() or not instanceof(target, 'IsoPlayer') then
+        return
+    end
+
+    local message = 'user ' .. attacker:getUsername() .. ' (' .. LogExtenderClient.getLocation(attacker) ..  ') hit user ';
+    message = message .. target:getUsername() .. ' (' .. LogExtenderClient.getLocation(target) ..  ') with ';
+    message = message .. weapon:getFullType();
+    message = message .. ' damage ' .. string.format("%.3f", damage);
+
+    LogExtenderClient.writeLog(LogExtenderClient.filemask.pvp, message);
+end
+
 -- OnAddItemsFromTable overrides original ISItemsListTable.onOptionMouseDown and
 -- ISItemsListTable.onAddItem and adds logs for additem actions.
 LogExtenderClient.OnAddItemsFromTable = function()
@@ -778,6 +794,10 @@ LogExtenderClient.OnGameStart = function()
 
     if SandboxVars.LogExtender.JoinToSafehouse then
         LogExtenderClient.OnJoinToSafehouse()
+    end
+
+    if SandboxVars.LogExtender.HitPVP then
+        Events.OnWeaponHitCharacter.Add(LogExtenderClient.WeaponHitCharacter)
     end
 
     if SandboxVars.LogExtender.AdminManageItem then
