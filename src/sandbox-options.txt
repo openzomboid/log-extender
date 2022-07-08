@@ -81,6 +81,15 @@ option LogExtender.TakeSafeHouse
   translation = LogExtender_TakeSafeHouse
 }
 
+option LogExtender.ChangeSafeHouseOwner
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_ChangeSafeHouseOwner
+}
+
 option LogExtender.ReleaseSafeHouse
 {
   type = boolean,

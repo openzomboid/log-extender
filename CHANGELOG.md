@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Added
 - Added player hit record to pvp log file.
+- Added change safehouse owner action to safehouse log file.
 
 ## [v0.9.0] - 2022-06-09
 ### Added

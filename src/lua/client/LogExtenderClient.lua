@@ -454,18 +454,37 @@ LogExtenderClient.OnTakeSafeHouse = function()
     end
 end
 
--- OnReleaseSafeHouse rewrites original ISSafehouseUI.onClick and
--- adds logs for player release safehouse action.
-LogExtenderClient.OnReleaseSafeHouse = function()
-    local onClickOriginal = ISSafehouseUI.onClick;
+-- OnChangeSafeHouseOwner rewrites original ISSafehouseAddPlayerUI.onClick and
+-- adds logs for change safehouse ownership action.
+LogExtenderClient.OnChangeSafeHouseOwner = function()
+    local onClickOriginal = ISSafehouseAddPlayerUI.onClick;
 
-    ISSafehouseUI.onClick = function(self, button)
+    ISSafehouseAddPlayerUI.onClick = function(self, button)
         onClickOriginal(self, button)
 
-        if button.internal == "RELEASE" then
-            local character = getPlayerFromUsername(self.safehouse:getOwner())
-            LogExtenderClient.DumpSafehouse(character, "release safehouse", self.safehouse, nil)
+        if button.internal == "ADDPLAYER" then
+            if self.changeOwnership then
+                local character = getPlayer()
+                LogExtenderClient.DumpSafehouse(character, "change safehouse owner", self.safehouse, self.selectedPlayer)
+            end
         end
+    end
+end
+
+-- OnReleaseSafeHouse rewrites original ISSafehouseUI.onReleaseSafehouse and
+-- adds logs for player release safehouse action.
+LogExtenderClient.OnReleaseSafeHouse = function()
+    local onReleaseSafehouseOriginal = ISSafehouseUI.onReleaseSafehouse;
+
+    ISSafehouseUI.onReleaseSafehouse = function(self, button, player)
+        if button.internal == "YES" then
+            if button.parent.ui:isOwner() or button.parent.ui:hasPrivilegedAccessLevel() then
+                local character = getPlayer()
+                LogExtenderClient.DumpSafehouse(character, "release safehouse", button.parent.ui.safehouse, nil)
+            end
+        end
+
+        onReleaseSafehouseOriginal(self, button, player)
     end
 end
 
@@ -613,7 +632,7 @@ LogExtenderClient.VehicleDetach = function()
 end
 
 -- WeaponHitCharacter adds player hit record to pvp log file.
--- [06-07-22 04:12:00.737] user Player1 (6823,5488,0) hit user Player2 (6822,5488,0) with Base.HuntingKnife damage 20.
+-- [06-07-22 04:12:00.737] user Player1 (6823,5488,0) hit user Player2 (6822,5488,0) with Base.HuntingKnife damage 1.137.
 LogExtenderClient.WeaponHitCharacter = function(attacker, target, weapon, damage)
     if attacker ~= getPlayer() or not instanceof(target, 'IsoPlayer') then
         return
@@ -753,19 +772,19 @@ LogExtenderClient.OnGameStart = function()
     LogExtenderClient.player = getPlayer();
 
     if SandboxVars.LogExtender.PlayerLevelup then
-        Events.LevelPerk.Add(LogExtenderClient.OnPerkLevel);
+        Events.LevelPerk.Add(LogExtenderClient.OnPerkLevel)
     end
 
     if SandboxVars.LogExtender.PlayerTick then
-        Events.EveryHours.Add(LogExtenderClient.EveryHours);
+        Events.EveryHours.Add(LogExtenderClient.EveryHours)
     end
 
     if SandboxVars.LogExtender.VehicleEnter then
-        Events.OnEnterVehicle.Add(LogExtenderClient.VehicleEnter);
+        Events.OnEnterVehicle.Add(LogExtenderClient.VehicleEnter)
     end
 
     if SandboxVars.LogExtender.VehicleExit then
-        Events.OnExitVehicle.Add(LogExtenderClient.VehicleExit);
+        Events.OnExitVehicle.Add(LogExtenderClient.VehicleExit)
     end
 
     if SandboxVars.LogExtender.VehicleAttach then
@@ -777,11 +796,15 @@ LogExtenderClient.OnGameStart = function()
     end
 
     if SandboxVars.LogExtender.TimedActions then
-        LogExtenderClient.TimedActionPerform();
+        LogExtenderClient.TimedActionPerform()
     end
 
     if SandboxVars.LogExtender.TakeSafeHouse then
         LogExtenderClient.OnTakeSafeHouse()
+    end
+
+    if SandboxVars.LogExtender.ChangeSafeHouseOwner then
+        LogExtenderClient.OnChangeSafeHouseOwner()
     end
 
     if SandboxVars.LogExtender.ReleaseSafeHouse then

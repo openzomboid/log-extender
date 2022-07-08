@@ -9,6 +9,7 @@ Sandbox_EN = {
     Sandbox_VehicleDetach = "VehicleDetach",
     Sandbox_TimedActions = "TimedActions",
     Sandbox_TakeSafeHouse = "TakeSafeHouse (WIP)",
+    Sandbox_ChangeSafeHouseOwner = "ChangeSafeHouseOwner",
     Sandbox_ReleaseSafeHouse = "ReleaseSafeHouse",
     Sandbox_RemovePlayerFromSafehouse = "RemovePlayerFromSafehouse",
     Sandbox_JoinToSafehouse = "JoinToSafehouse",
