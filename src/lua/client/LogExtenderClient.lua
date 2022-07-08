@@ -530,6 +530,23 @@ LogExtenderClient.OnRemovePlayerFromSafehouse = function()
     end
 end
 
+-- OnSendSafeHouseInvite rewrites original ISSafehouseAddPlayerUI.onClick and
+-- adds logs for send safehouse invite action.
+LogExtenderClient.OnSendSafeHouseInvite = function()
+    local onClickOriginal = ISSafehouseAddPlayerUI.onClick;
+
+    ISSafehouseAddPlayerUI.onClick = function(self, button)
+        onClickOriginal(self, button)
+
+        if button.internal == "ADDPLAYER" then
+            if not self.changeOwnership then
+                local character = getPlayer()
+                LogExtenderClient.DumpSafehouse(character, "send safehouse invite", self.safehouse, self.selectedPlayer)
+            end
+        end
+    end
+end
+
 -- OnJoinToSafehouse rewrites original ISSafehouseUI.onAnswerSafehouseInvite and
 -- adds logs for players join to safehouse action.
 LogExtenderClient.OnJoinToSafehouse = function()
@@ -813,6 +830,10 @@ LogExtenderClient.OnGameStart = function()
 
     if SandboxVars.LogExtender.RemovePlayerFromSafehouse then
         LogExtenderClient.OnRemovePlayerFromSafehouse()
+    end
+
+    if SandboxVars.LogExtender.SendSafeHouseInvite then
+        LogExtenderClient.OnSendSafeHouseInvite()
     end
 
     if SandboxVars.LogExtender.JoinToSafehouse then

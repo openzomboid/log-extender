@@ -108,6 +108,15 @@ option LogExtender.RemovePlayerFromSafehouse
   translation = LogExtender_RemovePlayerFromSafehouse
 }
 
+option LogExtender.SendSafeHouseInvite
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_SendSafeHouseInvite
+}
+
 option LogExtender.JoinToSafehouse
 {
   type = boolean,

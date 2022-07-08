@@ -23,6 +23,11 @@ This mod does not work in single player mode. Therefore, it must be installed on
 [20-01-22 03:12:51.212] 76561190000000000 "outdead" stove.toggle @ 10882,10080,0.
 ```
 
+### _pvp.txt
+```text
+[07-07-22 03:24:29.174] user outdead (8241,11669,0) hit user Rob Zombie (8242,11668,0) with Base.Hammer damage 1.735.
+```
+
 ### _vehicle.txt
 ```text
 [19-01-22 17:02:05.649] 76561190000000000 "outdead" attach vehicle={"id":872,"type":"VanRadio","center":"12801,3692,0"} to vehicle={"id":871,"type":"Van","center":"12807,3692,0"} at 12804,3691,0.
@@ -39,10 +44,13 @@ There can be `connected`, `levelup` and `tick` events.
 
 ### _safehouse.txt
 ```text
-[23-02-22 17:31:51.126] 76561190000000000 "outdead" take safehouse 10909,9397,11,11 owner="outdead".
-[23-02-22 18:04:53.263] 76561190000000000 "outdead" release safehouse 10909,9397,11,11 owner="outdead" members=["rez"].
-[23-02-22 17:40:16.922] 76561190000000000 "outdead" remove player from safehouse 10909,9397,11,11 owner="outdead" target="rez".
-[23-02-22 17:39:09.932] 76561190000000000 "outdead" join to safehouse 10880,9401,8,11 owner="rez".
+[23-02-22 17:31:51.126] 76561198200000000 "outdead" take safehouse 10909,9397,11,11 owner="outdead".
+[23-02-22 18:04:53.263] 76561198200000000 "outdead" release safehouse 10909,9397,11,11 owner="outdead" members=["rez"].
+[23-02-22 17:40:16.922] 76561198200000000 "outdead" remove player from safehouse 10909,9397,11,11 owner="outdead" target="rez".
+[23-02-22 17:39:09.932] 76561198200000000 "outdead" join to safehouse 10880,9401,8,11 owner="rez".
+[08-07-22 04:56:39.212] 76561198200000000 "outdead" send safehouse invite 10850,9875,12,10 owner="outdead" target="Rob Zombie".
+[08-07-22 04:57:00.480] 76561198100000000 "Rob Zombie" join to safehouse 10850,9875,12,10 owner="outdead".
+[08-07-22 04:57:59.129] 76561198200000000 "outdead" change safehouse owner 10850,9875,12,10 owner="Rob Zombie" target="Rob Zombie".
 ```
 
 ### _admin.txt

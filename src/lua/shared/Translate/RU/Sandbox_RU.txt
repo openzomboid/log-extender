@@ -12,6 +12,7 @@ Sandbox_RU = {
     Sandbox_ChangeSafeHouseOwner = "ChangeSafeHouseOwner",
     Sandbox_ReleaseSafeHouse = "ReleaseSafeHouse",
     Sandbox_RemovePlayerFromSafehouse = "RemovePlayerFromSafehouse",
+    Sandbox_SendSafeHouseInvite = "SendSafeHouseInvite",
     Sandbox_JoinToSafehouse = "JoinToSafehouse",
     Sandbox_HitPVP = "HitPVP",
     Sandbox_AdminManageItem = "AdminManageItem",
