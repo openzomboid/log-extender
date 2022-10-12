@@ -28,6 +28,7 @@ LogExtenderClient = {
         player = "player",
         admin = "admin",
         safehouse = "safehouse",
+        map_alternative = "map_alternative",
     },
 
     -- Store ingame player object when user is logged in.
