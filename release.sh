@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# TODO: Add Makefile.
+
 VERSION="$1"
 if [ -z "${VERSION}" ]; then echo "VERSION is not set. Use ./release.sh 0.0.0 stage" >&2; exit 1; fi
 

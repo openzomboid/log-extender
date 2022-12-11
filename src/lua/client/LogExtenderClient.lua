@@ -7,7 +7,7 @@
 
 -- TODO: Create JSON marshaller.
 
-local version = "0.10.0"
+local version = "0.10.0" -- TODO: Fill when make releases.
 
 local pzversion = getCore():getVersionNumber()
 
