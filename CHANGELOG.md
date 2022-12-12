@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- Added traps pick upping logs to map log file.
+- Added alternative destroying logs with sledge (WIP)
 
 ## [v0.10.0] - 2022-07-08
 ### Added

@@ -152,3 +152,12 @@ option LogExtender.AdminTeleport
   page = LogExtender,
   translation = LogExtender_AdminTeleport
 }
+
+option LogExtender.AlternativeMap
+{
+  type = boolean,
+  default = false,
+
+  page = LogExtender,
+  translation = LogExtender_AlternativeMap
+}

@@ -14,6 +14,7 @@ This mod does not work in single player mode. Therefore, it must be installed on
 [20-01-22 04:31:34.042] 76561190000000000 "outdead" taken IsoGenerator (appliances_misc_01_0) at 10883,10085,0.
 [20-01-22 03:39:53.389] 76561190000000000 "outdead" added Campfire (camping_01_6) at 10886,10087,0.
 [20-01-22 03:41:57.489] 76561190000000000 "outdead" taken Campfire (camping_01_6) at 10886,10087,0.
+[12-12-22 09:17:23.997] 76561190000000000 "outdead" taken Trap (constructedobjects_01_18) at 11644,8261,0.
 ```
 
 ### _cmd.txt

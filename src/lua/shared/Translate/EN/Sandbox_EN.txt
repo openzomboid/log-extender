@@ -17,4 +17,5 @@ Sandbox_EN = {
     Sandbox_HitPVP = "HitPVP",
     Sandbox_AdminManageItem = "AdminManageItem",
     Sandbox_AdminTeleport = "AdminTeleport",
+    Sandbox_AlternativeMap = "AlternativeMap",
 }

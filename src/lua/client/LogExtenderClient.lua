@@ -7,7 +7,7 @@
 
 -- TODO: Create JSON marshaller.
 
-local version = "0.10.0" -- TODO: Fill when make releases.
+local version = "0.11.0" -- TODO: Fill when make releases.
 
 local pzversion = getCore():getVersionNumber()
 
@@ -426,7 +426,23 @@ LogExtenderClient.TimedActionPerform = function()
             elseif self.Type == "ISPutOutCampfireAction" then
                 local message = LogExtenderClient.getLogLinePrefix(player, "campfire.extinguish") .. " @ " .. location;
                 LogExtenderClient.writeLog(LogExtenderClient.filemask.cmd, message);
+            elseif self.Type == "ISRemoveTrapAction" then
+                local message = LogExtenderClient.getLogLinePrefix(player, "taken Trap") .. " (" .. self.trap.openSprite .. ") at " .. location;
+                LogExtenderClient.writeLog(LogExtenderClient.filemask.map, message);
             end;
+
+            if SandboxVars.LogExtender.AlternativeMap then
+                if self.Type == "ISDestroyStuffAction" then
+                    local obj = self.item;
+                    local objLocation = LogExtenderClient.getLocation(obj);
+                    local sprite = obj:getSprite();
+                    local spriteName = sprite:getName() or "undefined"
+                    local objName = obj:getName() or obj:getObjectName();
+
+                    local message = LogExtenderClient.getLogLinePrefix(player, "removed " .. objName) .. " (" .. spriteName .. ") at " .. objLocation .. " (" .. location .. ")";
+                    LogExtenderClient.writeLog(LogExtenderClient.filemask.map_alternative, message);
+                end
+            end
         end;
     end;
 end
