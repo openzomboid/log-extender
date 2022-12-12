@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Added
 - Added traps pick upping logs to map log file.
-- Added alternative destroying logs with sledge (WIP)
+- Added alternative destroying logs with sledge.
+- Added alternative disassemble logs with tools.
 
 ## [v0.10.0] - 2022-07-08
 ### Added

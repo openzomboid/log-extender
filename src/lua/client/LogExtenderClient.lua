@@ -441,6 +441,17 @@ LogExtenderClient.TimedActionPerform = function()
 
                     local message = LogExtenderClient.getLogLinePrefix(player, "removed " .. objName) .. " (" .. spriteName .. ") at " .. objLocation .. " (" .. location .. ")";
                     LogExtenderClient.writeLog(LogExtenderClient.filemask.map_alternative, message);
+                elseif self.Type == "ISMoveablesAction" then
+                    if self.mode and self.mode=="scrap" and self.moveProps and self.moveProps.object then
+                        local obj = self.moveProps.object;
+                        local objLocation = LogExtenderClient.getLocation(obj);
+                        local sprite = obj:getSprite();
+                        local spriteName = sprite:getName() or "undefined"
+                        local objName = obj:getName() or obj:getObjectName();
+
+                        local message = LogExtenderClient.getLogLinePrefix(player, "disassembled " .. objName) .. " (" .. spriteName .. ") at " .. objLocation .. " (" .. location .. ")";
+                        LogExtenderClient.writeLog(LogExtenderClient.filemask.map_alternative, message);
+                    end
                 end
             end
         end;
@@ -665,6 +676,29 @@ LogExtenderClient.VehicleDetach = function()
     end;
 end
 
+-- WeaponHitThumpable adds objects hit record to map_alternative log file.
+-- [12-12-22 07:08:28.916] 76561190000000000 "outdead" destroyed Double Metal Wire Gate with Base.Axe at 11633,8265,0.
+-- TODO: Make me work.
+LogExtenderClient.WeaponHitThumpable = function(character, weapon, object)
+    if not SandboxVars.LogExtender.AlternativeMap then
+        return
+    end
+
+    if character ~= getPlayer() then
+        return
+    end
+
+    local location = LogExtenderClient.getLocation(character);
+
+    local objLocation = LogExtenderClient.getLocation(object);
+    local sprite = object:getSprite();
+    local spriteName = sprite:getName() or "undefined"
+    local objName = object:getName() or object:getObjectName();
+
+    local message = LogExtenderClient.getLogLinePrefix(character, "destroyed " .. objName) .. " (" .. spriteName .. ") with " .. weapon:getName() .. " at " .. objLocation .. " (" .. location .. ")";
+    LogExtenderClient.writeLog(LogExtenderClient.filemask.map_alternative, message);
+end
+
 -- WeaponHitCharacter adds player hit record to pvp log file.
 -- [06-07-22 04:12:00.737] user Player1 (6823,5488,0) hit user Player2 (6822,5488,0) with Base.HuntingKnife damage 1.137.
 LogExtenderClient.WeaponHitCharacter = function(attacker, target, weapon, damage)
@@ -870,6 +904,8 @@ LogExtenderClient.OnGameStart = function()
         LogExtenderClient.OnTeleport()
     end
 end
+
+Events.OnWeaponHitThumpable.Add(LogExtenderClient.WeaponHitThumpable)
 
 if SandboxVars.LogExtender.PlayerConnected then
     Events.OnCreatePlayer.Add(LogExtenderClient.OnCreatePlayer);

@@ -71,6 +71,12 @@ There can be `connected`, `levelup` and `tick` events.
 [09-06-22 02:43:11.187] outdead teleported to 10982,9650,0.
 ```
 
+### _map_alternative.txt
+```text
+[12-12-22 16:56:42.982] 76561190000000000 "outdead" removed IsoObject (location_restaurant_spiffos_02_25) at 11664,8298,0 (11665,8299,0).
+[12-12-22 18:03:16.876] 76561190000000000 "outdead" disassembled IsoObject (location_shop_gas2go_01_21) at 11597,8304,0 (11596,8304,0).
+```
+
 ## Warning
 Log Extender is under development and is being tested on the server [Last Day](https://last-day.wargm.ru). You can join our server or use the mod on your own server.
 If you think you have found a bug, write about it in the [bug reporting topic](https://steamcommunity.com/workshop/filedetails/discussion/1844524972/1638668751263547005/)
