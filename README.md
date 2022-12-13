@@ -77,6 +77,15 @@ There can be `connected`, `levelup` and `tick` events.
 [12-12-22 18:03:16.876] 76561190000000000 "outdead" disassembled IsoObject (location_shop_gas2go_01_21) at 11597,8304,0 (11596,8304,0).
 ```
 
+### _craft.txt
+```text
+[13-12-22 02:54:16.577] 76561190000000000 "outdead" crafted 1 Base.WhiskeyEmpty with recipe "Drink Exclusive Alcohol" (11606,8296,0).
+[13-12-22 02:55:00.910] 76561190000000000 "outdead" crafted 1 Base.Molotov with recipe "Make Molotov Cocktail" (11606,8296,0).
+[13-12-22 02:55:19.447] 76561190000000000 "outdead" crafted 1 Base.NailsBox with recipe "Place Nails in Box" (11606,8296,0).
+[13-12-22 02:56:08.041] 76561190000000000 "outdead" crafted 1 Base.SmashedBottle with recipe "Smash Bottle" (11606,8296,0).
+[13-12-22 02:56:53.508] 76561190000000000 "outdead" crafted 20 Base.Nails with recipe "Open Box of Nails" (11606,8296,0).
+```
+
 ## Warning
 Log Extender is under development and is being tested on the server [Last Day](https://last-day.wargm.ru). You can join our server or use the mod on your own server.
 If you think you have found a bug, write about it in the [bug reporting topic](https://steamcommunity.com/workshop/filedetails/discussion/1844524972/1638668751263547005/)

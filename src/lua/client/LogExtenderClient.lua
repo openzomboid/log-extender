@@ -28,6 +28,7 @@ LogExtenderClient = {
         player = "player",
         admin = "admin",
         safehouse = "safehouse",
+        craft = "craft",
         map_alternative = "map_alternative",
     },
 
@@ -429,6 +430,15 @@ LogExtenderClient.TimedActionPerform = function()
             elseif self.Type == "ISRemoveTrapAction" then
                 local message = LogExtenderClient.getLogLinePrefix(player, "taken Trap") .. " (" .. self.trap.openSprite .. ") at " .. location;
                 LogExtenderClient.writeLog(LogExtenderClient.filemask.map, message);
+            elseif self.Type == "ISCraftAction" then
+                local recipe = self.recipe
+                local recipeName = recipe:getOriginalname()
+                local result = recipe:getResult()
+                local resultType = result:getFullType()
+                local resultCount = result:getCount()
+
+                local message = LogExtenderClient.getLogLinePrefix(player, "crafted") .. " " .. resultCount .. " " .. resultType .. " with recipe \"" .. recipeName .. "\" (" .. location .. ")";
+                LogExtenderClient.writeLog(LogExtenderClient.filemask.craft, message);
             end;
 
             if SandboxVars.LogExtender.AlternativeMap then
@@ -677,7 +687,7 @@ LogExtenderClient.VehicleDetach = function()
 end
 
 -- WeaponHitThumpable adds objects hit record to map_alternative log file.
--- [12-12-22 07:08:28.916] 76561190000000000 "outdead" destroyed Double Metal Wire Gate with Base.Axe at 11633,8265,0.
+-- [12-12-22 07:08:28.916] 76561190000000000 "outdead" destroyed IsoObject (location_restaurant_spiffos_02_25) with Base.Axe at 11633,8265,0 (11633,8265,0).
 -- TODO: Make me work.
 LogExtenderClient.WeaponHitThumpable = function(character, weapon, object)
     if not SandboxVars.LogExtender.AlternativeMap then
@@ -797,6 +807,39 @@ LogExtenderClient.OnChangeItemsFromManageInventory = function()
     end
 end
 
+-- OnGiveIngredients overrides ISCraftingUI:debugGiveIngredients
+-- for adding logs for additem actions.
+LogExtenderClient.OnGiveIngredients = function()
+    local originalDebugGiveIngredients = ISCraftingUI.debugGiveIngredients;
+
+    ISCraftingUI.debugGiveIngredients = function(self)
+        originalDebugGiveIngredients(self);
+
+        local recipeListBox = self:getRecipeListBox()
+        local selectedItem = recipeListBox.items[recipeListBox.selected].item
+        if selectedItem.evolved then return end
+        local recipe = selectedItem.recipe
+        local items = {}
+        local options = {}
+        options.AvailableItemsAll = RecipeManager.getAvailableItemsAll(recipe, self.character, self:getContainers(), nil, nil)
+        options.MaxItemsPerSource = 10
+        options.NoDuplicateKeep = true
+        RecipeUtils.CreateSourceItems(recipe, options, items)
+
+        local mapItems = {}
+
+        for _,item in ipairs(items) do
+            local code = item:getFullType()
+            local count = mapItems[code] or 0
+            mapItems[code] = count + 1
+        end
+
+        for code, count in pairs(mapItems) do
+            LogExtenderClient.DumpAdminItem(self.character, "added", code, count, self.character);
+        end
+    end
+end
+
 -- OnTeleport adds logs for teleport actions.
 LogExtenderClient.OnTeleport = function()
     local originalOnTeleportValid = DebugContextMenu.onTeleportValid;
@@ -906,6 +949,10 @@ LogExtenderClient.OnGameStart = function()
 end
 
 Events.OnWeaponHitThumpable.Add(LogExtenderClient.WeaponHitThumpable)
+
+if SandboxVars.LogExtender.AdminManageItem then
+    LogExtenderClient.OnGiveIngredients()
+end
 
 if SandboxVars.LogExtender.PlayerConnected then
     Events.OnCreatePlayer.Add(LogExtenderClient.OnCreatePlayer);

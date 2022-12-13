@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 - Added traps pick upping logs to map log file.
 - Added alternative destroying logs with sledge.
 - Added alternative disassemble logs with tools.
+- Added crafting logs.
+- Added logs for add item action from ISCraftingUI panel in debug mode.
 
 ## [v0.10.0] - 2022-07-08
 ### Added
