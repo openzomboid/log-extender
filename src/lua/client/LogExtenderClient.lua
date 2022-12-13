@@ -716,6 +716,10 @@ LogExtenderClient.WeaponHitCharacter = function(attacker, target, weapon, damage
         return
     end
 
+    if target:isDead() then
+        return
+    end
+
     local message = 'user ' .. attacker:getUsername() .. ' (' .. LogExtenderClient.getLocation(attacker) ..  ') hit user ';
     message = message .. target:getUsername() .. ' (' .. LogExtenderClient.getLocation(target) ..  ') with ';
     message = message .. weapon:getFullType();

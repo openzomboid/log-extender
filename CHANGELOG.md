@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [v0.11.0] - 2022-12-13
+### Fixed
+- Fixed PVP hit logs. Sometimes mod writes hit user logs when player is already dead.
+
 ### Added
 - Added traps pick upping logs to map log file.
 - Added alternative destroying logs with sledge.
@@ -117,7 +122,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.11.0...HEAD
+[v0.11.0]: https://github.com/openzomboid/log-extender/compare/v0.10.0...v0.11.0
 [v0.10.0]: https://github.com/openzomboid/log-extender/compare/v0.9.0...v0.10.0
 [v0.9.0]: https://github.com/openzomboid/log-extender/compare/v0.8.0...v0.9.0
 [v0.8.0]: https://github.com/openzomboid/log-extender/compare/v0.7.1...v0.8.0
