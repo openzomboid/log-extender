@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.11.1] - 2022-12-22
+### Fixed
+- Fixed IsoTelevision ISDestroyStuffAction action.
+
+### Added
+- Added pickup action to map_alternative.txt log file.
+
 ## [v0.11.0] - 2022-12-13
 ### Fixed
 - Fixed PVP hit logs. Sometimes mod writes hit user logs when player is already dead.
@@ -122,7 +129,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.11.1...HEAD
+[v0.11.1]: https://github.com/openzomboid/log-extender/compare/v0.11.0...v0.11.1
 [v0.11.0]: https://github.com/openzomboid/log-extender/compare/v0.10.0...v0.11.0
 [v0.10.0]: https://github.com/openzomboid/log-extender/compare/v0.9.0...v0.10.0
 [v0.9.0]: https://github.com/openzomboid/log-extender/compare/v0.8.0...v0.9.0

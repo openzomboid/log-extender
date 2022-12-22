@@ -7,7 +7,7 @@
 
 -- TODO: Create JSON marshaller.
 
-local version = "0.11.0" -- TODO: Fill when make releases.
+local version = "0.11.1" -- TODO: Fill when make releases.
 
 local pzversion = getCore():getVersionNumber()
 
@@ -454,12 +454,22 @@ LogExtenderClient.TimedActionPerform = function()
                 elseif self.Type == "ISMoveablesAction" then
                     if self.mode and self.mode=="scrap" and self.moveProps and self.moveProps.object then
                         local obj = self.moveProps.object;
-                        local objLocation = LogExtenderClient.getLocation(obj);
+                        local objLocation = LogExtenderClient.getLocation(self.square);
                         local sprite = obj:getSprite();
                         local spriteName = sprite:getName() or "undefined"
                         local objName = obj:getName() or obj:getObjectName();
 
                         local message = LogExtenderClient.getLogLinePrefix(player, "disassembled " .. objName) .. " (" .. spriteName .. ") at " .. objLocation .. " (" .. location .. ")";
+                        LogExtenderClient.writeLog(LogExtenderClient.filemask.map_alternative, message);
+                    end
+
+                    if self.mode and self.mode=="pickup" and self.moveProps then
+                        local objLocation = LogExtenderClient.getLocation(self.square);
+                        local sprite = self.moveProps.sprite;
+                        local spriteName = sprite:getName() or "undefined"
+                        local objName = self.moveProps.isoType;
+
+                        local message = LogExtenderClient.getLogLinePrefix(player, "pickedup " .. objName) .. " (" .. spriteName .. ") at " .. objLocation .. " (" .. location .. ")";
                         LogExtenderClient.writeLog(LogExtenderClient.filemask.map_alternative, message);
                     end
                 end
