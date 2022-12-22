@@ -75,6 +75,7 @@ There can be `connected`, `levelup` and `tick` events.
 ```text
 [12-12-22 16:56:42.982] 76561190000000000 "outdead" removed IsoObject (location_restaurant_spiffos_02_25) at 11664,8298,0 (11665,8299,0).
 [12-12-22 18:03:16.876] 76561190000000000 "outdead" disassembled IsoObject (location_shop_gas2go_01_21) at 11597,8304,0 (11596,8304,0).
+[22-12-22 07:56:17.435] 76561190000000000 "outdead" pickedup IsoObject (furniture_seating_indoor_02_4) at 14109,5072,0 (14109,5073,0).
 ```
 
 ### _craft.txt
