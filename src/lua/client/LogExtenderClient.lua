@@ -442,6 +442,7 @@ LogExtenderClient.TimedActionPerform = function()
             end;
 
             if SandboxVars.LogExtender.AlternativeMap then
+                -- Action=removed - Destroyed with sledgehammer.
                 if self.Type == "ISDestroyStuffAction" then
                     local obj = self.item;
                     local objLocation = LogExtenderClient.getLocation(obj);
@@ -452,6 +453,7 @@ LogExtenderClient.TimedActionPerform = function()
                     local message = LogExtenderClient.getLogLinePrefix(player, "removed " .. objName) .. " (" .. spriteName .. ") at " .. objLocation .. " (" .. location .. ")";
                     LogExtenderClient.writeLog(LogExtenderClient.filemask.map_alternative, message);
                 elseif self.Type == "ISMoveablesAction" then
+                    -- Action=disassembled - Disassembled with tools.
                     if self.mode and self.mode=="scrap" and self.moveProps and self.moveProps.object then
                         local obj = self.moveProps.object;
                         local objLocation = LogExtenderClient.getLocation(self.square);
@@ -463,6 +465,7 @@ LogExtenderClient.TimedActionPerform = function()
                         LogExtenderClient.writeLog(LogExtenderClient.filemask.map_alternative, message);
                     end
 
+                    -- Action=pickedup - Picked up to inventory.
                     if self.mode and self.mode=="pickup" and self.moveProps then
                         local objLocation = LogExtenderClient.getLocation(self.square);
                         local sprite = self.moveProps.sprite;
