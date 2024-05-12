@@ -7,7 +7,7 @@
 
 -- TODO: Create JSON marshaller.
 
-local version = "0.11.1" -- TODO: Fill when make releases.
+local version = "0.12.0" -- TODO: Fill when make releases.
 
 local pzversion = getCore():getVersionNumber()
 
@@ -449,6 +449,9 @@ LogExtenderClient.TimedActionPerform = function()
                     local sprite = obj:getSprite();
                     local spriteName = sprite:getName() or "undefined"
                     local objName = obj:getName() or obj:getObjectName();
+                    if objName == "" then
+                        objName = instanceof(self.item, 'IsoThumpable') and "IsoThumpable" or "undefined"
+                    end
 
                     local message = LogExtenderClient.getLogLinePrefix(player, "removed " .. objName) .. " (" .. spriteName .. ") at " .. objLocation .. " (" .. location .. ")";
                     LogExtenderClient.writeLog(LogExtenderClient.filemask.map_alternative, message);
@@ -460,6 +463,9 @@ LogExtenderClient.TimedActionPerform = function()
                         local sprite = obj:getSprite();
                         local spriteName = sprite:getName() or "undefined"
                         local objName = obj:getName() or obj:getObjectName();
+                        if objName == "" then
+                            objName = instanceof(self.item, 'IsoThumpable') and "IsoThumpable" or "undefined"
+                        end
 
                         local message = LogExtenderClient.getLogLinePrefix(player, "disassembled " .. objName) .. " (" .. spriteName .. ") at " .. objLocation .. " (" .. location .. ")";
                         LogExtenderClient.writeLog(LogExtenderClient.filemask.map_alternative, message);

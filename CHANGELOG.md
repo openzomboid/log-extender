@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- Fixed empty objName value in map_alternative log record. When player picked up IsoThumpable, placed and destroyed it then added line with empty objName value.
 
 ## [v0.11.1] - 2022-12-22
 ### Fixed

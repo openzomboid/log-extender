@@ -13,12 +13,12 @@ if [ "${STAGE}" == "test" ]; then MOD_NAME="${MOD_NAME}Test"; fi
 
 RELEASE_NAME="${MOD_NAME}-${VERSION}"
 
-rm -r release
-mkdir release
-touch release/checksum.txt
+rm -r .tmp/release
+mkdir .tmp/release
+touch .tmp/release/checksum.txt
 
 function make_release() {
-    local dir_workshop="release/${RELEASE_NAME}"
+    local dir_workshop=".tmp/release/${RELEASE_NAME}"
     local dir="${dir_workshop}/Contents/mods/${MOD_NAME}"
 
     mkdir -p "${dir}"
@@ -53,16 +53,16 @@ function make_release() {
     cd ../../../ && {
         md5sum "${RELEASE_NAME}.tar.gz" >> checksum.txt;
         md5sum "${RELEASE_NAME}.zip" >> checksum.txt;
-        cd ../;
+        cd ../../;
     }
 }
 
 function install_release() {
     rm -r ~/Zomboid/Workshop/"${MOD_NAME}"
 
-    cp -r  "release/${RELEASE_NAME}" ~/Zomboid/Workshop/"${MOD_NAME}"
+    cp -r  .tmp/release/"${RELEASE_NAME}" ~/Zomboid/Workshop/"${MOD_NAME}"
 
-    rm -r "release/${RELEASE_NAME}"
+    rm -r .tmp/release/"${RELEASE_NAME}"
 }
 
 make_release && install_release
