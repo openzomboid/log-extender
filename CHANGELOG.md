@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Fixed
 - Fixed empty objName value in map_alternative log record. When player picked up IsoThumpable, placed and destroyed it then added line with empty objName value.
+- Fixed bug when vehicle detach log contains same vehicle twice.
 
 ## [v0.11.1] - 2022-12-22
 ### Fixed

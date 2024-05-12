@@ -37,7 +37,8 @@ LogExtenderClient = {
     -- Store vehicle object when user enter to it.
     vehicle = nil,
     -- Store vehicle object when user attach it.
-    vehicleAttachment = nil,
+    vehicleAttachmentA = nil,
+    vehicleAttachmentB = nil,
 }
 
 LogExtenderClient.writeLog = function(filemask, message)
@@ -683,7 +684,8 @@ LogExtenderClient.VehicleAttach = function()
         local player = self.character;
 
         if player then
-            LogExtenderClient.vehicleAttachment = self.vehicleB
+            LogExtenderClient.vehicleAttachmentA = self.vehicleA
+            LogExtenderClient.vehicleAttachmentB = self.vehicleB
             LogExtenderClient.DumpVehicle(player, "attach", self.vehicleA, self.vehicleB);
         end;
     end;
@@ -694,13 +696,19 @@ LogExtenderClient.VehicleDetach = function()
     local originalPerform = ISDetachTrailerFromVehicle.perform;
 
     ISDetachTrailerFromVehicle.perform = function(self)
+        local vehicleB = self.vehicle:getVehicleTowing()
+        if vehicleB == nil then
+            vehicleB = LogExtenderClient.vehicleAttachmentB
+        end
+
         originalPerform(self);
 
         local player = self.character;
 
         if player then
-            LogExtenderClient.DumpVehicle(player, "detach", self.vehicle, LogExtenderClient.vehicleAttachment);
-            LogExtenderClient.vehicleAttachment = nil;
+            LogExtenderClient.DumpVehicle(player, "detach", self.vehicle, vehicleB);
+            LogExtenderClient.vehicleAttachmentA = nil;
+            LogExtenderClient.vehicleAttachmentB = nil;
         end;
     end;
 end
