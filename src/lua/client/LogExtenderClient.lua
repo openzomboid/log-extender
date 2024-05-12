@@ -446,7 +446,27 @@ LogExtenderClient.TimedActionPerform = function()
                 -- Action=removed - Destroyed with sledgehammer.
                 if self.Type == "ISDestroyStuffAction" then
                     local obj = self.item;
-                    local objLocation = LogExtenderClient.getLocation(obj);
+                    local objLocation = ""
+                    if obj.GetX ~= nil then
+                        objLocation = LogExtenderClient.getLocation(obj);
+                    else
+                        -- Workaround for destroying IsoRadio and IsoTelevision from Brush Tool.
+                        -- That objects doesn't have x,y,z position. We only can get IsoGridSquare
+                        -- from object stack and then we can get position.
+                        local coroutine = getCurrentCoroutine();
+                        local count = getCoroutineTop(coroutine);
+                        for i = count - 1, 0, -1 do
+                            local o = getCoroutineObjStack(coroutine, i);
+                            if o ~= nil and instanceof(o, 'IsoGridSquare') then
+                                objLocation = LogExtenderClient.getLocation(o);
+                                break;
+                            end
+                        end
+
+                        if objLocation == nil or objLocation == "" then
+                            objLocation = location
+                        end
+                    end
                     local sprite = obj:getSprite();
                     local spriteName = sprite:getName() or "undefined"
                     local objName = obj:getName() or obj:getObjectName();
