@@ -18,4 +18,5 @@ Sandbox_EN = {
     Sandbox_AdminManageItem = "AdminManageItem",
     Sandbox_AdminTeleport = "AdminTeleport",
     Sandbox_AlternativeMap = "AlternativeMap",
+    Sandbox_BrushToolLogs = "BrushToolLogs",
 }

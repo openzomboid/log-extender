@@ -161,3 +161,12 @@ option LogExtender.AlternativeMap
   page = LogExtender,
   translation = LogExtender_AlternativeMap
 }
+
+option LogExtender.BrushToolLogs
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_BrushToolLogs
+}

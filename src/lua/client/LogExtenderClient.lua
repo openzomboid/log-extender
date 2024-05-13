@@ -5,8 +5,6 @@
 -- LogExtenderClient adds more logs to the Logs directory the Project Zomboid game.
 --
 
--- TODO: Create JSON marshaller.
-
 local version = "0.12.0" -- TODO: Fill when make releases.
 
 local pzversion = getCore():getVersionNumber()
@@ -30,6 +28,7 @@ LogExtenderClient = {
         safehouse = "safehouse",
         craft = "craft",
         map_alternative = "map_alternative",
+        brush_tool = "brush_tool",
     },
 
     -- Store ingame player object when user is logged in.
