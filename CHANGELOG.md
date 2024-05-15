@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file.
 - Fixed bug when vehicle detach log contains same vehicle twice.
 - Fixed error after destroy IsoRadio and IsoTelevision from Brush Tool with Sledgehammer.
 
+### Added
+- Added brash tool logs (WIP).
+
 ## [v0.11.1] - 2022-12-22
 ### Fixed
 - Fixed IsoTelevision ISDestroyStuffAction action.
