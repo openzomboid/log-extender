@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 - Fixed error after destroy IsoRadio and IsoTelevision from Brush Tool with Sledgehammer.
 
 ### Added
-- Added brash tool logs (WIP).
+- Added brash tool logs to brashtool.txt file (WIP).
 
 ## [v0.11.1] - 2022-12-22
 ### Fixed
