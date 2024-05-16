@@ -7,30 +7,50 @@
 
 require "LogExtenderClient"
 
-BrushToolLogger = {
+local BrushToolLogger = {
     filemask = {
-        brush_tool = "brush_tool",
+        brush_tool = "brushtool",
     },
     writeLog = LogExtenderClient.writeLog,
     getLogLinePrefix = LogExtenderClient.getLogLinePrefix,
     getLocation = LogExtenderClient.getLocation,
 }
 
-BrushToolLogger.doBrushToolOptions = function(player, context, worldobjects, test)
+function BrushToolLogger.OnDestroyTile(obj)
+    local character = getPlayer()
+    local location = LogExtenderClient.getLocation(character);
+    local objLocation = LogExtenderClient.getLocation(obj);
+    local texture = obj:getTextureName()
+    local objName = obj:getName() or obj:getObjectName();
+    if objName == "" then
+        objName = instanceof(obj, 'IsoThumpable') and "IsoThumpable" or "undefined"
+    end
+
+    if isClient() then
+        sledgeDestroy(obj)
+    else
+        obj:getSquare():transmitRemoveItemFromSquare(obj)
+    end
+
+    local message = LogExtenderClient.getLogLinePrefix(character, "removed " .. objName) .. " (" .. texture .. ") at " .. objLocation .. " (" .. location .. ")";
+    LogExtenderClient.writeLog(BrushToolLogger.filemask.brush_tool, message);
+end
+
+function BrushToolLogger.doBrushToolOptions(player, context, worldobjects, test)
     if not SandboxVars.LogExtender.BrushToolLogs then
         return
     end
 
     if test and ISWorldObjectContextMenu.Test then return true end
 
-    local character = getSpecificPlayer(player)
-    local options = context:getMenuOptionNames()
-
     local destroyTileOption = context:getOptionFromName("Destroy tile")
     if destroyTileOption then
         local destroyTileMenu = context:getSubMenu(destroyTileOption.subOption)
         if destroyTileMenu then
-            local m = destroyTileMenu
+            for i=1, #destroyTileMenu.options do
+                local option = destroyTileMenu.options[i];
+                option.onSelect = BrushToolLogger.OnDestroyTile
+            end
         end
     end
 end
