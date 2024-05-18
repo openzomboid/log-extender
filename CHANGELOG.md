@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
 - Fixed error after destroy IsoRadio and IsoTelevision from Brush Tool with Sledgehammer.
 
 ### Added
-- Added brash tool logs to `brashtool.txt` file.
+- Added brush tool logs to `brushtool.txt` file.
 
 ### Changed
 - Marked as deprecated fuctions `writeLog`, `getLogLinePrefix`, `getLocation`, `getPlayerSafehouses`, `getPlayerPerks`, `getPlayerTraits`, `getPlayerStats`, `getPlayerHealth`, `getVehicleInfo` on LogExtenderClient. This functions copied to LogExtenderUtils.
