@@ -24,7 +24,7 @@ function BrushToolLoggerClient.onDestroyTile(obj)
     end
 
     local message = LogExtenderUtils.getLogLinePrefix(character, "removed " .. objName) .. " (" .. texture .. ") at " .. objLocation .. " (" .. location .. ")";
-    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.brush_tool, message);
+    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.brushtool, message);
 end
 
 function BrushToolLoggerClient.doBrushToolOptions(player, context, worldobjects, test)

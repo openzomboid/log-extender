@@ -25,7 +25,7 @@ function BrushToolLoggerServer.createBrushToolTileCursor(self, x, y, z, north, s
     local objName = "IsoThumpable"
 
     local message = LogExtenderUtils.getLogLinePrefix(character, "added " .. objName) .. " (" .. texture .. ") at " .. objLocation .. " (" .. location .. ")";
-    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.brush_tool, message);
+    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.brushtool, message);
 end
 
 ISBrushToolTileCursor.create = BrushToolLoggerServer.createBrushToolTileCursor;
