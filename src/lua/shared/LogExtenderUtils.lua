@@ -30,6 +30,7 @@ LogExtenderUtils = {
     },
 }
 
+-- writeLog sends command to server for writting log line to file.
 LogExtenderUtils.writeLog = function(filemask, message)
     sendClientCommand("LogExtender", "write", { mask = filemask, message = message });
 end

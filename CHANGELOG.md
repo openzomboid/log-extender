@@ -10,7 +10,10 @@ All notable changes to this project will be documented in this file.
 - Fixed error after destroy IsoRadio and IsoTelevision from Brush Tool with Sledgehammer.
 
 ### Added
-- Added brash tool logs to brashtool.txt file (WIP).
+- Added brash tool logs to brashtool.txt file.
+
+### Changed
+- Marked as deprecated fuctions writeLog, getLogLinePrefix, getLocation on LogExtenderClient. This functions copied to LogExtenderUtils.
 
 ## [v0.11.1] - 2022-12-22
 ### Fixed

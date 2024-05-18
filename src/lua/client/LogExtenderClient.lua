@@ -40,18 +40,22 @@ LogExtenderClient = {
     vehicleAttachmentB = nil,
 }
 
+-- writeLog sends command to server for writting log line to file.
+-- Deprecated: Function LogExtenderClient.writeLog is deprecated. Use LogExtenderUtils.writeLog.
 LogExtenderClient.writeLog = function(filemask, message)
     sendClientCommand("LogExtender", "write", { mask = filemask, message = message });
 end
 
 -- getLogLinePrefix generates prefix for each log lines.
 -- for ease of use, we assume that the player’s existence has been verified previously.
+-- Deprecated: Function LogExtenderClient.getLogLinePrefix is deprecated. Use LogExtenderUtils.getLogLinePrefix.
 LogExtenderClient.getLogLinePrefix = function(player, action)
     -- TODO: Add ownerID.
     return getCurrentUserSteamID() .. " \"" .. player:getUsername() .. "\" " .. action
 end
 
 -- getLocation returns players or vehicle location in "x,x,z" format.
+-- Deprecated: Function LogExtenderClient.getLocation is deprecated. Use LogExtenderUtils.getLocation.
 LogExtenderClient.getLocation = function(obj)
     return math.floor(obj:getX()) .. "," .. math.floor(obj:getY()) .. "," .. math.floor(obj:getZ());
 end
