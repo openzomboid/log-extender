@@ -5,9 +5,9 @@
 -- BrushToolLogger adds BrushTool logs to the Logs directory the Project Zomboid game.
 --
 
-local BrushToolLoggerClient = {}
+local BrushToolClientLogger = {}
 
-function BrushToolLoggerClient.onDestroyTile(obj)
+function BrushToolClientLogger.onDestroyTile(obj)
     local character = getPlayer()
     local location = LogExtenderUtils.getLocation(character);
     local objLocation = LogExtenderUtils.getLocation(obj);
@@ -27,7 +27,7 @@ function BrushToolLoggerClient.onDestroyTile(obj)
     LogExtenderUtils.writeLog(LogExtenderUtils.filemask.brushtool, message);
 end
 
-function BrushToolLoggerClient.doBrushToolOptions(player, context, worldobjects, test)
+function BrushToolClientLogger.doBrushToolOptions(player, context, worldobjects, test)
     if not SandboxVars.LogExtender.BrushToolLogs then
         return
     end
@@ -40,10 +40,10 @@ function BrushToolLoggerClient.doBrushToolOptions(player, context, worldobjects,
         if destroyTileMenu then
             for i=1, #destroyTileMenu.options do
                 local option = destroyTileMenu.options[i];
-                option.onSelect = BrushToolLoggerClient.onDestroyTile
+                option.onSelect = BrushToolClientLogger.onDestroyTile
             end
         end
     end
 end
 
-Events.OnFillWorldObjectContextMenu.Add(BrushToolLoggerClient.doBrushToolOptions);
+Events.OnFillWorldObjectContextMenu.Add(BrushToolClientLogger.doBrushToolOptions);

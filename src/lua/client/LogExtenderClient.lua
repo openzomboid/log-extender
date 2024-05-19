@@ -33,11 +33,6 @@ LogExtenderClient = {
 
     -- Store ingame player object when user is logged in.
     player = nil,
-    -- Store vehicle object when user enter to it.
-    vehicle = nil,
-    -- Store vehicle object when user attach it.
-    vehicleAttachmentA = nil,
-    vehicleAttachmentB = nil,
 }
 
 -- writeLog sends command to server for writting log line to file.
@@ -313,100 +308,6 @@ LogExtenderClient.DumpPlayer = function(player, action)
     LogExtenderUtils.writeLog(LogExtenderUtils.filemask.player, message);
 end
 
--- DumpVehicle writes vehicles info to log file.
-LogExtenderClient.DumpVehicle = function(player, action, vehicle, vehicle2)
-    if player == nil then
-        return nil;
-    end
-
-    local message = LogExtenderUtils.getLogLinePrefix(player, action);
-
-    if vehicle then
-        local info = LogExtenderUtils.getVehicleInfo(vehicle)
-
-        message = message .. ' vehicle={'
-                .. '"id":' .. info.ID .. ','
-                .. '"type":"' .. info.Type .. '",'
-                .. '"center":"' .. info.Center .. '"'
-                .. '}';
-    else
-        message = message .. " vehicle={}";
-    end
-
-    if vehicle2 then
-        local info = LogExtenderUtils.getVehicleInfo(vehicle2)
-
-        if action == 'attach' then
-            message = message .. ' to'
-        elseif action == 'detach' then
-            message = message .. ' from'
-        end
-
-        message = message .. ' vehicle={'
-                .. '"id":' .. info.ID .. ','
-                .. '"type":"' .. info.Type .. '",'
-                .. '"center":"' .. info.Center .. '"'
-                .. '}';
-    end
-
-    local location = LogExtenderUtils.getLocation(player);
-    message = message .. " at " .. location
-
-    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.vehicle, message);
-end
-
--- DumpSafehouse writes player's safehouse info to log file.
-LogExtenderClient.DumpSafehouse = function(player, action, safehouse, target)
-    if player == nil then
-        return nil;
-    end
-
-    local message = LogExtenderUtils.getLogLinePrefix(player, action);
-
-    if safehouse then
-        local area = {}
-        local owner = player:getUsername()
-
-        if instanceof(safehouse, 'SafeHouse') then
-            owner = safehouse:getOwner();
-            area = {
-                Top = safehouse:getX() .. "x" .. safehouse:getY(),
-                Bottom = safehouse:getX2() .. "x" .. safehouse:getY2(),
-                zone = safehouse:getX() .. "," .. safehouse:getY() .. "," .. safehouse:getX2() - safehouse:getX() .. "," .. safehouse:getY2() - safehouse:getY()
-            };
-        end
-
-        message = message .. ' ' .. area.zone
-        message = message .. ' owner="' .. owner .. '"'
-
-        if action == "release safehouse" then
-            message = message .. ' members=['
-
-            local members = safehouse:getPlayers();
-            for j = 0, members:size() - 1 do
-                local member = members:get(j)
-
-                if member ~= owner then
-                    message = message .. '"' .. member .. '"'
-                    if j ~= members:size() - 1 then
-                        message = message .. ','
-                    end
-                end
-            end
-            message = message .. ']'
-        end
-    else
-        message = message .. ' ' .. '0,0,0,0' -- TODO: What can I do?
-        message = message .. ' owner="' .. player:getUsername() .. '"'
-    end
-
-    if target ~= nil then
-        message = message .. ' target="' .. target .. '"'
-    end
-
-    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.safehouse, message);
-end
-
 -- DumpAdminItem writes admin actions with items.
 LogExtenderClient.DumpAdminItem = function(player, action, itemName, count, target)
     if player == nil then
@@ -438,15 +339,24 @@ LogExtenderClient.TimedActionPerform = function()
             if self.Type == "ISTakeGenerator" then
                 local message = LogExtenderUtils.getLogLinePrefix(player, "taken IsoGenerator") .. " (appliances_misc_01_0) at " .. location;
                 LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map, message);
+                if SandboxVars.LogExtender.AlternativeMap then
+                    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map_alternative, message);
+                end
             elseif self.Type == "ISToggleStoveAction" then
                 local message = LogExtenderUtils.getLogLinePrefix(player, "stove.toggle") .. " @ " .. location;
                 LogExtenderUtils.writeLog(LogExtenderUtils.filemask.cmd, message);
             elseif self.Type == "ISPlaceCampfireAction" then
                 local message = LogExtenderUtils.getLogLinePrefix(player, "added Campfire") .. " (camping_01_6) at " .. location;
                 LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map, message);
+                if SandboxVars.LogExtender.AlternativeMap then
+                    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map_alternative, message);
+                end
             elseif self.Type == "ISRemoveCampfireAction" then
                 local message = LogExtenderUtils.getLogLinePrefix(player, "taken Campfire") .. " (camping_01_6) at " .. location;
                 LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map, message);
+                if SandboxVars.LogExtender.AlternativeMap then
+                    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map_alternative, message);
+                end
             elseif (self.Type == "ISLightFromKindle" or self.Type == "ISLightFromLiterature" or self.Type == "ISLightFromPetrol") then
                 local message = LogExtenderUtils.getLogLinePrefix(player, "campfire.light") .. " @ " .. location;
                 LogExtenderUtils.writeLog(LogExtenderUtils.filemask.cmd, message);
@@ -456,6 +366,9 @@ LogExtenderClient.TimedActionPerform = function()
             elseif self.Type == "ISRemoveTrapAction" then
                 local message = LogExtenderUtils.getLogLinePrefix(player, "taken Trap") .. " (" .. self.trap.openSprite .. ") at " .. location;
                 LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map, message);
+                if SandboxVars.LogExtender.AlternativeMap then
+                    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map_alternative, message);
+                end
             elseif self.Type == "ISCraftAction" then
                 local recipe = self.recipe
                 local recipeName = recipe:getOriginalname()
@@ -533,138 +446,6 @@ LogExtenderClient.TimedActionPerform = function()
     end;
 end
 
--- OnTakeSafeHouse rewrites original ISWorldObjectContextMenu.onTakeSafeHouse and
--- adds logs for player take safehouse action.
-LogExtenderClient.OnTakeSafeHouse = function()
-    local originalOnTakeSafeHouse = ISWorldObjectContextMenu.onTakeSafeHouse;
-
-    ISWorldObjectContextMenu.onTakeSafeHouse = function(worldobjects, square, player)
-        originalOnTakeSafeHouse(worldobjects, square, player)
-
-        local character = getSpecificPlayer(player)
-        local safehouse = nil
-
-        local safehouseList = SafeHouse.getSafehouseList();
-        -- TODO: If player owned 2 or more safehouses we can get not relevant house.
-        for i = 0, safehouseList:size() - 1 do
-            if safehouseList:get(i):getOwner() == character:getUsername() then
-                safehouse = safehouseList:get(i);
-                break;
-            end
-        end
-
-        LogExtenderClient.DumpSafehouse(character, "take safehouse", safehouse, nil)
-    end
-end
-
--- OnChangeSafeHouseOwner rewrites original ISSafehouseAddPlayerUI.onClick and
--- adds logs for change safehouse ownership action.
-LogExtenderClient.OnChangeSafeHouseOwner = function()
-    local onClickOriginal = ISSafehouseAddPlayerUI.onClick;
-
-    ISSafehouseAddPlayerUI.onClick = function(self, button)
-        onClickOriginal(self, button)
-
-        if button.internal == "ADDPLAYER" then
-            if self.changeOwnership then
-                local character = getPlayer()
-                LogExtenderClient.DumpSafehouse(character, "change safehouse owner", self.safehouse, self.selectedPlayer)
-            end
-        end
-    end
-end
-
--- OnReleaseSafeHouse rewrites original ISSafehouseUI.onReleaseSafehouse and
--- adds logs for player release safehouse action.
-LogExtenderClient.OnReleaseSafeHouse = function()
-    local onReleaseSafehouseOriginal = ISSafehouseUI.onReleaseSafehouse;
-
-    ISSafehouseUI.onReleaseSafehouse = function(self, button, player)
-        if button.internal == "YES" then
-            if button.parent.ui:isOwner() or button.parent.ui:hasPrivilegedAccessLevel() then
-                local character = getPlayer()
-                LogExtenderClient.DumpSafehouse(character, "release safehouse", button.parent.ui.safehouse, nil)
-            end
-        end
-
-        onReleaseSafehouseOriginal(self, button, player)
-    end
-end
-
--- OnReleaseSafeHouseCommand rewrites original ISChat.onCommandEntered and
--- adds logs for player release safehouse action.
-LogExtenderClient.OnReleaseSafeHouseCommand = function()
-    local onCommandEnteredOriginal = ISChat.onCommandEntered;
-
-    ISChat.onCommandEntered = function(self)
-        local command = ISChat.instance.textEntry:getText();
-        if command == "/releasesafehouse" then
-            local character = getSpecificPlayer(0)
-            local safehouse = nil
-
-            local safehouseList = SafeHouse.getSafehouseList();
-            -- TODO: If player owned 2 or more safehouses we can get not relevant house.
-            for i = 0, safehouseList:size() - 1 do
-                if safehouseList:get(i):getOwner() == character:getUsername() then
-                    safehouse = safehouseList:get(i);
-                    break;
-                end
-            end
-
-            LogExtenderClient.DumpSafehouse(character, "release safehouse", safehouse, nil)
-        end
-
-        onCommandEnteredOriginal(self)
-    end
-end
-
--- OnRemovePlayerFromSafehouse rewrites original ISSafehouseUI.onRemovePlayerFromSafehouse
--- and adds logs for remove player from safehouse action.
-LogExtenderClient.OnRemovePlayerFromSafehouse = function()
-    local onRemovePlayerFromSafehouseOriginal = ISSafehouseUI.onRemovePlayerFromSafehouse;
-
-    ISSafehouseUI.onRemovePlayerFromSafehouse = function(self, button, player)
-        if button.internal == "YES" then
-            local character = getPlayer()
-            LogExtenderClient.DumpSafehouse(character, "remove player from safehouse", button.parent.ui.safehouse, button.parent.ui.selectedPlayer)
-        end
-
-        onRemovePlayerFromSafehouseOriginal(self, button, player)
-    end
-end
-
--- OnSendSafeHouseInvite rewrites original ISSafehouseAddPlayerUI.onClick and
--- adds logs for send safehouse invite action.
-LogExtenderClient.OnSendSafeHouseInvite = function()
-    local onClickOriginal = ISSafehouseAddPlayerUI.onClick;
-
-    ISSafehouseAddPlayerUI.onClick = function(self, button)
-        onClickOriginal(self, button)
-
-        if button.internal == "ADDPLAYER" then
-            if not self.changeOwnership then
-                local character = getPlayer()
-                LogExtenderClient.DumpSafehouse(character, "send safehouse invite", self.safehouse, self.selectedPlayer)
-            end
-        end
-    end
-end
-
--- OnJoinToSafehouse rewrites original ISSafehouseUI.onAnswerSafehouseInvite and
--- adds logs for players join to safehouse action.
-LogExtenderClient.OnJoinToSafehouse = function()
-    local onAnswerSafehouseInviteOriginal = ISSafehouseUI.onAnswerSafehouseInvite;
-
-    ISSafehouseUI.onAnswerSafehouseInvite = function(self, button)
-        if button.internal == "YES" then
-            local character = getPlayer()
-            LogExtenderClient.DumpSafehouse(character, "join to safehouse", button.parent.safehouse, nil)
-        end
-
-        onAnswerSafehouseInviteOriginal(self, button)
-    end
-end
-
 -- OnCreatePlayer adds callback for player OnCreatePlayerData event.
 LogExtenderClient.OnCreatePlayer = function(id)
     Events.OnTick.Add(LogExtenderClient.OnTick);
@@ -701,61 +482,6 @@ LogExtenderClient.EveryHours = function()
 
         LogExtenderClient.DumpPlayer(player, "tick");
     end
-end
-
--- VehicleEnter adds callback for OnEnterVehicle event.
-LogExtenderClient.VehicleEnter = function(player)
-    if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
-        LogExtenderClient.vehicle = player:getVehicle()
-        LogExtenderClient.DumpVehicle(player, "enter", LogExtenderClient.vehicle, nil);
-    end
-end
-
--- VehicleExit adds callback for OnExitVehicle event.
-LogExtenderClient.VehicleExit = function(player)
-    if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
-        LogExtenderClient.DumpVehicle(player, "exit", LogExtenderClient.vehicle, nil);
-        LogExtenderClient.vehicle = nil
-    end
-end
-
--- VehicleAttach adds callback for ISAttachTrailerToVehicle event.
-LogExtenderClient.VehicleAttach = function()
-    local originalPerform = ISAttachTrailerToVehicle.perform;
-
-    ISAttachTrailerToVehicle.perform = function(self)
-        originalPerform(self);
-
-        local player = self.character;
-
-        if player then
-            LogExtenderClient.vehicleAttachmentA = self.vehicleA
-            LogExtenderClient.vehicleAttachmentB = self.vehicleB
-            LogExtenderClient.DumpVehicle(player, "attach", self.vehicleA, self.vehicleB);
-        end;
-    end;
-end
-
--- VehicleDetach adds callback for ISDetachTrailerFromVehicle event.
-LogExtenderClient.VehicleDetach = function()
-    local originalPerform = ISDetachTrailerFromVehicle.perform;
-
-    ISDetachTrailerFromVehicle.perform = function(self)
-        local vehicleB = self.vehicle:getVehicleTowing()
-        if vehicleB == nil then
-            vehicleB = LogExtenderClient.vehicleAttachmentB
-        end
-
-        originalPerform(self);
-
-        local player = self.character;
-
-        if player then
-            LogExtenderClient.DumpVehicle(player, "detach", self.vehicle, vehicleB);
-            LogExtenderClient.vehicleAttachmentA = nil;
-            LogExtenderClient.vehicleAttachmentB = nil;
-        end;
-    end;
 end
 
 -- WeaponHitThumpable adds objects hit record to map_alternative log file.
@@ -966,48 +692,8 @@ LogExtenderClient.OnGameStart = function()
         Events.EveryHours.Add(LogExtenderClient.EveryHours)
     end
 
-    if SandboxVars.LogExtender.VehicleEnter then
-        Events.OnEnterVehicle.Add(LogExtenderClient.VehicleEnter)
-    end
-
-    if SandboxVars.LogExtender.VehicleExit then
-        Events.OnExitVehicle.Add(LogExtenderClient.VehicleExit)
-    end
-
-    if SandboxVars.LogExtender.VehicleAttach then
-        LogExtenderClient.VehicleAttach()
-    end
-
-    if SandboxVars.LogExtender.VehicleDetach then
-        LogExtenderClient.VehicleDetach()
-    end
-
     if SandboxVars.LogExtender.TimedActions then
         LogExtenderClient.TimedActionPerform()
-    end
-
-    if SandboxVars.LogExtender.TakeSafeHouse then
-        LogExtenderClient.OnTakeSafeHouse()
-    end
-
-    if SandboxVars.LogExtender.ChangeSafeHouseOwner then
-        LogExtenderClient.OnChangeSafeHouseOwner()
-    end
-
-    if SandboxVars.LogExtender.ReleaseSafeHouse then
-        LogExtenderClient.OnReleaseSafeHouse()
-    end
-
-    if SandboxVars.LogExtender.RemovePlayerFromSafehouse then
-        LogExtenderClient.OnRemovePlayerFromSafehouse()
-    end
-
-    if SandboxVars.LogExtender.SendSafeHouseInvite then
-        LogExtenderClient.OnSendSafeHouseInvite()
-    end
-
-    if SandboxVars.LogExtender.JoinToSafehouse then
-        LogExtenderClient.OnJoinToSafehouse()
     end
 
     if SandboxVars.LogExtender.HitPVP then
@@ -1032,10 +718,6 @@ end
 
 if SandboxVars.LogExtender.PlayerConnected then
     Events.OnCreatePlayer.Add(LogExtenderClient.OnCreatePlayer);
-end
-
-if SandboxVars.LogExtender.ReleaseSafeHouse then
-    LogExtenderClient.OnReleaseSafeHouseCommand()
 end
 
 Events.OnGameStart.Add(LogExtenderClient.OnGameStart);

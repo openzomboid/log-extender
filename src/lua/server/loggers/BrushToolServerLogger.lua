@@ -5,14 +5,14 @@
 -- BrushToolLogger adds BrushTool logs to the Logs directory the Project Zomboid game.
 --
 
-local BrushToolLoggerServer = {
+local BrushToolServerLogger = {
     Original = {
         ISBrushToolTileCursor_create = ISBrushToolTileCursor.create
     }
 }
 
-function BrushToolLoggerServer.createBrushToolTileCursor(self, x, y, z, north, sprite)
-    BrushToolLoggerServer.Original.ISBrushToolTileCursor_create(self, x, y, z, north, sprite)
+function BrushToolServerLogger.createBrushToolTileCursor(self, x, y, z, north, sprite)
+    BrushToolServerLogger.Original.ISBrushToolTileCursor_create(self, x, y, z, north, sprite)
 
     if not SandboxVars.LogExtender.BrushToolLogs then
         return
@@ -28,4 +28,4 @@ function BrushToolLoggerServer.createBrushToolTileCursor(self, x, y, z, north, s
     LogExtenderUtils.writeLog(LogExtenderUtils.filemask.brushtool, message);
 end
 
-ISBrushToolTileCursor.create = BrushToolLoggerServer.createBrushToolTileCursor;
+ISBrushToolTileCursor.create = BrushToolServerLogger.createBrushToolTileCursor;
