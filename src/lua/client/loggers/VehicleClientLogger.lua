@@ -3,7 +3,7 @@
 -- Use of this source code is governed by the Apache 2.0 license.
 --
 
-local VehiclesClientLogger = {
+local VehicleClientLogger = {
     Original = {
         ISSpawnVehicleUI_onClick = ISSpawnVehicleUI.onClick
     },
@@ -15,7 +15,7 @@ local VehiclesClientLogger = {
 }
 
 -- DumpVehicle writes vehicles info to log file.
-function VehiclesClientLogger.DumpVehicle(player, action, vehicle, vehicle2)
+function VehicleClientLogger.DumpVehicle(player, action, vehicle, vehicle2)
     if player == nil then
         return nil;
     end
@@ -58,23 +58,23 @@ end
 
 
 -- VehicleEnter adds callback for OnEnterVehicle event.
-VehiclesClientLogger.VehicleEnter = function(player)
+VehicleClientLogger.VehicleEnter = function(player)
     if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
         LogExtenderClient.vehicle = player:getVehicle()
-        VehiclesClientLogger.DumpVehicle(player, "enter", LogExtenderClient.vehicle, nil);
+        VehicleClientLogger.DumpVehicle(player, "enter", LogExtenderClient.vehicle, nil);
     end
 end
 
 -- VehicleExit adds callback for OnExitVehicle event.
-VehiclesClientLogger.VehicleExit = function(player)
+VehicleClientLogger.VehicleExit = function(player)
     if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
-        VehiclesClientLogger.DumpVehicle(player, "exit", LogExtenderClient.vehicle, nil);
-        VehiclesClientLogger.vehicle = nil
+        VehicleClientLogger.DumpVehicle(player, "exit", LogExtenderClient.vehicle, nil);
+        VehicleClientLogger.vehicle = nil
     end
 end
 
 -- VehicleAttach adds callback for ISAttachTrailerToVehicle event.
-VehiclesClientLogger.VehicleAttach = function()
+VehicleClientLogger.VehicleAttach = function()
     local originalPerform = ISAttachTrailerToVehicle.perform;
 
     ISAttachTrailerToVehicle.perform = function(self)
@@ -83,21 +83,21 @@ VehiclesClientLogger.VehicleAttach = function()
         local player = self.character;
 
         if player then
-            VehiclesClientLogger.vehicleAttachmentA = self.vehicleA
-            VehiclesClientLogger.vehicleAttachmentB = self.vehicleB
-            VehiclesClientLogger.DumpVehicle(player, "attach", self.vehicleA, self.vehicleB);
+            VehicleClientLogger.vehicleAttachmentA = self.vehicleA
+            VehicleClientLogger.vehicleAttachmentB = self.vehicleB
+            VehicleClientLogger.DumpVehicle(player, "attach", self.vehicleA, self.vehicleB);
         end;
     end;
 end
 
 -- VehicleDetach adds callback for ISDetachTrailerFromVehicle event.
-VehiclesClientLogger.VehicleDetach = function()
+VehicleClientLogger.VehicleDetach = function()
     local originalPerform = ISDetachTrailerFromVehicle.perform;
 
     ISDetachTrailerFromVehicle.perform = function(self)
         local vehicleB = self.vehicle:getVehicleTowing()
         if vehicleB == nil then
-            vehicleB = VehiclesClientLogger.vehicleAttachmentB
+            vehicleB = VehicleClientLogger.vehicleAttachmentB
         end
 
         originalPerform(self);
@@ -105,9 +105,9 @@ VehiclesClientLogger.VehicleDetach = function()
         local player = self.character;
 
         if player then
-            VehiclesClientLogger.DumpVehicle(player, "detach", self.vehicle, vehicleB);
-            VehiclesClientLogger.vehicleAttachmentA = nil;
-            VehiclesClientLogger.vehicleAttachmentB = nil;
+            VehicleClientLogger.DumpVehicle(player, "detach", self.vehicle, vehicleB);
+            VehicleClientLogger.vehicleAttachmentA = nil;
+            VehicleClientLogger.vehicleAttachmentB = nil;
         end;
     end;
 end
@@ -116,8 +116,8 @@ end
 -- Admin tools
 --
 
-VehiclesClientLogger.ISSpawnVehicleUI_onClick = function(self, button)
-    VehiclesClientLogger.Original.ISSpawnVehicleUI_onClick(self, button)
+VehicleClientLogger.ISSpawnVehicleUI_onClick = function(self, button)
+    VehicleClientLogger.Original.ISSpawnVehicleUI_onClick(self, button)
 
     if self.player == nil then
         return
@@ -126,32 +126,49 @@ VehiclesClientLogger.ISSpawnVehicleUI_onClick = function(self, button)
     local character = self.player
 
     if button.internal == "SPAWN" then
-        character:Say(character:getUsername() .. " spawned vehicle")
+        local action = "spawned vehicle"
+
+        local message = character:getUsername() .. " " .. action .. " " .. tostring(self:getVehicle())
+        message = message .. " at " .. LogExtenderUtils.getLocation(character)
+
+        LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
     elseif button.internal == "GETKEY" then
         if self.vehicle ~= nil then
-            character:Say(character:getUsername() .. " got vehicle key")
+            local action = "got vehicle key"
+            local info = LogExtenderUtils.getVehicleInfo(self.vehicle)
+
+            local message = character:getUsername() .. " " .. action .. " " .. info.Type
+            message = message .. " at " .. LogExtenderUtils.getLocation(character)
+
+            LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
         end
     elseif button.internal == "REPAIR" then
         if self.vehicle ~= nil then
-            character:Say(character:getUsername() .. " repaired vehicle")
+            local action = "repaired vehicle"
+            local info = LogExtenderUtils.getVehicleInfo(self.vehicle)
+
+            local message = character:getUsername() .. " " .. action .. " " .. info.Type
+            message = message .. " at " .. LogExtenderUtils.getLocation(character)
+
+            LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
         end
     end
 end
 
 if SandboxVars.LogExtender.VehicleEnter then
-    Events.OnEnterVehicle.Add(VehiclesClientLogger.VehicleEnter)
+    Events.OnEnterVehicle.Add(VehicleClientLogger.VehicleEnter)
 end
 
 if SandboxVars.LogExtender.VehicleExit then
-    Events.OnExitVehicle.Add(VehiclesClientLogger.VehicleExit)
+    Events.OnExitVehicle.Add(VehicleClientLogger.VehicleExit)
 end
 
 if SandboxVars.LogExtender.VehicleAttach then
-    VehiclesClientLogger.VehicleAttach()
+    VehicleClientLogger.VehicleAttach()
 end
 
 if SandboxVars.LogExtender.VehicleDetach then
-    VehiclesClientLogger.VehicleDetach()
+    VehicleClientLogger.VehicleDetach()
 end
 
-ISSpawnVehicleUI.onClick = VehiclesClientLogger.ISSpawnVehicleUI_onClick;
+ISSpawnVehicleUI.onClick = VehicleClientLogger.ISSpawnVehicleUI_onClick;
