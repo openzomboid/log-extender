@@ -4,9 +4,6 @@
 --
 
 local VehicleClientLogger = {
-    Original = {
-        ISSpawnVehicleUI_onClick = ISSpawnVehicleUI.onClick
-    },
     -- Store vehicle object when user enter to it.
     vehicle = nil,
     -- Store vehicle object when user attach it.
@@ -108,49 +105,53 @@ VehicleClientLogger.VehicleDetach = function()
             VehicleClientLogger.DumpVehicle(player, "detach", self.vehicle, vehicleB);
             VehicleClientLogger.vehicleAttachmentA = nil;
             VehicleClientLogger.vehicleAttachmentB = nil;
-        end;
-    end;
+        end
+    end
 end
 
 --
 -- Admin tools
 --
 
-VehicleClientLogger.ISSpawnVehicleUI_onClick = function(self, button)
-    VehicleClientLogger.Original.ISSpawnVehicleUI_onClick(self, button)
+VehicleClientLogger.ISSpawnVehicleUI_onClick = function()
+    local originalOnClick = ISSpawnVehicleUI.onClick;
 
-    if self.player == nil then
-        return
-    end
+    ISSpawnVehicleUI.onClick = function(self, button)
+        originalOnClick(self, button)
 
-    local character = self.player
-
-    if button.internal == "SPAWN" then
-        local action = "spawned vehicle"
-
-        local message = character:getUsername() .. " " .. action .. " " .. tostring(self:getVehicle())
-        message = message .. " at " .. LogExtenderUtils.getLocation(character)
-
-        LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
-    elseif button.internal == "GETKEY" then
-        if self.vehicle ~= nil then
-            local action = "got vehicle key"
-            local info = LogExtenderUtils.getVehicleInfo(self.vehicle)
-
-            local message = character:getUsername() .. " " .. action .. " " .. info.Type
-            message = message .. " at " .. LogExtenderUtils.getLocation(character)
-
-            LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+        if self.player == nil then
+            return
         end
-    elseif button.internal == "REPAIR" then
-        if self.vehicle ~= nil then
-            local action = "repaired vehicle"
-            local info = LogExtenderUtils.getVehicleInfo(self.vehicle)
 
-            local message = character:getUsername() .. " " .. action .. " " .. info.Type
+        local character = self.player
+
+        if button.internal == "SPAWN" then
+            local action = "spawned vehicle"
+
+            local message = character:getUsername() .. " " .. action .. " " .. tostring(self:getVehicle())
             message = message .. " at " .. LogExtenderUtils.getLocation(character)
 
             LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+        elseif button.internal == "GETKEY" then
+            if self.vehicle ~= nil then
+                local action = "got vehicle key"
+                local info = LogExtenderUtils.getVehicleInfo(self.vehicle)
+
+                local message = character:getUsername() .. " " .. action .. " " .. info.Type
+                message = message .. " at " .. LogExtenderUtils.getLocation(character)
+
+                LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+            end
+        elseif button.internal == "REPAIR" then
+            if self.vehicle ~= nil then
+                local action = "repaired vehicle"
+                local info = LogExtenderUtils.getVehicleInfo(self.vehicle)
+
+                local message = character:getUsername() .. " " .. action .. " " .. info.Type
+                message = message .. " at " .. LogExtenderUtils.getLocation(character)
+
+                LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+            end
         end
     end
 end
@@ -171,4 +172,4 @@ if SandboxVars.LogExtender.VehicleDetach then
     VehicleClientLogger.VehicleDetach()
 end
 
-ISSpawnVehicleUI.onClick = VehicleClientLogger.ISSpawnVehicleUI_onClick;
+VehicleClientLogger.ISSpawnVehicleUI_onClick()
