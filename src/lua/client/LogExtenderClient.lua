@@ -58,7 +58,7 @@ function LogExtenderClient.getLocation(obj)
     return math.floor(obj:getX()) .. "," .. math.floor(obj:getY()) .. "," .. math.floor(obj:getZ());
 end
 
--- getPlayerSafehouse iterates in server safehouse list and returns
+-- getPlayerSafehouses iterates in server safehouse list and returns
 -- area coordinates of player's houses.
 -- Deprecated: Moved to LogExtenderUtils.
 -- TODO: Will be removed from LogExtenderClient on next releases.

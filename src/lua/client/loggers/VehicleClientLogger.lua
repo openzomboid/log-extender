@@ -156,6 +156,56 @@ VehicleClientLogger.ISSpawnVehicleUI_onClick = function()
     end
 end
 
+VehicleClientLogger.OnAddVehicleCommand = function()
+    local onCommandEnteredOriginal = ISChat.onCommandEntered;
+
+    ISChat.onCommandEntered = function(self)
+        local command = ISChat.instance.textEntry:getText():gsub("%s+", " ");
+        if luautils.stringStarts(string.lower(command), "/addvehicle") then
+            local action = "spawned vehicle"
+            local character = getSpecificPlayer(0)
+            local splitCommand = luautils.split(command, " ")
+
+            if #splitCommand == 2 or #splitCommand == 3 then
+                local code = splitCommand[2]
+                if code ~= "" then
+                    local scripts = getScriptManager():getAllVehicleScripts()
+                    for i=1, scripts:size() do
+                        local script = scripts:get(i-1)
+                        if code == script:getFullName() or code == script:getName() then
+                            local doLogMessage = true
+
+                            if #splitCommand == 3 then
+                                doLogMessage = false
+
+                                local onlineUsers = getOnlinePlayers()
+
+                                for j=0, onlineUsers:size()-1 do
+                                    local username = onlineUsers:get(j):getUsername()
+                                    if username == splitCommand[3] then
+                                        doLogMessage = true
+                                    end
+                                end
+                            end
+
+                            if doLogMessage then
+                                local message = character:getUsername() .. " " .. action .. " " .. code
+                                message = message .. " at " .. LogExtenderUtils.getLocation(character)
+
+                                LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+                            end
+
+                            break;
+                        end
+                    end
+                end
+            end
+        end
+
+        onCommandEnteredOriginal(self)
+    end
+end
+
 if SandboxVars.LogExtender.VehicleEnter then
     Events.OnEnterVehicle.Add(VehicleClientLogger.VehicleEnter)
 end
@@ -172,4 +222,7 @@ if SandboxVars.LogExtender.VehicleDetach then
     VehicleClientLogger.VehicleDetach()
 end
 
-VehicleClientLogger.ISSpawnVehicleUI_onClick()
+if SandboxVars.LogExtender.VehicleAdminTools then
+    VehicleClientLogger.ISSpawnVehicleUI_onClick()
+    VehicleClientLogger.OnAddVehicleCommand()
+end

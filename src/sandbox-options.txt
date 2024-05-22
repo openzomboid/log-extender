@@ -63,6 +63,15 @@ option LogExtender.VehicleDetach
   translation = LogExtender_VehicleDetach
 }
 
+option LogExtender.VehicleAdminTools
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_VehicleAdminTools
+}
+
 option LogExtender.TimedActions
 {
   type = boolean,

@@ -47,7 +47,7 @@ function LogExtenderUtils.getLocation(obj)
     return math.floor(obj:getX()) .. "," .. math.floor(obj:getY()) .. "," .. math.floor(obj:getZ());
 end
 
--- getPlayerSafehouse iterates in server safehouse list and returns
+-- getPlayerSafehouses iterates in server safehouse list and returns
 -- area coordinates of player's houses.
 function LogExtenderUtils.getPlayerSafehouses(player)
     if player == nil then
