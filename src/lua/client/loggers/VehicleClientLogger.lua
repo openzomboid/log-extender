@@ -113,6 +113,8 @@ end
 -- Admin tools
 --
 
+-- ISSpawnVehicleUI_onClick adds logs record to admin.txt file after spawn, repair
+-- vehicle and add key from vehicle in Spawn Vehicle interface.
 VehicleClientLogger.ISSpawnVehicleUI_onClick = function()
     local originalOnClick = ISSpawnVehicleUI.onClick;
 
@@ -156,6 +158,8 @@ VehicleClientLogger.ISSpawnVehicleUI_onClick = function()
     end
 end
 
+-- OnAddVehicleCommand adds logs record to admin.txt file after spawn vehicle
+-- from chat command.
 VehicleClientLogger.OnAddVehicleCommand = function()
     local onCommandEnteredOriginal = ISChat.onCommandEntered;
 
