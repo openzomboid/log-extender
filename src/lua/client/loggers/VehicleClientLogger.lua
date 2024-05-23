@@ -57,15 +57,15 @@ end
 -- VehicleEnter adds callback for OnEnterVehicle event.
 VehicleClientLogger.VehicleEnter = function(player)
     if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
-        LogExtenderClient.vehicle = player:getVehicle()
-        VehicleClientLogger.DumpVehicle(player, "enter", LogExtenderClient.vehicle, nil);
+        VehicleClientLogger.vehicle = player:getVehicle()
+        VehicleClientLogger.DumpVehicle(player, "enter", VehicleClientLogger.vehicle, nil);
     end
 end
 
 -- VehicleExit adds callback for OnExitVehicle event.
 VehicleClientLogger.VehicleExit = function(player)
     if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
-        VehicleClientLogger.DumpVehicle(player, "exit", LogExtenderClient.vehicle, nil);
+        VehicleClientLogger.DumpVehicle(player, "exit", VehicleClientLogger.vehicle, nil);
         VehicleClientLogger.vehicle = nil
     end
 end
