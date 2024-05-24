@@ -53,7 +53,6 @@ function VehicleClientLogger.DumpVehicle(player, action, vehicle, vehicle2)
     LogExtenderUtils.writeLog(LogExtenderUtils.filemask.vehicle, message);
 end
 
-
 -- VehicleEnter adds callback for OnEnterVehicle event.
 VehicleClientLogger.VehicleEnter = function(player)
     if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
