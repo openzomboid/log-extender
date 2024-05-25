@@ -209,6 +209,76 @@ VehicleClientLogger.OnAddVehicleCommand = function()
     end
 end
 
+VehicleClientLogger.OnCheatRemove = function()
+    local onCheatRemoveAuxOriginal = ISVehicleMechanics.onCheatRemoveAux;
+
+    ISVehicleMechanics.onCheatRemoveAux = function(dummy, button, playerObj, vehicle)
+        if button.internal ~= "NO" then
+            local character = playerObj
+            local action = "removed vehicle"
+            local info = LogExtenderUtils.getVehicleInfo(vehicle)
+
+            local message = character:getUsername() .. " " .. action .. " " .. info.Type
+            message = message .. " at " .. LogExtenderUtils.getLocation(character)
+
+            LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+        end
+
+        onCheatRemoveAuxOriginal(dummy, button, playerObj, vehicle)
+    end
+end
+
+VehicleClientLogger.OnCheatRepair = function()
+    local onCheatRepairOriginal = ISVehicleMechanics.onCheatRepair;
+
+    ISVehicleMechanics.onCheatRepair = function(playerObj, vehicle)
+        local character = playerObj
+        local action = "repaired vehicle"
+        local info = LogExtenderUtils.getVehicleInfo(vehicle)
+
+        local message = character:getUsername() .. " " .. action .. " " .. info.Type
+        message = message .. " at " .. LogExtenderUtils.getLocation(character)
+
+        LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+
+        onCheatRepairOriginal(playerObj, vehicle)
+    end
+end
+
+VehicleClientLogger.OnCheatRepairPart = function()
+    local onCheatRepairPartOriginal = ISVehicleMechanics.onCheatRepairPart;
+
+    ISVehicleMechanics.onCheatRepairPart = function(playerObj, part)
+        local character = playerObj
+        local action = "repaired vehicle part"
+        local info = LogExtenderUtils.getVehicleInfo(part:getVehicle())
+
+        local message = character:getUsername() .. " " .. action .. " " .. info.Type
+        message = message .. " at " .. LogExtenderUtils.getLocation(character)
+
+        LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+
+        onCheatRepairPartOriginal(playerObj, part)
+    end
+end
+
+VehicleClientLogger.OnCheatSetCondition = function()
+    local onCheatSetConditionAuxOriginal = ISVehicleMechanics.onCheatSetConditionAux;
+
+    ISVehicleMechanics.onCheatSetConditionAux = function(target, button, playerObj, part)
+        local character = playerObj
+        local action = "set vehicle part condition"
+        local info = LogExtenderUtils.getVehicleInfo(part:getVehicle())
+
+        local message = character:getUsername() .. " " .. action .. " " .. info.Type
+        message = message .. " at " .. LogExtenderUtils.getLocation(character)
+
+        LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+
+        onCheatSetConditionAuxOriginal(target, button, playerObj, part)
+    end
+end
+
 if SandboxVars.LogExtender.VehicleEnter then
     Events.OnEnterVehicle.Add(VehicleClientLogger.VehicleEnter)
 end
@@ -228,4 +298,8 @@ end
 if SandboxVars.LogExtender.VehicleAdminTools then
     VehicleClientLogger.ISSpawnVehicleUI_onClick()
     VehicleClientLogger.OnAddVehicleCommand()
+    VehicleClientLogger.OnCheatRemove()
+    VehicleClientLogger.OnCheatRepair()
+    VehicleClientLogger.OnCheatRepairPart()
+    VehicleClientLogger.OnCheatSetCondition()
 end
