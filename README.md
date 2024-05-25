@@ -69,6 +69,13 @@ There can be `connected`, `levelup` and `tick` events.
 [09-06-22 02:39:28.470] outdead teleported to 10997,9643,0.
 [09-06-22 02:42:44.499] outdead teleported to 10982,9650,0.
 [09-06-22 02:43:11.187] outdead teleported to 10982,9650,0.
+
+[25-05-24 06:13:29.246] testuser repaired vehicle CarLights at 11813,6709,0.
+[25-05-24 06:14:02.396] testuser set vehicle part condition CarLights at 11813,6709,0.
+[25-05-24 06:14:24.026] testuser repaired vehicle part CarLights at 11813,6709,0.
+[25-05-24 06:16:14.228] testuser removed vehicle CarLights at 11815,6708,0.
+[25-05-24 06:16:40.072] testuser got vehicle key ModernCar at 11818,6710,0.
+[25-05-24 06:16:43.519] testuser spawned vehicle Base.CarLights at 11813,6709,0.
 ```
 
 ### _map_alternative.txt
