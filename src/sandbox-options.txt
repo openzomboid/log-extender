@@ -135,6 +135,15 @@ option LogExtender.JoinToSafehouse
   translation = LogExtender_JoinToSafehouse
 }
 
+option LogExtender.SafehouseAdminTools
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_SafehouseAdminTools
+}
+
 option LogExtender.HitPVP
 {
   type = boolean,

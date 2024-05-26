@@ -3,6 +3,10 @@
 -- Use of this source code is governed by the Apache 2.0 license.
 --
 
+if ClientTweaker then
+    require "ClientTweaker"
+end
+
 local SafehouseClientLogger = {}
 
 -- DumpSafehouse writes player's safehouse info to log file.
@@ -16,6 +20,10 @@ function SafehouseClientLogger.DumpSafehouse(player, action, safehouse, target)
     if safehouse then
         local area = {}
         local owner = player:getUsername()
+        if action == "create safehouse" then
+            owner = target
+            target = nil
+        end
 
         if instanceof(safehouse, 'SafeHouse') then
             owner = safehouse:getOwner();
@@ -189,6 +197,44 @@ SafehouseClientLogger.OnJoinToSafehouse = function()
     end
 end
 
+--
+-- Admin Tools
+--
+
+-- OnAddSafeHouse rewrites original ISWorldObjectContextMenu.onTakeSafeHouse and
+-- adds logs for player take safehouse action.
+SafehouseClientLogger.OnAddSafeHouse = function()
+    local originalOnClick = ISAddSafeZoneUI.onClick;
+
+    ISAddSafeZoneUI.onClick = function(self, button)
+        originalOnClick(self, button)
+
+        local setX = math.floor(math.min(self.X1, self.X2));
+        local setY = math.floor(math.min(self.Y1, self.Y2));
+        local setW = math.floor(math.abs(self.X1 - self.X2) + 1);
+        local setH = math.floor(math.abs(self.Y1 - self.Y2) + 1);
+
+        local character = getPlayer()
+        local safehouse = nil
+
+        local safehouseList = SafeHouse.getSafehouseList();
+        for i = 0, safehouseList:size() - 1 do
+            if safehouseList:get(i):getOwner() == self.ownerEntry:getInternalText() and safehouseList:get(i):getX() == setX and safehouseList:get(i):getY() == setY then
+                safehouse = safehouseList:get(i);
+                break;
+            end
+        end
+
+        if SandboxVars.LogExtender.TakeSafeHouse then
+            SafehouseClientLogger.DumpSafehouse(character, "create safehouse", safehouse, self.ownerEntry:getInternalText())
+        end
+
+        local message = character:getUsername() .. " create safehouse " .. tostring(setX) .. "," .. tostring(setY) .. "," .. tostring(setW) .. "," .. tostring(setH)
+                .. " at " .. LogExtenderUtils.getLocation(character)
+        LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+    end
+end
+
 if SandboxVars.LogExtender.TakeSafeHouse then
     SafehouseClientLogger.OnTakeSafeHouse()
 end
@@ -215,4 +261,8 @@ end
 
 if SandboxVars.LogExtender.ReleaseSafeHouse then
     SafehouseClientLogger.OnReleaseSafeHouseCommand()
+end
+
+if SandboxVars.LogExtender.SafehouseAdminTools then
+    SafehouseClientLogger.OnAddSafeHouse()
 end

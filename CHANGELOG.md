@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Added brush tool logs to `brushtool.txt` file.
 - Added vehicle admin and cheat logs to `admin.txt` file.
+- Added safehouse admin and cheat logs to `admin.txt` file.
 
 ### Changed
 - Marked as deprecated fuctions `writeLog`, `getLogLinePrefix`, `getLocation`, `getPlayerSafehouses`, `getPlayerPerks`, `getPlayerTraits`, `getPlayerStats`, `getPlayerHealth`, `getVehicleInfo` on LogExtenderClient. This functions copied to LogExtenderUtils.

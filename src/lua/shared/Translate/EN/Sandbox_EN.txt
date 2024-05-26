@@ -15,6 +15,7 @@ Sandbox_EN = {
     Sandbox_RemovePlayerFromSafehouse = "RemovePlayerFromSafehouse",
     Sandbox_SendSafeHouseInvite = "SendSafeHouseInvite",
     Sandbox_JoinToSafehouse = "JoinToSafehouse",
+    Sandbox_SafehouseAdminTools = "SafehouseAdminTools",
     Sandbox_HitPVP = "HitPVP",
     Sandbox_AdminManageItem = "AdminManageItem",
     Sandbox_AdminTeleport = "AdminTeleport",
