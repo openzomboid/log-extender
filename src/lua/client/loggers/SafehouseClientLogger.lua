@@ -3,10 +3,6 @@
 -- Use of this source code is governed by the Apache 2.0 license.
 --
 
-if ClientTweaker then
-    require "ClientTweaker"
-end
-
 local SafehouseClientLogger = {}
 
 -- DumpSafehouse writes player's safehouse info to log file.
@@ -263,6 +259,10 @@ if SandboxVars.LogExtender.ReleaseSafeHouse then
     SafehouseClientLogger.OnReleaseSafeHouseCommand()
 end
 
-if SandboxVars.LogExtender.SafehouseAdminTools then
-    SafehouseClientLogger.OnAddSafeHouse()
+LogExtenderClient.OnGameStart = function()
+    if SandboxVars.LogExtender.SafehouseAdminTools then
+        SafehouseClientLogger.OnAddSafeHouse()
+    end
 end
+
+Events.OnGameStart.Add(LogExtenderClient.OnGameStart);
