@@ -91,12 +91,20 @@ SafehouseClientLogger.OnChangeSafeHouseOwner = function()
     local onClickOriginal = ISSafehouseAddPlayerUI.onClick;
 
     ISSafehouseAddPlayerUI.onClick = function(self, button)
+        local previousOwner = self.safehouse:getOwner()
+
         onClickOriginal(self, button)
 
         if button.internal == "ADDPLAYER" then
             if self.changeOwnership then
                 local character = getPlayer()
                 SafehouseClientLogger.DumpSafehouse(character, "change safehouse owner", self.safehouse, self.selectedPlayer)
+
+                if previousOwner ~= character:getUsername() then
+                    local message = character:getUsername() .. " change safehouse owner"
+                            .. " at " .. LogExtenderUtils.getLocation(character)
+                    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+                end
             end
         end
     end
