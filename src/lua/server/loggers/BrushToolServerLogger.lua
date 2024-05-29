@@ -19,13 +19,13 @@ function BrushToolServerLogger.createBrushToolTileCursor(self, x, y, z, north, s
     end
 
     local character = getPlayer()
-    local location = LogExtenderUtils.getLocation(character);
+    local location = logutils.GetLocation(character);
     local objLocation = tostring(x) .. ',' .. tostring(y) .. ',' .. tostring(y);
     local texture = sprite
     local objName = "IsoThumpable"
 
-    local message = LogExtenderUtils.getLogLinePrefix(character, "added " .. objName) .. " (" .. texture .. ") at " .. objLocation .. " (" .. location .. ")";
-    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.brushtool, message);
+    local message = logutils.GetLogLinePrefix(character, "added " .. objName) .. " (" .. texture .. ") at " .. objLocation .. " (" .. location .. ")";
+    logutils.WriteLog(logutils.filemask.brushtool, message);
 end
 
 ISBrushToolTileCursor.create = BrushToolServerLogger.createBrushToolTileCursor;

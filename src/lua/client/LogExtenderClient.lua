@@ -5,13 +5,10 @@
 -- LogExtenderClient adds more logs to the Logs directory the Project Zomboid game.
 --
 
-local version = "0.12.0" -- TODO: Fill when make releases.
-
-local pzversion = getCore():getVersionNumber()
-
 LogExtenderClient = {
-    version = version,
-
+    version = logutils.version,
+    pzversion = getCore():getVersionNumber(),
+    
     -- Placeholders for Project Zomboid log file names.
     -- Project Zomboid generates files like this 24-08-19_18-11_chat.txt
     -- at first action and use file until next server restart.
@@ -36,7 +33,7 @@ LogExtenderClient = {
 }
 
 -- writeLog sends command to server for writting log line to file.
--- Deprecated: Moved to LogExtenderUtils.
+-- Deprecated: Moved to logutils.
 -- TODO: Will be removed from LogExtenderClient on next releases.
 function LogExtenderClient.writeLog(filemask, message)
     sendClientCommand("LogExtender", "write", { mask = filemask, message = message });
@@ -44,7 +41,7 @@ end
 
 -- getLogLinePrefix generates prefix for each log lines.
 -- for ease of use, we assume that the player’s existence has been verified previously.
--- Deprecated: Moved to LogExtenderUtils.
+-- Deprecated: Moved to logutils.
 -- TODO: Will be removed from LogExtenderClient on next releases.
 function LogExtenderClient.getLogLinePrefix(player, action)
     -- TODO: Add ownerID.
@@ -52,7 +49,7 @@ function LogExtenderClient.getLogLinePrefix(player, action)
 end
 
 -- getLocation returns players or vehicle location in "x,x,z" format.
--- Deprecated: Moved to LogExtenderUtils.
+-- Deprecated: Moved to logutils.
 -- TODO: Will be removed from LogExtenderClient on next releases.
 function LogExtenderClient.getLocation(obj)
     return math.floor(obj:getX()) .. "," .. math.floor(obj:getY()) .. "," .. math.floor(obj:getZ());
@@ -60,7 +57,7 @@ end
 
 -- getPlayerSafehouses iterates in server safehouse list and returns
 -- area coordinates of player's houses.
--- Deprecated: Moved to LogExtenderUtils.
+-- Deprecated: Moved to logutils.
 -- TODO: Will be removed from LogExtenderClient on next releases.
 function LogExtenderClient.getPlayerSafehouses(player)
     if player == nil then
@@ -98,7 +95,7 @@ function LogExtenderClient.getPlayerSafehouses(player)
 end
 
 -- getPlayerPerks returns player perks table.
--- Deprecated: Moved to LogExtenderUtils.
+-- Deprecated: Moved to logutils.
 -- TODO: Will be removed from LogExtenderClient on next releases.
 function LogExtenderClient.getPlayerPerks(player)
     if player == nil then
@@ -128,7 +125,7 @@ function LogExtenderClient.getPlayerPerks(player)
 end
 
 -- getPlayerTraits returns player traits table.
--- Deprecated: Moved to LogExtenderUtils.
+-- Deprecated: Moved to logutils.
 -- TODO: Will be removed from LogExtenderClient on next releases.
 function LogExtenderClient.getPlayerTraits(player)
     if player == nil then
@@ -151,7 +148,7 @@ function LogExtenderClient.getPlayerTraits(player)
 end
 
 -- getPlayerStats returns some player additional info.
--- Deprecated: Moved to LogExtenderUtils.
+-- Deprecated: Moved to logutils.
 -- TODO: Will be removed from LogExtenderClient on next releases.
 function LogExtenderClient.getPlayerStats(player)
     if player == nil then
@@ -175,7 +172,7 @@ function LogExtenderClient.getPlayerStats(player)
 end
 
 -- getPlayerHealth returns some player health information.
--- Deprecated: Moved to LogExtenderUtils.
+-- Deprecated: Moved to logutils.
 -- TODO: Will be removed from LogExtenderClient on next releases.
 function LogExtenderClient.getPlayerHealth(player)
     if player == nil then
@@ -194,7 +191,7 @@ end
 
 -- getVehicleInfo returns some vehicles information such as id, type and center
 -- coordinate.
--- Deprecated: Moved to LogExtenderUtils.
+-- Deprecated: Moved to logutils.
 -- TODO: Will be removed from LogExtenderClient on next releases.
 function LogExtenderClient.getVehicleInfo(vehicle)
     local info = {
@@ -217,7 +214,7 @@ function LogExtenderClient.getVehicleInfo(vehicle)
 
     info.ID = tostring(id);
     info.Type = type;
-    info.Center = LogExtenderUtils.getLocation(vehicle:getCurrentSquare());
+    info.Center = logutils.GetLocation(vehicle:getCurrentSquare());
 
     return info;
 end
@@ -228,23 +225,23 @@ LogExtenderClient.DumpPlayer = function(player, action)
         return nil;
     end
 
-    local message = LogExtenderUtils.getLogLinePrefix(player, action);
+    local message = logutils.GetLogLinePrefix(player, action);
 
-    local perks = LogExtenderUtils.getPlayerPerks(player);
+    local perks = logutils.GetPlayerPerks(player);
     if perks ~= nil then
         message = message .. " perks={" .. table.concat(perks, ",") .. "}";
     else
         message = message .. " perks={}";
     end
 
-    local traits = LogExtenderUtils.getPlayerTraits(player);
+    local traits = logutils.GetPlayerTraits(player);
     if traits ~= nil then
         message = message .. " traits=[" .. table.concat(traits, ",") .. "]";
     else
         message = message .. " traits=[]";
     end
 
-    local stats = LogExtenderUtils.getPlayerStats(player);
+    local stats = logutils.GetPlayerStats(player);
     if stats ~= nil then
         message = message .. ' stats={'
                 .. '"profession":"' .. stats.Profession .. '",'
@@ -255,7 +252,7 @@ LogExtenderClient.DumpPlayer = function(player, action)
         message = message .. " stats={}";
     end
 
-    local health = LogExtenderUtils.getPlayerHealth(player)
+    local health = logutils.GetPlayerHealth(player)
     if health ~= nil then
         message = message .. ' health={'
                 .. '"health":' .. health.Health .. ','
@@ -265,7 +262,7 @@ LogExtenderClient.DumpPlayer = function(player, action)
         message = message .. " health={}";
     end
 
-    local safehouses = LogExtenderUtils.getPlayerSafehouses(player);
+    local safehouses = logutils.GetPlayerSafehouses(player);
     if safehouses ~= nil then
         message = message .. " safehouse owner=("
         if #safehouses.Owner > 0 then
@@ -302,10 +299,10 @@ LogExtenderClient.DumpPlayer = function(player, action)
         message = message .. " safehouse owner=() safehouse member=()"
     end
 
-    local location = LogExtenderUtils.getLocation(player);
+    local location = logutils.GetLocation(player);
     message = message .. " (" .. location .. ")"
 
-    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.player, message);
+    logutils.WriteLog(logutils.filemask.player, message);
 end
 
 -- DumpAdminItem writes admin actions with items.
@@ -320,7 +317,7 @@ LogExtenderClient.DumpAdminItem = function(player, action, itemName, count, targ
     message = message .. " in " .. target:getUsername() .. "'s"
     message = message .. " inventory"
 
-    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+    logutils.WriteLog(logutils.filemask.admin, message);
 end
 
 -- TimedActionPerform overrides the original ISBaseTimedAction: perform function to gain
@@ -334,40 +331,40 @@ LogExtenderClient.TimedActionPerform = function()
         local player = self.character;
 
         if player and self.Type then
-            local location = LogExtenderUtils.getLocation(player);
+            local location = logutils.GetLocation(player);
 
             if self.Type == "ISTakeGenerator" then
-                local message = LogExtenderUtils.getLogLinePrefix(player, "taken IsoGenerator") .. " (appliances_misc_01_0) at " .. location;
-                LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map, message);
+                local message = logutils.GetLogLinePrefix(player, "taken IsoGenerator") .. " (appliances_misc_01_0) at " .. location;
+                logutils.WriteLog(logutils.filemask.map, message);
                 if SandboxVars.LogExtender.AlternativeMap then
-                    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map_alternative, message);
+                    logutils.WriteLog(logutils.filemask.map_alternative, message);
                 end
             elseif self.Type == "ISToggleStoveAction" then
-                local message = LogExtenderUtils.getLogLinePrefix(player, "stove.toggle") .. " @ " .. location;
-                LogExtenderUtils.writeLog(LogExtenderUtils.filemask.cmd, message);
+                local message = logutils.GetLogLinePrefix(player, "stove.toggle") .. " @ " .. location;
+                logutils.WriteLog(logutils.filemask.cmd, message);
             elseif self.Type == "ISPlaceCampfireAction" then
-                local message = LogExtenderUtils.getLogLinePrefix(player, "added Campfire") .. " (camping_01_6) at " .. location;
-                LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map, message);
+                local message = logutils.GetLogLinePrefix(player, "added Campfire") .. " (camping_01_6) at " .. location;
+                logutils.WriteLog(logutils.filemask.map, message);
                 if SandboxVars.LogExtender.AlternativeMap then
-                    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map_alternative, message);
+                    logutils.WriteLog(logutils.filemask.map_alternative, message);
                 end
             elseif self.Type == "ISRemoveCampfireAction" then
-                local message = LogExtenderUtils.getLogLinePrefix(player, "taken Campfire") .. " (camping_01_6) at " .. location;
-                LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map, message);
+                local message = logutils.GetLogLinePrefix(player, "taken Campfire") .. " (camping_01_6) at " .. location;
+                logutils.WriteLog(logutils.filemask.map, message);
                 if SandboxVars.LogExtender.AlternativeMap then
-                    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map_alternative, message);
+                    logutils.WriteLog(logutils.filemask.map_alternative, message);
                 end
             elseif (self.Type == "ISLightFromKindle" or self.Type == "ISLightFromLiterature" or self.Type == "ISLightFromPetrol") then
-                local message = LogExtenderUtils.getLogLinePrefix(player, "campfire.light") .. " @ " .. location;
-                LogExtenderUtils.writeLog(LogExtenderUtils.filemask.cmd, message);
+                local message = logutils.GetLogLinePrefix(player, "campfire.light") .. " @ " .. location;
+                logutils.WriteLog(logutils.filemask.cmd, message);
             elseif self.Type == "ISPutOutCampfireAction" then
-                local message = LogExtenderUtils.getLogLinePrefix(player, "campfire.extinguish") .. " @ " .. location;
-                LogExtenderUtils.writeLog(LogExtenderUtils.filemask.cmd, message);
+                local message = logutils.GetLogLinePrefix(player, "campfire.extinguish") .. " @ " .. location;
+                logutils.WriteLog(logutils.filemask.cmd, message);
             elseif self.Type == "ISRemoveTrapAction" then
-                local message = LogExtenderUtils.getLogLinePrefix(player, "taken Trap") .. " (" .. self.trap.openSprite .. ") at " .. location;
-                LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map, message);
+                local message = logutils.GetLogLinePrefix(player, "taken Trap") .. " (" .. self.trap.openSprite .. ") at " .. location;
+                logutils.WriteLog(logutils.filemask.map, message);
                 if SandboxVars.LogExtender.AlternativeMap then
-                    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map_alternative, message);
+                    logutils.WriteLog(logutils.filemask.map_alternative, message);
                 end
             elseif self.Type == "ISCraftAction" then
                 local recipe = self.recipe
@@ -376,8 +373,8 @@ LogExtenderClient.TimedActionPerform = function()
                 local resultType = result:getFullType()
                 local resultCount = result:getCount()
 
-                local message = LogExtenderUtils.getLogLinePrefix(player, "crafted") .. " " .. resultCount .. " " .. resultType .. " with recipe \"" .. recipeName .. "\" (" .. location .. ")";
-                LogExtenderUtils.writeLog(LogExtenderUtils.filemask.craft, message);
+                local message = logutils.GetLogLinePrefix(player, "crafted") .. " " .. resultCount .. " " .. resultType .. " with recipe \"" .. recipeName .. "\" (" .. location .. ")";
+                logutils.WriteLog(logutils.filemask.craft, message);
             end;
 
             if SandboxVars.LogExtender.AlternativeMap then
@@ -386,7 +383,7 @@ LogExtenderClient.TimedActionPerform = function()
                     local obj = self.item;
                     local objLocation = ""
                     if obj.GetX ~= nil then
-                        objLocation = LogExtenderUtils.getLocation(obj);
+                        objLocation = logutils.GetLocation(obj);
                     else
                         -- Workaround for destroying IsoRadio and IsoTelevision from Brush Tool.
                         -- That objects doesn't have x,y,z position. We only can get IsoGridSquare
@@ -396,7 +393,7 @@ LogExtenderClient.TimedActionPerform = function()
                         for i = count - 1, 0, -1 do
                             local o = getCoroutineObjStack(coroutine, i);
                             if o ~= nil and instanceof(o, 'IsoGridSquare') then
-                                objLocation = LogExtenderUtils.getLocation(o);
+                                objLocation = logutils.GetLocation(o);
                                 break;
                             end
                         end
@@ -412,13 +409,13 @@ LogExtenderClient.TimedActionPerform = function()
                         objName = instanceof(self.item, 'IsoThumpable') and "IsoThumpable" or "undefined"
                     end
 
-                    local message = LogExtenderUtils.getLogLinePrefix(player, "removed " .. objName) .. " (" .. spriteName .. ") at " .. objLocation .. " (" .. location .. ")";
-                    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map_alternative, message);
+                    local message = logutils.GetLogLinePrefix(player, "removed " .. objName) .. " (" .. spriteName .. ") at " .. objLocation .. " (" .. location .. ")";
+                    logutils.WriteLog(logutils.filemask.map_alternative, message);
                 elseif self.Type == "ISMoveablesAction" then
                     -- Action=disassembled - Disassembled with tools.
                     if self.mode and self.mode=="scrap" and self.moveProps and self.moveProps.object then
                         local obj = self.moveProps.object;
-                        local objLocation = LogExtenderUtils.getLocation(self.square);
+                        local objLocation = logutils.GetLocation(self.square);
                         local sprite = obj:getSprite();
                         local spriteName = sprite:getName() or "undefined"
                         local objName = obj:getName() or obj:getObjectName();
@@ -426,19 +423,19 @@ LogExtenderClient.TimedActionPerform = function()
                             objName = instanceof(self.item, 'IsoThumpable') and "IsoThumpable" or "undefined"
                         end
 
-                        local message = LogExtenderUtils.getLogLinePrefix(player, "disassembled " .. objName) .. " (" .. spriteName .. ") at " .. objLocation .. " (" .. location .. ")";
-                        LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map_alternative, message);
+                        local message = logutils.GetLogLinePrefix(player, "disassembled " .. objName) .. " (" .. spriteName .. ") at " .. objLocation .. " (" .. location .. ")";
+                        logutils.WriteLog(logutils.filemask.map_alternative, message);
                     end
 
                     -- Action=pickedup - Picked up to inventory.
                     if self.mode and self.mode=="pickup" and self.moveProps then
-                        local objLocation = LogExtenderUtils.getLocation(self.square);
+                        local objLocation = logutils.GetLocation(self.square);
                         local sprite = self.moveProps.sprite;
                         local spriteName = sprite:getName() or "undefined"
                         local objName = self.moveProps.isoType;
 
-                        local message = LogExtenderUtils.getLogLinePrefix(player, "pickedup " .. objName) .. " (" .. spriteName .. ") at " .. objLocation .. " (" .. location .. ")";
-                        LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map_alternative, message);
+                        local message = logutils.GetLogLinePrefix(player, "pickedup " .. objName) .. " (" .. spriteName .. ") at " .. objLocation .. " (" .. location .. ")";
+                        logutils.WriteLog(logutils.filemask.map_alternative, message);
                     end
                 end
             end
@@ -496,15 +493,15 @@ LogExtenderClient.WeaponHitThumpable = function(character, weapon, object)
         return
     end
 
-    local location = LogExtenderUtils.getLocation(character);
+    local location = logutils.GetLocation(character);
 
-    local objLocation = LogExtenderUtils.getLocation(object);
+    local objLocation = logutils.GetLocation(object);
     local sprite = object:getSprite();
     local spriteName = sprite:getName() or "undefined"
     local objName = object:getName() or object:getObjectName();
 
-    local message = LogExtenderUtils.getLogLinePrefix(character, "destroyed " .. objName) .. " (" .. spriteName .. ") with " .. weapon:getName() .. " at " .. objLocation .. " (" .. location .. ")";
-    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.map_alternative, message);
+    local message = logutils.GetLogLinePrefix(character, "destroyed " .. objName) .. " (" .. spriteName .. ") with " .. weapon:getName() .. " at " .. objLocation .. " (" .. location .. ")";
+    logutils.WriteLog(logutils.filemask.map_alternative, message);
 end
 
 -- WeaponHitCharacter adds player hit record to pvp log file.
@@ -518,12 +515,12 @@ LogExtenderClient.WeaponHitCharacter = function(attacker, target, weapon, damage
         return
     end
 
-    local message = 'user ' .. attacker:getUsername() .. ' (' .. LogExtenderUtils.getLocation(attacker) ..  ') hit user ';
-    message = message .. target:getUsername() .. ' (' .. LogExtenderUtils.getLocation(target) ..  ') with ';
+    local message = 'user ' .. attacker:getUsername() .. ' (' .. logutils.GetLocation(attacker) ..  ') hit user ';
+    message = message .. target:getUsername() .. ' (' .. logutils.GetLocation(target) ..  ') with ';
     message = message .. weapon:getFullType();
     message = message .. ' damage ' .. string.format("%.3f", damage);
 
-    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.pvp, message);
+    logutils.WriteLog(logutils.filemask.pvp, message);
 end
 
 -- OnAddItemsFromTable overrides original ISItemsListTable.onOptionMouseDown and
@@ -653,7 +650,7 @@ LogExtenderClient.OnTeleport = function()
         originalOnTeleportValid(button, x, y, z);
 
         local message = getPlayer():getUsername() .. " teleported to " .. x .. "," .. y .. "," .. z
-        LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+        logutils.WriteLog(logutils.filemask.admin, message);
     end
 
     ISSafehousesList.onClick = function(self, button)
@@ -661,7 +658,7 @@ LogExtenderClient.OnTeleport = function()
 
         if button.internal == "TELEPORT" then
             local message = getPlayer():getUsername() .. " teleported to " .. self.selectedSafehouse:getX() .. "," .. self.selectedSafehouse:getY() .. "," .. 0
-            LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+            logutils.WriteLog(logutils.filemask.admin, message);
         end
     end
 
@@ -669,14 +666,14 @@ LogExtenderClient.OnTeleport = function()
         originalISMiniMapInnerOnTeleport(self, worldX, worldY)
 
         local message = getPlayer():getUsername() .. " teleported to " .. math.floor(worldX) .. "," .. math.floor(worldY) .. "," .. 0
-        LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+        logutils.WriteLog(logutils.filemask.admin, message);
     end
 
     ISWorldMap.onTeleport = function(self, worldX, worldY)
         originalISWorldMapOnTeleport(self, worldX, worldY)
 
         local message = getPlayer():getUsername() .. " teleported to " .. math.floor(worldX) .. "," .. math.floor(worldY) .. "," .. 0
-        LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+        logutils.WriteLog(logutils.filemask.admin, message);
     end
 end
 

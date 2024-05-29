@@ -11,7 +11,7 @@ function SafehouseClientLogger.DumpSafehouse(player, action, safehouse, target)
         return nil;
     end
 
-    local message = LogExtenderUtils.getLogLinePrefix(player, action);
+    local message = logutils.GetLogLinePrefix(player, action);
 
     if safehouse then
         local area = {}
@@ -58,7 +58,7 @@ function SafehouseClientLogger.DumpSafehouse(player, action, safehouse, target)
         message = message .. ' target="' .. target .. '"'
     end
 
-    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.safehouse, message);
+    logutils.WriteLog(logutils.filemask.safehouse, message);
 end
 
 -- OnTakeSafeHouse rewrites original ISWorldObjectContextMenu.onTakeSafeHouse and
@@ -91,20 +91,23 @@ SafehouseClientLogger.OnChangeSafeHouseOwner = function()
     local onClickOriginal = ISSafehouseAddPlayerUI.onClick;
 
     ISSafehouseAddPlayerUI.onClick = function(self, button)
-        local previousOwner = self.safehouse:getOwner()
+        local owner = self.safehouse:getOwner()
 
         onClickOriginal(self, button)
 
         if button.internal == "ADDPLAYER" then
-            if self.changeOwnership then
-                local character = getPlayer()
-                SafehouseClientLogger.DumpSafehouse(character, "change safehouse owner", self.safehouse, self.selectedPlayer)
+            local character = getPlayer()
 
-                if previousOwner ~= character:getUsername() then
-                    local message = character:getUsername() .. " change safehouse owner" -- TODO: Add safehouxe coordintes
-                            .. " at " .. LogExtenderUtils.getLocation(character)
-                    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
-                end
+            if self.changeOwnership then
+                SafehouseClientLogger.DumpSafehouse(character, "change safehouse owner", self.safehouse, self.selectedPlayer)
+            else
+                SafehouseClientLogger.DumpSafehouse(character, "add player to safehouse", self.safehouse, self.selectedPlayer)
+            end
+
+            if owner ~= character:getUsername() then
+                local message = character:getUsername() .. " change safehouse " .. logutils.GetSafehouseShrotNotation(self.safehouse)
+                        .. " at " .. logutils.GetLocation(character)
+                logutils.WriteLog(logutils.filemask.admin, message);
             end
         end
     end
@@ -116,10 +119,18 @@ SafehouseClientLogger.OnReleaseSafeHouse = function()
     local onReleaseSafehouseOriginal = ISSafehouseUI.onReleaseSafehouse;
 
     ISSafehouseUI.onReleaseSafehouse = function(self, button, player)
+        local owner = button.parent.ui.safehouse:getOwner()
+
         if button.internal == "YES" then
             if button.parent.ui:isOwner() or button.parent.ui:hasPrivilegedAccessLevel() then
                 local character = getPlayer()
                 SafehouseClientLogger.DumpSafehouse(character, "release safehouse", button.parent.ui.safehouse, nil)
+
+                if owner ~= character:getUsername() then
+                    local message = character:getUsername() .. " release safehouse " .. logutils.GetSafehouseShrotNotation(button.parent.ui.safehouse)
+                            .. " at " .. logutils.GetLocation(character)
+                    logutils.WriteLog(logutils.filemask.admin, message);
+                end
             end
         end
 
@@ -234,8 +245,8 @@ SafehouseClientLogger.OnAddSafeHouse = function()
         end
 
         local message = character:getUsername() .. " create safehouse " .. tostring(setX) .. "," .. tostring(setY) .. "," .. tostring(setW) .. "," .. tostring(setH)
-                .. " at " .. LogExtenderUtils.getLocation(character)
-        LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+                .. " at " .. logutils.GetLocation(character)
+        logutils.WriteLog(logutils.filemask.admin, message);
     end
 end
 

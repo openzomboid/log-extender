@@ -2,13 +2,9 @@
 -- Copyright (c) 2024 outdead.
 -- Use of this source code is governed by the Apache 2.0 license.
 --
--- LogExtender utils for mod Log Extender.
---
 
-local version = "0.12.0" -- TODO: Fill when make releases.
-
-LogExtenderUtils = {
-    version = version,
+logutils = {
+    version = "0.12.0", -- in semantic versioning (http://semver.org/)
 
     -- Placeholders for Project Zomboid log file names.
     -- Project Zomboid generates files like this 24-08-19_18-11_chat.txt
@@ -30,26 +26,26 @@ LogExtenderUtils = {
     },
 }
 
--- writeLog sends command to server for writting log line to file.
-function LogExtenderUtils.writeLog(filemask, message)
+-- WriteLog sends command to server for writting log line to file.
+function logutils.WriteLog(filemask, message)
     sendClientCommand("LogExtender", "write", { mask = filemask, message = message });
 end
 
--- getLogLinePrefix generates prefix for each log lines.
+-- GetLogLinePrefix generates prefix for each log lines.
 -- for ease of use, we assume that the player’s existence has been verified previously.
-function LogExtenderUtils.getLogLinePrefix(player, action)
+function logutils.GetLogLinePrefix(player, action)
     -- TODO: Add ownerID.
     return getCurrentUserSteamID() .. " \"" .. player:getUsername() .. "\" " .. action
 end
 
--- getLocation returns players or vehicle location in "x,x,z" format.
-function LogExtenderUtils.getLocation(obj)
+-- GetLocation returns players or vehicle location in "x,x,z" format.
+function logutils.GetLocation(obj)
     return math.floor(obj:getX()) .. "," .. math.floor(obj:getY()) .. "," .. math.floor(obj:getZ());
 end
 
--- getPlayerSafehouses iterates in server safehouse list and returns
+-- GetPlayerSafehouses iterates in server safehouse list and returns
 -- area coordinates of player's houses.
-function LogExtenderUtils.getPlayerSafehouses(player)
+function logutils.GetPlayerSafehouses(player)
     if player == nil then
         return nil;
     end
@@ -84,8 +80,8 @@ function LogExtenderUtils.getPlayerSafehouses(player)
     return safehouses;
 end
 
--- getPlayerPerks returns player perks table.
-function LogExtenderUtils.getPlayerPerks(player)
+-- GetPlayerPerks returns player perks table.
+function logutils.GetPlayerPerks(player)
     if player == nil then
         return nil;
     end
@@ -112,8 +108,8 @@ function LogExtenderUtils.getPlayerPerks(player)
     return perks;
 end
 
--- getPlayerTraits returns player traits table.
-function LogExtenderUtils.getPlayerTraits(player)
+-- GetPlayerTraits returns player traits table.
+function logutils.GetPlayerTraits(player)
     if player == nil then
         return nil;
     end
@@ -133,8 +129,8 @@ function LogExtenderUtils.getPlayerTraits(player)
     return traits;
 end
 
--- getPlayerStats returns some player additional info.
-function LogExtenderUtils.getPlayerStats(player)
+-- GetPlayerStats returns some player additional info.
+function logutils.GetPlayerStats(player)
     if player == nil then
         return nil;
     end
@@ -155,8 +151,8 @@ function LogExtenderUtils.getPlayerStats(player)
     return stats;
 end
 
--- getPlayerHealth returns some player health information.
-function LogExtenderUtils.getPlayerHealth(player)
+-- GetPlayerHealth returns some player health information.
+function logutils.GetPlayerHealth(player)
     if player == nil then
         return nil;
     end
@@ -171,9 +167,9 @@ function LogExtenderUtils.getPlayerHealth(player)
     return health;
 end
 
--- getVehicleInfo returns some vehicles information such as id, type and center
+-- GetVehicleInfo returns some vehicles information such as id, type and center
 -- coordinate.
-function LogExtenderUtils.getVehicleInfo(vehicle)
+function logutils.GetVehicleInfo(vehicle)
     local info = {
         ID = "0",
         Type = "unknown",
@@ -194,7 +190,20 @@ function LogExtenderUtils.getVehicleInfo(vehicle)
 
     info.ID = tostring(id);
     info.Type = type;
-    info.Center = LogExtenderUtils.getLocation(vehicle:getCurrentSquare());
+    info.Center = logutils.GetLocation(vehicle:getCurrentSquare());
 
     return info;
+end
+
+function logutils.GetSafehouseShrotNotation(safehouse)
+    if not safehouse then
+        return "0,0,0,0"
+    end
+
+    local x = math.floor(math.min(safehouse:getX(), safehouse:getX2()));
+    local y = math.floor(math.min(safehouse:getY(), safehouse:getY2()));
+    local w = math.floor(math.abs(safehouse:getX() - safehouse:getX2()));
+    local h = math.floor(math.abs(safehouse:getY() - safehouse:getY2()));
+
+    return tostring(x) .. "," .. tostring(y) .. "," .. tostring(w) .. "," .. tostring(h)
 end

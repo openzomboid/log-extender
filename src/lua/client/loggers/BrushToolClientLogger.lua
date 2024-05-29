@@ -9,8 +9,8 @@ local BrushToolClientLogger = {}
 
 function BrushToolClientLogger.onDestroyTile(obj)
     local character = getPlayer()
-    local location = LogExtenderUtils.getLocation(character);
-    local objLocation = LogExtenderUtils.getLocation(obj);
+    local location = logutils.GetLocation(character);
+    local objLocation = logutils.GetLocation(obj);
     local texture = obj:getTextureName()
     local objName = obj:getName() or obj:getObjectName();
     if objName == "" then
@@ -23,8 +23,8 @@ function BrushToolClientLogger.onDestroyTile(obj)
         obj:getSquare():transmitRemoveItemFromSquare(obj)
     end
 
-    local message = LogExtenderUtils.getLogLinePrefix(character, "removed " .. objName) .. " (" .. texture .. ") at " .. objLocation .. " (" .. location .. ")";
-    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.brushtool, message);
+    local message = logutils.GetLogLinePrefix(character, "removed " .. objName) .. " (" .. texture .. ") at " .. objLocation .. " (" .. location .. ")";
+    logutils.WriteLog(logutils.filemask.brushtool, message);
 end
 
 function BrushToolClientLogger.doBrushToolOptions(player, context, worldobjects, test)

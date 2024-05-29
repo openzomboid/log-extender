@@ -17,10 +17,10 @@ function VehicleClientLogger.DumpVehicle(player, action, vehicle, vehicle2)
         return nil;
     end
 
-    local message = LogExtenderUtils.getLogLinePrefix(player, action);
+    local message = logutils.GetLogLinePrefix(player, action);
 
     if vehicle then
-        local info = LogExtenderUtils.getVehicleInfo(vehicle)
+        local info = logutils.GetVehicleInfo(vehicle)
 
         message = message .. ' vehicle={'
                 .. '"id":' .. info.ID .. ','
@@ -32,7 +32,7 @@ function VehicleClientLogger.DumpVehicle(player, action, vehicle, vehicle2)
     end
 
     if vehicle2 then
-        local info = LogExtenderUtils.getVehicleInfo(vehicle2)
+        local info = logutils.GetVehicleInfo(vehicle2)
 
         if action == 'attach' then
             message = message .. ' to'
@@ -47,10 +47,10 @@ function VehicleClientLogger.DumpVehicle(player, action, vehicle, vehicle2)
                 .. '}';
     end
 
-    local location = LogExtenderUtils.getLocation(player);
+    local location = logutils.GetLocation(player);
     message = message .. " at " .. location
 
-    LogExtenderUtils.writeLog(LogExtenderUtils.filemask.vehicle, message);
+    logutils.WriteLog(logutils.filemask.vehicle, message);
 end
 
 -- VehicleEnter adds callback for OnEnterVehicle event.
@@ -129,29 +129,26 @@ VehicleClientLogger.ISSpawnVehicleUI_onClick = function()
         if button.internal == "SPAWN" then
             local action = "spawned vehicle"
 
-            local message = character:getUsername() .. " " .. action .. " " .. tostring(self:getVehicle())
-            message = message .. " at " .. LogExtenderUtils.getLocation(character)
+            local message = character:getUsername() .. " " .. action .. " " .. tostring(self:getVehicle()) .. " at " .. logutils.GetLocation(character)
 
-            LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+            logutils.WriteLog(logutils.filemask.admin, message);
         elseif button.internal == "GETKEY" then
             if self.vehicle ~= nil then
                 local action = "got vehicle key"
-                local info = LogExtenderUtils.getVehicleInfo(self.vehicle)
+                local info = logutils.GetVehicleInfo(self.vehicle)
 
-                local message = character:getUsername() .. " " .. action .. " " .. info.Type
-                message = message .. " at " .. LogExtenderUtils.getLocation(character)
+                local message = character:getUsername() .. " " .. action .. " " .. info.Type .. " at " .. logutils.GetLocation(character)
 
-                LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+                logutils.WriteLog(logutils.filemask.admin, message);
             end
         elseif button.internal == "REPAIR" then
             if self.vehicle ~= nil then
                 local action = "repaired vehicle"
-                local info = LogExtenderUtils.getVehicleInfo(self.vehicle)
+                local info = logutils.GetVehicleInfo(self.vehicle)
 
-                local message = character:getUsername() .. " " .. action .. " " .. info.Type
-                message = message .. " at " .. LogExtenderUtils.getLocation(character)
+                local message = character:getUsername() .. " " .. action .. " " .. info.Type .. " at " .. logutils.GetLocation(character)
 
-                LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+                logutils.WriteLog(logutils.filemask.admin, message);
             end
         end
     end
@@ -192,10 +189,9 @@ VehicleClientLogger.OnAddVehicleCommand = function()
                             end
 
                             if doLogMessage then
-                                local message = character:getUsername() .. " " .. action .. " " .. code
-                                message = message .. " at " .. LogExtenderUtils.getLocation(character)
+                                local message = character:getUsername() .. " " .. action .. " " .. code .. " at " .. logutils.GetLocation(character)
 
-                                LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+                                logutils.WriteLog(logutils.filemask.admin, message);
                             end
 
                             break;
@@ -216,12 +212,11 @@ VehicleClientLogger.OnCheatRemove = function()
         if button.internal ~= "NO" then
             local character = playerObj
             local action = "removed vehicle"
-            local info = LogExtenderUtils.getVehicleInfo(vehicle)
+            local info = logutils.GetVehicleInfo(vehicle)
 
-            local message = character:getUsername() .. " " .. action .. " " .. info.Type
-            message = message .. " at " .. LogExtenderUtils.getLocation(character)
+            local message = character:getUsername() .. " " .. action .. " " .. info.Type .. " at " .. logutils.GetLocation(character)
 
-            LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+            logutils.WriteLog(logutils.filemask.admin, message);
         end
 
         onCheatRemoveAuxOriginal(dummy, button, playerObj, vehicle)
@@ -234,12 +229,11 @@ VehicleClientLogger.OnCheatRepair = function()
     ISVehicleMechanics.onCheatRepair = function(playerObj, vehicle)
         local character = playerObj
         local action = "repaired vehicle"
-        local info = LogExtenderUtils.getVehicleInfo(vehicle)
+        local info = logutils.GetVehicleInfo(vehicle)
 
-        local message = character:getUsername() .. " " .. action .. " " .. info.Type
-        message = message .. " at " .. LogExtenderUtils.getLocation(character)
+        local message = character:getUsername() .. " " .. action .. " " .. info.Type .. " at " .. logutils.GetLocation(character)
 
-        LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+        logutils.WriteLog(logutils.filemask.admin, message);
 
         onCheatRepairOriginal(playerObj, vehicle)
     end
@@ -251,12 +245,11 @@ VehicleClientLogger.OnCheatRepairPart = function()
     ISVehicleMechanics.onCheatRepairPart = function(playerObj, part)
         local character = playerObj
         local action = "repaired vehicle part"
-        local info = LogExtenderUtils.getVehicleInfo(part:getVehicle())
+        local info = logutils.GetVehicleInfo(part:getVehicle())
 
-        local message = character:getUsername() .. " " .. action .. " " .. info.Type
-        message = message .. " at " .. LogExtenderUtils.getLocation(character)
+        local message = character:getUsername() .. " " .. action .. " " .. info.Type .. " at " .. logutils.GetLocation(character)
 
-        LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+        logutils.WriteLog(logutils.filemask.admin, message);
 
         onCheatRepairPartOriginal(playerObj, part)
     end
@@ -268,14 +261,29 @@ VehicleClientLogger.OnCheatSetCondition = function()
     ISVehicleMechanics.onCheatSetConditionAux = function(target, button, playerObj, part)
         local character = playerObj
         local action = "set vehicle part condition"
-        local info = LogExtenderUtils.getVehicleInfo(part:getVehicle())
+        local info = logutils.GetVehicleInfo(part:getVehicle())
 
-        local message = character:getUsername() .. " " .. action .. " " .. info.Type
-        message = message .. " at " .. LogExtenderUtils.getLocation(character)
+        local message = character:getUsername() .. " " .. action .. " " .. info.Type .. " at " .. logutils.GetLocation(character)
 
-        LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
+        logutils.WriteLog(logutils.filemask.admin, message);
 
         onCheatSetConditionAuxOriginal(target, button, playerObj, part)
+    end
+end
+
+VehicleClientLogger.OnCheatGetKey = function()
+    local onCheatGetKeyOriginal = ISVehicleMechanics.onCheatGetKey;
+
+    ISVehicleMechanics.onCheatGetKey = function(playerObj, vehicle)
+        local character = playerObj
+        local action = "got vehicle key"
+        local info = logutils.GetVehicleInfo(vehicle)
+
+        local message = character:getUsername() .. " " .. action .. " " .. info.Type .. " at " .. logutils.GetLocation(character)
+
+        logutils.WriteLog(logutils.filemask.admin, message);
+
+        onCheatGetKeyOriginal(playerObj, vehicle)
     end
 end
 
@@ -302,4 +310,5 @@ if SandboxVars.LogExtender.VehicleAdminTools then
     VehicleClientLogger.OnCheatRepair()
     VehicleClientLogger.OnCheatRepairPart()
     VehicleClientLogger.OnCheatSetCondition()
+    VehicleClientLogger.OnCheatGetKey()
 end
