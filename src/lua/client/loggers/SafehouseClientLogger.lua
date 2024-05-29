@@ -101,7 +101,7 @@ SafehouseClientLogger.OnChangeSafeHouseOwner = function()
                 SafehouseClientLogger.DumpSafehouse(character, "change safehouse owner", self.safehouse, self.selectedPlayer)
 
                 if previousOwner ~= character:getUsername() then
-                    local message = character:getUsername() .. " change safehouse owner"
+                    local message = character:getUsername() .. " change safehouse owner" -- TODO: Add safehouxe coordintes
                             .. " at " .. LogExtenderUtils.getLocation(character)
                     LogExtenderUtils.writeLog(LogExtenderUtils.filemask.admin, message);
                 end
