@@ -26,10 +26,7 @@ LogExtenderClient = {
         craft = "craft",
         map_alternative = "map_alternative",
         brushtool = "brushtool",
-    },
-
-    -- Store ingame player object when user is logged in.
-    player = nil,
+    }
 }
 
 -- writeLog sends command to server for writting log line to file.
@@ -219,92 +216,6 @@ function LogExtenderClient.getVehicleInfo(vehicle)
     return info;
 end
 
--- DumpPlayer writes player perks and safehouse coordinates to log file.
-LogExtenderClient.DumpPlayer = function(player, action)
-    if player == nil then
-        return nil;
-    end
-
-    local message = logutils.GetLogLinePrefix(player, action);
-
-    local perks = logutils.GetPlayerPerks(player);
-    if perks ~= nil then
-        message = message .. " perks={" .. table.concat(perks, ",") .. "}";
-    else
-        message = message .. " perks={}";
-    end
-
-    local traits = logutils.GetPlayerTraits(player);
-    if traits ~= nil then
-        message = message .. " traits=[" .. table.concat(traits, ",") .. "]";
-    else
-        message = message .. " traits=[]";
-    end
-
-    local stats = logutils.GetPlayerStats(player);
-    if stats ~= nil then
-        message = message .. ' stats={'
-                .. '"profession":"' .. stats.Profession .. '",'
-                .. '"kills":' .. stats.Kills .. ','
-                .. '"hours":' .. stats.Survived
-                .. '}';
-    else
-        message = message .. " stats={}";
-    end
-
-    local health = logutils.GetPlayerHealth(player)
-    if health ~= nil then
-        message = message .. ' health={'
-                .. '"health":' .. health.Health .. ','
-                .. '"infected":' .. health.Infected
-                .. '}';
-    else
-        message = message .. " health={}";
-    end
-
-    local safehouses = logutils.GetPlayerSafehouses(player);
-    if safehouses ~= nil then
-        message = message .. " safehouse owner=("
-        if #safehouses.Owner > 0 then
-            local temp = ""
-
-            for i = 1, #safehouses.Owner do
-                local area = safehouses.Owner[i];
-                temp = temp .. area.Top .. " - " .. area.Bottom;
-                if i ~= #safehouses.Owner then
-                    temp = temp .. ", ";
-                end
-            end
-
-            message = message .. temp;
-        end
-        message = message .. ")";
-
-        message = message .. " safehouse member=(";
-        if #safehouses.Member > 0 then
-            local temp = ""
-
-            for i = 1, #safehouses.Member do
-                local area = safehouses.Member[i];
-                temp = temp .. area.Top .. " - " .. area.Bottom;
-                if i ~= #safehouses.Member then
-                    temp = temp .. ", ";
-                end
-            end
-
-            message = message .. temp;
-        end
-        message = message .. ")"
-    else
-        message = message .. " safehouse owner=() safehouse member=()"
-    end
-
-    local location = logutils.GetLocation(player);
-    message = message .. " (" .. location .. ")"
-
-    logutils.WriteLog(logutils.filemask.player, message);
-end
-
 -- DumpAdminItem writes admin actions with items.
 LogExtenderClient.DumpAdminItem = function(player, action, itemName, count, target)
     if player == nil then
@@ -441,44 +352,6 @@ LogExtenderClient.TimedActionPerform = function()
             end
         end;
     end;
-end
-
--- OnCreatePlayer adds callback for player OnCreatePlayerData event.
-LogExtenderClient.OnCreatePlayer = function(id)
-    Events.OnTick.Add(LogExtenderClient.OnTick);
-end
-
--- OnTick creates and removes ticker for emulating player connected event.
--- This is Black Magic.
-LogExtenderClient.OnTick = function()
-    local player = getPlayer()
-    if player then
-        LogExtenderClient.DumpPlayer(player, "connected");
-        Events.OnTick.Remove(LogExtenderClient.OnTick);
-    end
-end
-
--- OnPerkLevel adds callback for player OnPerkLevel global event.
-LogExtenderClient.OnPerkLevel = function(player, perk, level)
-    if player and perk and level then
-        if instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
-            -- Hide events from the log when creating a character.
-            if player:getHoursSurvived() <= 0 then return end
-
-            LogExtenderClient.DumpPlayer(player, "levelup");
-        end
-    end
-end
-
--- EveryHours adds callback for EveryHours global event.
-LogExtenderClient.EveryHours = function()
-    local player = getSpecificPlayer(0);
-    if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
-        -- Hide events from the log when creating a character.
-        if player:getHoursSurvived() <= 0 then return end
-
-        LogExtenderClient.DumpPlayer(player, "tick");
-    end
 end
 
 -- WeaponHitThumpable adds objects hit record to map_alternative log file.
@@ -679,16 +552,6 @@ end
 
 -- OnGameStart adds callback for OnGameStart global event.
 LogExtenderClient.OnGameStart = function()
-    LogExtenderClient.player = getPlayer();
-
-    if SandboxVars.LogExtender.PlayerLevelup then
-        Events.LevelPerk.Add(LogExtenderClient.OnPerkLevel)
-    end
-
-    if SandboxVars.LogExtender.PlayerTick then
-        Events.EveryHours.Add(LogExtenderClient.EveryHours)
-    end
-
     if SandboxVars.LogExtender.TimedActions then
         LogExtenderClient.TimedActionPerform()
     end
@@ -711,10 +574,6 @@ Events.OnWeaponHitThumpable.Add(LogExtenderClient.WeaponHitThumpable)
 
 if SandboxVars.LogExtender.AdminManageItem then
     LogExtenderClient.OnGiveIngredients()
-end
-
-if SandboxVars.LogExtender.PlayerConnected then
-    Events.OnCreatePlayer.Add(LogExtenderClient.OnCreatePlayer);
 end
 
 Events.OnGameStart.Add(LogExtenderClient.OnGameStart);
