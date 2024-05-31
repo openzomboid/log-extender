@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - Marked as deprecated fuctions `writeLog`, `getLogLinePrefix`, `getLocation`, `getPlayerSafehouses`, `getPlayerPerks`, `getPlayerTraits`, `getPlayerStats`, `getPlayerHealth`, `getVehicleInfo` on LogExtenderClient. This functions copied to LogExtenderUtils.
 - Changed function `LogExtenderUtils.getPlayerSafehouses` behavior - field `Owner` now is array.
 - Changed behavior of `player.txt` log file writing - field `Owner` now is array.
+- Moved client logs to separated files loggers.
 
 ## [v0.11.1] - 2022-12-22
 ### Fixed
