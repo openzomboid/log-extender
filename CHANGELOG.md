@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [v0.12.0] - 2024-06-03
 ### Fixed
 - Fixed empty objName value in map_alternative log record. When player picked up IsoThumpable, placed and destroyed it then added line with empty objName value.
 - Fixed bug when vehicle detach log contains same vehicle twice.
