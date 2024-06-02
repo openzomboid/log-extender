@@ -146,7 +146,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.11.1...HEAD
+[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.12.0...HEAD
+[v0.12.0]: https://github.com/openzomboid/log-extender/compare/v0.11.1...v0.12.0
 [v0.11.1]: https://github.com/openzomboid/log-extender/compare/v0.11.0...v0.11.1
 [v0.11.0]: https://github.com/openzomboid/log-extender/compare/v0.10.0...v0.11.0
 [v0.10.0]: https://github.com/openzomboid/log-extender/compare/v0.9.0...v0.10.0
