@@ -7,8 +7,8 @@ All notable changes to this project will be documented in this file.
 
 ## [v0.12.0] - 2024-06-03
 ### Fixed
-- Fixed empty objName value in map_alternative log record. When player picked up IsoThumpable, placed and destroyed it then added line with empty objName value.
-- Fixed bug when vehicle detach log contains same vehicle twice.
+- Fixed empty objName value in map_alternative log record. When player picked up IsoThumpable, placed and destroyed it LogExtender added line with empty objName value.
+- Fixed bug when vehicle detach log contained same vehicle twice.
 - Fixed error after destroy IsoRadio and IsoTelevision from Brush Tool with Sledgehammer.
 
 ### Added
@@ -17,9 +17,9 @@ All notable changes to this project will be documented in this file.
 - Added safehouse admin and cheat logs to `admin.txt` file.
 
 ### Changed
-- Marked as deprecated fuctions `writeLog`, `getLogLinePrefix`, `getLocation`, `getPlayerSafehouses`, `getPlayerPerks`, `getPlayerTraits`, `getPlayerStats`, `getPlayerHealth`, `getVehicleInfo` on LogExtenderClient. This functions copied to LogExtenderUtils.
-- Changed function `LogExtenderUtils.getPlayerSafehouses` behavior - field `Owner` now is array.
-- Changed behavior of `player.txt` log file writing - field `Owner` now is array.
+- Marked as deprecated fuctions `writeLog`, `getLogLinePrefix`, `getLocation`, `getPlayerSafehouses`, `getPlayerPerks`, `getPlayerTraits`, `getPlayerStats`, `getPlayerHealth`, `getVehicleInfo` on LogExtenderClient. This functions copied to logutils and will be REMOVED on next update! Modders, please use this functions from new location `logutils`.
+- Changed function `logutils.getPlayerSafehouses` behavior - field `Owner` now is an array.
+- Changed behavior of `player.txt` log file writing - field `Owner` now is an array.
 - Moved client logs to separated files loggers.
 
 ## [v0.11.1] - 2022-12-22
