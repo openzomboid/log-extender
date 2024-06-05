@@ -7,7 +7,7 @@
 
 if isClient() then return end;
 
-LogExtenderServer = {}
+local LogExtenderServer = {}
 
 LogExtenderServer.onClientCommand = function(module, command, playerObj, args)
     if module ~= "LogExtender" then
