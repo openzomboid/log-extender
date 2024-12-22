@@ -4,7 +4,7 @@
 --
 
 logutils = {
-    version = "0.12.0", -- in semantic versioning (http://semver.org/)
+    version = "0.13.0", -- in semantic versioning (http://semver.org/)
 
     -- Placeholders for Project Zomboid log file names.
     -- Project Zomboid generates files like this 24-08-19_18-11_chat.txt
