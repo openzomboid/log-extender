@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- Added skipping player tick log when character is dead.
 
 ## [v0.12.0] - 2024-06-03
 ### Fixed

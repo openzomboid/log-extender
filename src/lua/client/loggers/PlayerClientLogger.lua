@@ -128,6 +128,9 @@ PlayerClientLogger.EveryHours = function()
         -- Hide events from the log when creating a character.
         if player:getHoursSurvived() <= 0 then return end
 
+        -- Hide events from the log when character is dead.
+        if player:isDead() then return end
+
         PlayerClientLogger.DumpPlayer(player, "tick");
     end
 end
