@@ -3,6 +3,7 @@ Sandbox_RU = {
     Sandbox_PlayerConnected = "PlayerConnected",
     Sandbox_PlayerLevelup = "PlayerLevelup",
     Sandbox_PlayerTick = "PlayerTick",
+    Sandbox_PlayerDeath = "PlayerDeath",
     Sandbox_VehicleEnter = "VehicleEnter",
     Sandbox_VehicleExit = "VehicleExit",
     Sandbox_VehicleAttach = "VehicleAttach",

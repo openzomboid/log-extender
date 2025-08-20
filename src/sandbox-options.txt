@@ -27,6 +27,15 @@ option LogExtender.PlayerTick
   translation = LogExtender_PlayerTick
 }
 
+option LogExtender.PlayerDeath
+{
+  type = boolean,
+  default = true,
+
+  page = LogExtender,
+  translation = LogExtender_PlayerDeath
+}
+
 option LogExtender.VehicleEnter
 {
   type = boolean,

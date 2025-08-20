@@ -99,6 +99,11 @@ PlayerClientLogger.OnCreatePlayer = function(id)
     Events.OnTick.Add(PlayerClientLogger.OnTick);
 end
 
+-- OnPlayerDeath adds callback for player OnPlayerDeath event.
+function PlayerClientLogger.OnPlayerDeath(player)
+	PlayerClientLogger.DumpPlayer(player, "death");
+end
+
 -- OnTick creates and removes ticker for emulating player connected event.
 -- This is Black Magic.
 PlayerClientLogger.OnTick = function()
@@ -143,6 +148,10 @@ PlayerClientLogger.OnGameStart = function()
 
     if SandboxVars.LogExtender.PlayerTick then
         Events.EveryHours.Add(PlayerClientLogger.EveryHours)
+    end
+
+    if SandboxVars.LogExtender.PlayerDeath then
+        Events.OnPlayerDeath.Add(PlayerClientLogger.OnPlayerDeath)
     end
 end
 
