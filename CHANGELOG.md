@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 ### Added
 - Added skipping player tick log when character is dead.
+- Added death log to player file.
 
 ## [v0.12.0] - 2024-06-03
 ### Fixed
