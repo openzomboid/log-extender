@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 - Added death log to player file.
 
 ## Removed
-- Removed functions writeLog, getLogLinePrefix, getLocation, getPlayerSafehouses, getPlayerPerks, getPlayerTraits, getPlayerStats, getPlayerHealth, getVehicleInfo from LogExtenderClient. These functions were deprecated on v0.12 and moved to logutils.
+- Removed functions `writeLog`, `getLogLinePrefix`, `getLocation`, `getPlayerSafehouses`, `getPlayerPerks`, `getPlayerTraits`, `getPlayerStats`, `getPlayerHealth`, `getVehicleInfo` from LogExtenderClient. These functions were deprecated on v0.12 and moved to logutils.
 
 ## [v0.12.0] - 2024-06-03
 ### Fixed
