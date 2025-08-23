@@ -196,6 +196,7 @@ function logutils.GetVehicleInfo(vehicle)
     return info;
 end
 
+-- GetSafehouseShrotNotation returns Safehouse area in "x,y,w,h" format.
 function logutils.GetSafehouseShrotNotation(safehouse)
     if not safehouse then
         return "0,0,0,0"
