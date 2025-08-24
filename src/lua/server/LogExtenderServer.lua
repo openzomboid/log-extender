@@ -2,11 +2,10 @@
 -- Copyright (c) 2022 outdead.
 -- Use of this source code is governed by the Apache 2.0 license.
 --
--- LogExtenderServer creates server side callback to write logs.
---
 
 if isClient() then return end;
 
+-- LogExtenderServer creates server side callback to write logs.
 local LogExtenderServer = {}
 
 -- onClientCommand adds LogExtender write log command.
