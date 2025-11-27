@@ -13,24 +13,27 @@ if [ "${STAGE}" == "test" ]; then MOD_NAME="${MOD_NAME}Test"; fi
 
 RELEASE_NAME="${MOD_NAME}-${VERSION}"
 
+RELEASE_DIR_WORKSHOP=".tmp/release/${RELEASE_NAME}"
+RELEASE_DIR_MOD_HOME="${RELEASE_DIR_WORKSHOP}/Contents/mods/${MOD_NAME}"
+
 rm -r .tmp/release
 mkdir .tmp/release
 touch .tmp/release/checksum.txt
 
 function make_release() {
-    local dir_workshop=".tmp/release/${RELEASE_NAME}"
-    local dir="${dir_workshop}/Contents/mods/${MOD_NAME}"
+  local dir_workshop="${RELEASE_DIR_WORKSHOP}"
+  local dir_mod_home="${RELEASE_DIR_MOD_HOME}"
 
-    mkdir -p "${dir}"
+    mkdir -p "${dir_mod_home}"
 
     case $STAGE in
         test)
             cp workshop/test/workshop.txt "${dir_workshop}"
-            cp workshop/test/mod.info "${dir}"
+            cp workshop/test/mod.info "${dir_mod_home}"
             ;;
         prod)
             cp workshop/workshop.txt "${dir_workshop}"
-            cp workshop/mod.info "${dir}"
+            cp workshop/mod.info "${dir_mod_home}"
             ;;
         *)
             echo "incorrect stage" >&2
@@ -39,12 +42,12 @@ function make_release() {
     esac
 
     cp workshop/preview.png "${dir_workshop}/preview.png"
-    cp workshop/poster.png "${dir}"
-    cp src -r "${dir}/media"
+    cp workshop/poster.png "${dir_mod_home}"
+    cp src -r "${dir_mod_home}/media"
 
-    cp LICENSE "${dir}"
-    cp README.md "${dir}"
-    cp CHANGELOG.md "${dir}"
+    cp LICENSE "${dir_mod_home}"
+    cp README.md "${dir_mod_home}"
+    cp CHANGELOG.md "${dir_mod_home}"
 
     cd "${dir_workshop}/Contents/mods/"
     tar -zcvf "../../../${RELEASE_NAME}.tar.gz" "${MOD_NAME}"
