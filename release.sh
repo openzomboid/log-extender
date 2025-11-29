@@ -26,19 +26,15 @@ function make_release() {
 
     mkdir -p "${dir_mod_home}"
 
-    case $STAGE in
-        test)
-            cp workshop/test/workshop.txt "${dir_workshop}"
-            cp workshop/test/mod.info "${dir_mod_home}"
-            ;;
-        prod)
-            cp workshop/workshop.txt "${dir_workshop}"
-            cp workshop/mod.info "${dir_mod_home}"
-            ;;
-        *)
-            echo "incorrect stage" >&2
-            exit 1
-            ;;
+    case ${STAGE} in
+      local|test|prod)
+        cp workshop/${STAGE}/workshop.txt "${dir_workshop}"
+        cp workshop/${STAGE}/mod.info "${dir_mod_home}"
+        ;;
+      *)
+        echo "incorrect stage" >&2
+        exit 1
+        ;;
     esac
 
     cp workshop/preview.png "${dir_workshop}/preview.png"
