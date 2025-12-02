@@ -45,9 +45,10 @@ function make_release() {
     cp README.md "${dir_mod_home}"
     cp CHANGELOG.md "${dir_mod_home}"
 
-    cd "${dir_workshop}/Contents/mods/"
-    tar -zcvf "../../../${RELEASE_NAME}.tar.gz" "${MOD_NAME}"
-    zip -r "../../../${RELEASE_NAME}.zip" "${MOD_NAME}"
+    cd "${dir_workshop}/Contents/mods/" && {
+      tar -zcvf "../../../${RELEASE_NAME}.tar.gz" "${MOD_NAME}"
+      zip -r "../../../${RELEASE_NAME}.zip" "${MOD_NAME}"
+    }
 
     cd ../../../ && {
         md5sum "${RELEASE_NAME}.tar.gz" >> checksum.txt;
