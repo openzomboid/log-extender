@@ -51,9 +51,9 @@ function make_release() {
     }
 
     cd ../../../ && {
-        md5sum "${RELEASE_NAME}.tar.gz" >> checksum.txt;
-        md5sum "${RELEASE_NAME}.zip" >> checksum.txt;
-        cd ../../;
+      md5sum "${RELEASE_NAME}.tar.gz" >> checksum.txt;
+      md5sum "${RELEASE_NAME}.zip" >> checksum.txt;
+      cd ../../;
     }
 }
 
