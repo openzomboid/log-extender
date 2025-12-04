@@ -44,17 +44,21 @@ function make_release() {
     cp LICENSE "${dir_mod_home}"
     cp README.md "${dir_mod_home}"
     cp CHANGELOG.md "${dir_mod_home}"
+}
 
-    cd "${dir_workshop}/Contents/mods/" && {
-      tar -zcvf "../../../${RELEASE_NAME}.tar.gz" "${MOD_NAME}"
-      zip -r "../../../${RELEASE_NAME}.zip" "${MOD_NAME}"
-    }
+function compress_release() {
+  local dir_workshop=${RELEASE_DIR_WORKSHOP}
 
-    cd ../../../ && {
-      md5sum "${RELEASE_NAME}.tar.gz" >> checksum.txt;
-      md5sum "${RELEASE_NAME}.zip" >> checksum.txt;
-      cd ../../;
-    }
+  cd "${dir_workshop}/Contents/mods/" && {
+    tar -zcvf "../../../${RELEASE_NAME}.tar.gz" "${MOD_NAME}"
+    zip -r "../../../${RELEASE_NAME}.zip" "${MOD_NAME}"
+  }
+
+  cd ../../../ && {
+    md5sum "${RELEASE_NAME}.tar.gz" >> checksum.txt;
+    md5sum "${RELEASE_NAME}.zip" >> checksum.txt;
+    cd ../../;
+  }
 }
 
 function install_release() {
@@ -65,4 +69,4 @@ function install_release() {
     rm -r .tmp/release/"${RELEASE_NAME}"
 }
 
-make_release && install_release
+make_release && compress_release && install_release
