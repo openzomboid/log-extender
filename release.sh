@@ -39,7 +39,7 @@ function make_release() {
 
     cp workshop/preview.png "${dir_workshop}/preview.png"
     cp workshop/poster.png "${dir_mod_home}"
-    cp src -r "${dir_mod_home}/media"
+    cp src/b41 -r "${dir_mod_home}/media"
 
     cp LICENSE "${dir_mod_home}"
     cp README.md "${dir_mod_home}"
