@@ -10,6 +10,7 @@ if [ -z "${STAGE}" ]; then STAGE="prod"; fi
 
 MOD_NAME="LogExtender"
 if [ "${STAGE}" == "test" ]; then MOD_NAME="${MOD_NAME}Test"; fi
+if [ "${STAGE}" == "local" ]; then MOD_NAME="${MOD_NAME}Local"; fi
 
 RELEASE_NAME="${MOD_NAME}-${VERSION}"
 
