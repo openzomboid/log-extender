@@ -17,9 +17,11 @@ RELEASE_NAME="${MOD_NAME}-${VERSION}"
 RELEASE_DIR_WORKSHOP=".tmp/release/${RELEASE_NAME}"
 RELEASE_DIR_MOD_HOME="${RELEASE_DIR_WORKSHOP}/Contents/mods/${MOD_NAME}"
 
-rm -r .tmp/release
-mkdir .tmp/release
-touch .tmp/release/checksum.txt
+function remove_old_release() {
+  rm -r .tmp/release
+  mkdir .tmp/release
+  touch .tmp/release/checksum.txt
+}
 
 function make_release() {
   local dir_workshop="${RELEASE_DIR_WORKSHOP}"
@@ -68,4 +70,7 @@ function install_release() {
     rm -r .tmp/release/"${RELEASE_NAME}"
 }
 
-make_release && compress_release && install_release
+remove_old_release && \
+  make_release && \
+  compress_release && \
+  install_release
