@@ -18,9 +18,11 @@ RELEASE_DIR_WORKSHOP=".tmp/release/${RELEASE_NAME}"
 RELEASE_DIR_MOD_HOME="${RELEASE_DIR_WORKSHOP}/Contents/mods/${MOD_NAME}"
 
 function remove_old_release() {
-  rm -r .tmp/release
+  rm -rf .tmp/release
   mkdir .tmp/release
   touch .tmp/release/checksum.txt
+
+  rm -rf ~/Zomboid/Workshop/"${MOD_NAME}"
 }
 
 function make_release() {
@@ -65,7 +67,6 @@ function compress_release() {
 }
 
 function install_release() {
-    rm -r ~/Zomboid/Workshop/"${MOD_NAME}"
     cp -r  .tmp/release/"${RELEASE_NAME}" ~/Zomboid/Workshop/"${MOD_NAME}"
     rm -r .tmp/release/"${RELEASE_NAME}"
 }
