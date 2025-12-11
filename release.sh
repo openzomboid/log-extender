@@ -40,8 +40,7 @@ function make_release() {
         cp workshop/${STAGE}/mod.info "${dir_mod_home}"
         ;;
       *)
-        echo "incorrect stage" >&2
-        exit 1
+        echo "incorrect stage" >&2; exit 1
         ;;
     esac
 
