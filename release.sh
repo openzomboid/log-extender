@@ -19,7 +19,6 @@ RELEASE_DIR_MOD_HOME="${RELEASE_DIR_WORKSHOP}/Contents/mods/${MOD_NAME}"
 
 function remove_old_release() {
   rm -rf .tmp/release
-
   rm -rf ~/Zomboid/Workshop/"${MOD_NAME}"
 }
 
