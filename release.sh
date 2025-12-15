@@ -12,6 +12,15 @@ MOD_NAME="LogExtender"
 if [ "${STAGE}" == "test" ]; then MOD_NAME="${MOD_NAME}Test"; fi
 if [ "${STAGE}" == "local" ]; then MOD_NAME="${MOD_NAME}Local"; fi
 
+case ${STAGE} in
+  local|test|prod)
+    echo "[ INFO ] Preparing ${MOD_NAME} release v${VERSION}"
+    ;;
+  *)
+    echo "incorrect stage" >&2; exit 1
+    ;;
+esac
+
 RELEASE_NAME="${MOD_NAME}-${VERSION}"
 
 RELEASE_DIR_WORKSHOP=".tmp/release/${RELEASE_NAME}"
