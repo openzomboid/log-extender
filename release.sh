@@ -17,7 +17,7 @@ case ${STAGE} in
     echo "[ INFO ] Preparing ${MOD_NAME} release v${VERSION}"
     ;;
   *)
-    echo "incorrect stage" >&2; exit 1
+    echo "[  ER  ] Incorrect stage \"${STAGE}\"" >&2; exit 1
     ;;
 esac
 
