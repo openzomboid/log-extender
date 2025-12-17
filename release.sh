@@ -14,11 +14,9 @@ if [ "${STAGE}" == "local" ]; then MOD_NAME="${MOD_NAME}Local"; fi
 
 case ${STAGE} in
   local|test|prod)
-    echo "[ INFO ] Preparing ${MOD_NAME} release v${VERSION}"
-    ;;
+    echo "[ INFO ] Preparing ${MOD_NAME} release v${VERSION}" ;;
   *)
-    echo "[  ER  ] Incorrect stage \"${STAGE}\"" >&2; exit 1
-    ;;
+    echo "[  ER  ] Incorrect stage \"${STAGE}\"" >&2; exit 1  ;;
 esac
 
 RELEASE_NAME="${MOD_NAME}-${VERSION}"
