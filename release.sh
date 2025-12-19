@@ -38,18 +38,18 @@ function make_release() {
   local dir_workshop="${RELEASE_DIR_WORKSHOP}"
   local dir_mod_home="${RELEASE_DIR_MOD_HOME}"
 
-    mkdir -p "${dir_mod_home}"
+  mkdir -p "${dir_mod_home}"
 
-    cp workshop/${STAGE}/workshop.txt "${dir_workshop}"
-    cp workshop/${STAGE}/mod.info "${dir_mod_home}"
+  cp workshop/${STAGE}/workshop.txt "${dir_workshop}"
+  cp workshop/${STAGE}/mod.info "${dir_mod_home}"
 
-    cp workshop/preview.png "${dir_workshop}/preview.png"
-    cp workshop/poster.png "${dir_mod_home}"
-    cp src/b41 -r "${dir_mod_home}/media"
+  cp workshop/preview.png "${dir_workshop}/preview.png"
+  cp workshop/poster.png "${dir_mod_home}"
+  cp src/b41 -r "${dir_mod_home}/media"
 
-    cp LICENSE "${dir_mod_home}"
-    cp README.md "${dir_mod_home}"
-    cp CHANGELOG.md "${dir_mod_home}"
+  cp LICENSE "${dir_mod_home}"
+  cp README.md "${dir_mod_home}"
+  cp CHANGELOG.md "${dir_mod_home}"
 }
 
 function compress_release() {
