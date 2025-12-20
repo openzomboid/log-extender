@@ -2,8 +2,8 @@
 
 # TODO: Add Makefile.
 
-VERSION="$1"
-if [ -z "${VERSION}" ]; then echo "VERSION is not set. Use ./release.sh 0.0.0 stage" >&2; exit 1; fi
+MOD_VERSION="$1"
+if [ -z "${MOD_VERSION}" ]; then echo "MOD_VERSION is not set. Use ./release.sh 0.0.0 stage" >&2; exit 1; fi
 
 STAGE="$2"
 if [ -z "${STAGE}" ]; then STAGE="prod"; fi
@@ -14,12 +14,12 @@ if [ "${STAGE}" == "local" ]; then MOD_NAME="${MOD_NAME}Local"; fi
 
 case ${STAGE} in
   local|test|prod)
-    echo "[ INFO ] Preparing ${MOD_NAME} release v${VERSION}" ;;
+    echo "[ INFO ] Preparing ${MOD_NAME} release v${MOD_VERSION}" ;;
   *)
     echo "[  ER  ] Incorrect stage \"${STAGE}\"" >&2; exit 1  ;;
 esac
 
-RELEASE_NAME="${MOD_NAME}-${VERSION}"
+RELEASE_NAME="${MOD_NAME}-${MOD_VERSION}"
 
 RELEASE_DIR_WORKSHOP=".tmp/release/${RELEASE_NAME}"
 RELEASE_DIR_MOD_HOME="${RELEASE_DIR_WORKSHOP}/Contents/mods/${MOD_NAME}"
