@@ -11,5 +11,5 @@ description=This mod does not work in single player mode. Therefore, it must be 
 description=
 description=[h1]Warning[/h1]
 description=Mod Log Extender is under development and is being tested on the server [url=https://last-day.wargm.ru]Last Day[/url]. You can join our server or use the mod on your own server. If you think you have found a bug, write about it in the [url=https://steamcommunity.com/workshop/filedetails/discussion/1844524972/1638668751263547005/]bug reporting topic[/url] the Steam workshop or create issue in [url=https://github.com/openzomboid/log-extender]github repository[/url].
-tags=Build 40;Build 41;Multiplayer
+tags=Build 42;Multiplayer
 visibility=public

@@ -1,0 +1,9 @@
+VERSION = 1,
+
+option LogExtender.ExtendPlayerLogs
+{
+  type        = boolean,
+  default     = true,
+  page        = LogExtender,
+  translation = ExtendPlayerLogs
+}

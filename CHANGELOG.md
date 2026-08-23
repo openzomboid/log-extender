@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 **ATTN**: This project uses [semantic versioning](http://semver.org/).
 
 ## [Unreleased]
+
+### Changed
+- Log Extender has been adapted for b42 (WIP).
+- Changed License from Apache to MIT.
+
+## [v0.13.0] - 2024-06-09 - Unreleased
 ### Added
 - Added skipping player tick log when character is dead.
 - Added death log to player file.
@@ -152,7 +158,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.12.0...HEAD
+[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.13.0...HEAD
+[v0.13.0]: https://github.com/openzomboid/log-extender/compare/v0.12.0...v0.13.0
 [v0.12.0]: https://github.com/openzomboid/log-extender/compare/v0.11.1...v0.12.0
 [v0.11.1]: https://github.com/openzomboid/log-extender/compare/v0.11.0...v0.11.1
 [v0.11.0]: https://github.com/openzomboid/log-extender/compare/v0.10.0...v0.11.0
