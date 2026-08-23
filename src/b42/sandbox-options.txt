@@ -7,3 +7,19 @@ option LogExtender.ExtendPlayerLogs
   page        = LogExtender,
   translation = ExtendPlayerLogs
 }
+
+option LogExtender.ExtendVehicleLogs
+{
+  type        = boolean,
+  default     = true,
+  page        = LogExtender,
+  translation = ExtendVehicleLogs
+}
+
+option LogExtender.VehicleAdminTools
+{
+  type        = boolean,
+  default     = true,
+  page        = LogExtender,
+  translation = VehicleAdminTools
+}

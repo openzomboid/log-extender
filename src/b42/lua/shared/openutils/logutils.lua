@@ -31,7 +31,7 @@ logutils = {
 
 -- WriteLog sends command to server for writting log line to file.
 function logutils.WriteLog(filemask, message)
-    sendClientCommand("LogExtender", "write", { mask = filemask, message = message, sender = getPlayer() })
+    sendClientCommand("LogExtender", "write", { mask = filemask, message = message })
 end
 
 -- GetLogLinePrefix generates prefix for each log lines.
@@ -97,7 +97,7 @@ function logutils.GetPlayerPerks(character)
             local parent = perk:getParent()
             if parent ~= Perks.None then
                 local perkType = tostring(perk:getType())
-                local perkLevel = player:getPerkLevel(Perks.fromIndex(i))
+                local perkLevel = character:getPerkLevel(Perks.fromIndex(i))
                 local key = "\"" .. perkType .. "\""
 
                 table.insert(perks, key .. ":" .. perkLevel)
