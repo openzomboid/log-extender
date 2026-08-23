@@ -116,6 +116,13 @@ VehicleLogger.VehicleDetach = function()
     end
 end
 
+if VehicleLogger.IsEnabledOnServer() then
+    Events.OnEnterVehicle.Add(VehicleLogger.VehicleEnter)
+    Events.OnExitVehicle.Add(VehicleLogger.VehicleExit)
+    VehicleLogger.VehicleAttach()
+    VehicleLogger.VehicleDetach()
+end
+
 --
 -- Admin tools
 --
@@ -165,22 +172,19 @@ end
 VehicleLogger.DebugContextMenuCheats = function()
     local originalOnAddVehicle = DebugContextMenu.onAddVehicle
 
-    DebugContextMenu.onAddVehicle = function(playerObj)
-        local character = playerObj
-
+    DebugContextMenu.onAddVehicle = function(character)
         local action = "spawned vehicle"
 
         local message = character:getUsername() .. " " .. action .. " " .. "random" .. " at " .. logutils.GetLocation(character)
 
         logutils.WriteLog(logutils.filemask.admin, message)
 
-        originalOnAddVehicle(playerObj)
+        originalOnAddVehicle(character)
     end
 
     local originalOnRemoveVehicle = DebugContextMenu.onRemoveVehicle
 
-    DebugContextMenu.onRemoveVehicle = function(playerObj, vehicle)
-        local character = playerObj
+    DebugContextMenu.onRemoveVehicle = function(character, vehicle)
         local action = "removed vehicle"
         local info = logutils.GetVehicleInfo(vehicle)
 
@@ -188,7 +192,7 @@ VehicleLogger.DebugContextMenuCheats = function()
 
         logutils.WriteLog(logutils.filemask.admin, message)
 
-        originalOnRemoveVehicle(playerObj, vehicle)
+        originalOnRemoveVehicle(character, vehicle)
     end
 end
 
@@ -246,9 +250,8 @@ end
 VehicleLogger.OnCheatRemove = function()
     local onCheatRemoveAuxOriginal = ISVehicleMechanics.onCheatRemoveAux
 
-    ISVehicleMechanics.onCheatRemoveAux = function(dummy, button, playerObj, vehicle)
+    ISVehicleMechanics.onCheatRemoveAux = function(dummy, button, character, vehicle)
         if button.internal ~= "NO" then
-            local character = playerObj
             local action = "removed vehicle"
             local info = logutils.GetVehicleInfo(vehicle)
 
@@ -257,15 +260,14 @@ VehicleLogger.OnCheatRemove = function()
             logutils.WriteLog(logutils.filemask.admin, message)
         end
 
-        onCheatRemoveAuxOriginal(dummy, button, playerObj, vehicle)
+        onCheatRemoveAuxOriginal(dummy, button, character, vehicle)
     end
 end
 
 VehicleLogger.OnCheatRepair = function()
     local onCheatRepairOriginal = ISVehicleMechanics.onCheatRepair
 
-    ISVehicleMechanics.onCheatRepair = function(playerObj, vehicle)
-        local character = playerObj
+    ISVehicleMechanics.onCheatRepair = function(character, vehicle)
         local action = "repaired vehicle"
         local info = logutils.GetVehicleInfo(vehicle)
 
@@ -273,15 +275,14 @@ VehicleLogger.OnCheatRepair = function()
 
         logutils.WriteLog(logutils.filemask.admin, message)
 
-        onCheatRepairOriginal(playerObj, vehicle)
+        onCheatRepairOriginal(character, vehicle)
     end
 end
 
 VehicleLogger.OnCheatRepairPart = function()
     local onCheatRepairPartOriginal = ISVehicleMechanics.onCheatRepairPart
 
-    ISVehicleMechanics.onCheatRepairPart = function(playerObj, part)
-        local character = playerObj
+    ISVehicleMechanics.onCheatRepairPart = function(character, part)
         local action = "repaired vehicle part"
         local info = logutils.GetVehicleInfo(part:getVehicle())
 
@@ -289,15 +290,14 @@ VehicleLogger.OnCheatRepairPart = function()
 
         logutils.WriteLog(logutils.filemask.admin, message)
 
-        onCheatRepairPartOriginal(playerObj, part)
+        onCheatRepairPartOriginal(character, part)
     end
 end
 
 VehicleLogger.OnCheatSetCondition = function()
     local onCheatSetConditionAuxOriginal = ISVehicleMechanics.onCheatSetConditionAux
 
-    ISVehicleMechanics.onCheatSetConditionAux = function(target, button, playerObj, part)
-        local character = playerObj
+    ISVehicleMechanics.onCheatSetConditionAux = function(target, button, character, part)
         local action = "set vehicle part condition"
         local info = logutils.GetVehicleInfo(part:getVehicle())
 
@@ -305,15 +305,14 @@ VehicleLogger.OnCheatSetCondition = function()
 
         logutils.WriteLog(logutils.filemask.admin, message)
 
-        onCheatSetConditionAuxOriginal(target, button, playerObj, part)
+        onCheatSetConditionAuxOriginal(target, button, character, part)
     end
 end
 
 VehicleLogger.OnCheatGetKey = function()
     local onCheatGetKeyOriginal = ISVehicleMechanics.onCheatGetKey
 
-    ISVehicleMechanics.onCheatGetKey = function(playerObj, vehicle)
-        local character = playerObj
+    ISVehicleMechanics.onCheatGetKey = function(character, vehicle)
         local action = "got vehicle key"
         local info = logutils.GetVehicleInfo(vehicle)
 
@@ -321,24 +320,8 @@ VehicleLogger.OnCheatGetKey = function()
 
         logutils.WriteLog(logutils.filemask.admin, message)
 
-        onCheatGetKeyOriginal(playerObj, vehicle)
+        onCheatGetKeyOriginal(character, vehicle)
     end
-end
-
-if VehicleLogger.IsEnabledOnServer() then
-    Events.OnEnterVehicle.Add(VehicleLogger.VehicleEnter)
-end
-
-if VehicleLogger.IsEnabledOnServer() then
-    Events.OnExitVehicle.Add(VehicleLogger.VehicleExit)
-end
-
-if VehicleLogger.IsEnabledOnServer() then
-    VehicleLogger.VehicleAttach()
-end
-
-if VehicleLogger.IsEnabledOnServer() then
-    VehicleLogger.VehicleDetach()
 end
 
 if SandboxVars.LogExtender.VehicleAdminTools then

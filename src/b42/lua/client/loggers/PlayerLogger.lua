@@ -2,10 +2,8 @@
 -- Copyright (c) 2024 outdead.
 -- Use of this source code is governed by the Apache 2.0 license.
 --
--- PlayerClienLogger adds players dump logs to the Logs directory the 
--- Project Zomboid game.
---
 
+-- PlayerLogger adds players logs to the Zomboid/Logs directory.
 local PlayerLogger = {}
 
 function PlayerLogger.IsEnabledOnServer()
@@ -13,28 +11,26 @@ function PlayerLogger.IsEnabledOnServer()
 end
 
 -- DumpPlayer writes player perks and safehouse coordinates to log file.
-function PlayerLogger.DumpPlayer(player, action)
-    if player == nil then
-        return nil
-    end
+function PlayerLogger.DumpPlayer(character, action)
+    if character == nil then return nil end
 
-    local message = logutils.GetLogLinePrefix(player, action)
+    local message = logutils.GetLogLinePrefix(character, action)
 
-    local perks = logutils.GetPlayerPerks(player)
+    local perks = logutils.GetPlayerPerks(character)
     if perks ~= nil then
         message = message .. " perks={" .. table.concat(perks, ",") .. "}"
     else
         message = message .. " perks={}"
     end
 
-    local traits = logutils.GetPlayerTraits(player)
+    local traits = logutils.GetPlayerTraits(character)
     if traits ~= nil then
         message = message .. " traits=[" .. table.concat(traits, ",") .. "]"
     else
         message = message .. " traits=[]"
     end
 
-    local stats = logutils.GetPlayerStats(player)
+    local stats = logutils.GetPlayerStats(character)
     if stats ~= nil then
         message = message .. ' stats={'
                 .. '"profession":"' .. stats.Profession .. '",'
@@ -45,7 +41,7 @@ function PlayerLogger.DumpPlayer(player, action)
         message = message .. " stats={}"
     end
 
-    local health = logutils.GetPlayerHealth(player)
+    local health = logutils.GetPlayerHealth(character)
     if health ~= nil then
         message = message .. ' health={'
                 .. '"health":' .. health.Health .. ','
@@ -55,7 +51,7 @@ function PlayerLogger.DumpPlayer(player, action)
         message = message .. " health={}"
     end
 
-    local safehouses = logutils.GetPlayerSafehouses(player)
+    local safehouses = logutils.GetPlayerSafehouses(character)
     if safehouses ~= nil then
         message = message .. " safehouse owner=("
         if #safehouses.Owner > 0 then
@@ -92,7 +88,7 @@ function PlayerLogger.DumpPlayer(player, action)
         message = message .. " safehouse owner=() safehouse member=()"
     end
 
-    local location = logutils.GetLocation(player)
+    local location = logutils.GetLocation(character)
     message = message .. " (" .. location .. ")"
 
     logutils.WriteLog(logutils.filemask.player, message)
