@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Changed
-- Log Extender has been adapted for b42 (WIP).
+- Log Extender has been adapted for b42 (WIP):
+  - Adapted _player.txt logs for build 42
 - Changed License from Apache to MIT.
 
 ## [v0.13.0] - 2024-06-09 - Unreleased
