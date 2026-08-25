@@ -1,6 +1,7 @@
 {
     "Sandbox_LogExtender": "Log Extender",
-    "Sandbox_ExtendPlayerLogs": "Enable _player.txt logs",
-    "Sandbox_ExtendVehicleLogs": "Enable _vehicle.txt logs",
-    "Sandbox_VehicleAdminTools": "Enable logging of admin actions on vehicle"
+    "Sandbox_PlayerLogs": "Enable _player.txt logs",
+    "Sandbox_VehicleLogs": "Enable _vehicle.txt logs",
+    "Sandbox_VehicleAdminTools": "Enable logging of admin actions on vehicle",
+    "Sandbox_BrushToolLogs": "Enable _brushtool.txt logs"
 }

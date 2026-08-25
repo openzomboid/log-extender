@@ -1,25 +1,29 @@
 VERSION = 1,
 
-option LogExtender.ExtendPlayerLogs
-{
+option LogExtender.PlayerLogs {
   type        = boolean,
   default     = true,
   page        = LogExtender,
-  translation = ExtendPlayerLogs
+  translation = PlayerLogs
 }
 
-option LogExtender.ExtendVehicleLogs
-{
+option LogExtender.VehicleLogs {
   type        = boolean,
   default     = true,
   page        = LogExtender,
-  translation = ExtendVehicleLogs
+  translation = VehicleLogs
 }
 
-option LogExtender.VehicleAdminTools
-{
+option LogExtender.VehicleAdminTools {
   type        = boolean,
   default     = true,
   page        = LogExtender,
   translation = VehicleAdminTools
+}
+
+option LogExtender.BrushToolLogs {
+  type        = boolean,
+  default     = true,
+  page        = LogExtender,
+  translation = BrushToolLogs
 }

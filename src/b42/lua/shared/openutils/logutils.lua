@@ -13,9 +13,9 @@ logutils = {
     filemask = {
         player = "player",
         vehicle = "vehicle",
+        brushtool = "brushtool",
         safehouse = "safehouse",
         craft = "craft",
-        brushtool = "brushtool",
 
         admin = "admin",
         user = "user",
@@ -206,4 +206,25 @@ function logutils.GetSafehouseShrotNotation(safehouse)
     local h = math.floor(math.abs(safehouse:getY() - safehouse:getY2()))
 
     return tostring(x) .. "," .. tostring(y) .. "," .. tostring(w) .. "," .. tostring(h)
+end
+
+function logutils.GetOptionFromName(currentContext, name)
+    if not currentContext or not currentContext.options then return end
+
+    for _, option in ipairs(currentContext.options) do
+        if option.name == name then
+            return option
+        end
+
+        if option.subOption then
+            local subMenu = currentContext:getSubMenu(option.subOption)
+            local target = logutils.GetOptionFromName(subMenu, name)
+
+            if target then
+                return target
+            end
+        end
+    end
+
+    return nil
 end

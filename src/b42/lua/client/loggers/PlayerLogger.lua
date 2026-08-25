@@ -7,7 +7,7 @@
 local PlayerLogger = {}
 
 function PlayerLogger.IsEnabledOnServer()
-    return SandboxVars.LogExtender.ExtendPlayerLogs
+    return SandboxVars.LogExtender.PlayerLogs
 end
 
 -- DumpPlayer writes player perks and safehouse coordinates to log file.

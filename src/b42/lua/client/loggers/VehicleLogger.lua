@@ -12,7 +12,7 @@ local VehicleLogger = {
 }
 
 function VehicleLogger.IsEnabledOnServer()
-    return SandboxVars.LogExtender.ExtendVehicleLogs
+    return SandboxVars.LogExtender.VehicleLogs
 end
 
 -- DumpVehicle writes vehicles info to log file.
