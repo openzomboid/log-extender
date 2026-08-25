@@ -1,7 +1,7 @@
 {
     "Sandbox_LogExtender": "Log Extender",
     "Sandbox_PlayerLogs": "Enable _player.txt logs",
-    "Sandbox_PlayerTickLogs": "Log the player every game hour (may create a load on the network and disk)",
+    "Sandbox_PlayerTickLogs": "Additionally write player log every game hour",
     "Sandbox_VehicleLogs": "Enable _vehicle.txt logs",
     "Sandbox_VehicleAdminTools": "Enable logging of admin actions on vehicle",
     "Sandbox_BrushToolLogs": "Enable _brushtool.txt logs"

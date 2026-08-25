@@ -1,7 +1,7 @@
 {
     "Sandbox_LogExtender": "Log Extender",
     "Sandbox_PlayerLogs": "Включить логи _player.txt",
-    "Sandbox_PlayerTickLogs": "Сохранять игрока каждый игровой час (может создавать нагрузку на сеть и диск)",
+    "Sandbox_PlayerTickLogs": "Дополнительно писать лог игрока каждый игровой час",
     "Sandbox_VehicleLogs": "Включить логи _vehicle.txt",
     "Sandbox_VehicleAdminTools": "Включить логирование действий админов над машинами",
     "Sandbox_BrushToolLogs": "Включить логи _brushtool.txt"
