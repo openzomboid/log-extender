@@ -143,19 +143,15 @@ end
 
 -- OnGameStart adds callback for OnGameStart global event.
 PlayerLogger.OnGameStart = function()
-    local levelup = PlayerLogger.IsEnabledOnServer()
-    local tick = PlayerLogger.IsEnabledOnServer()
-    local death = PlayerLogger.IsEnabledOnServer()
-
-    if levelup then
+    if PlayerLogger.IsEnabledOnServer() then
         Events.LevelPerk.Add(PlayerLogger.OnPerkLevel)
     end
 
-    if tick then
+    if PlayerLogger.IsEnabledOnServer() and SandboxVars.LogExtender.PlayerTickLogs then
         Events.EveryHours.Add(PlayerLogger.EveryHours)
     end
 
-    if death then
+    if PlayerLogger.IsEnabledOnServer() then
         Events.OnPlayerDeath.Add(PlayerLogger.OnPlayerDeath)
     end
 end

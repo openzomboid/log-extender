@@ -7,6 +7,13 @@ option LogExtender.PlayerLogs {
   translation = PlayerLogs
 }
 
+option LogExtender.PlayerTickLogs {
+  type        = boolean,
+  default     = true,
+  page        = LogExtender,
+  translation = PlayerTickLogs
+}
+
 option LogExtender.VehicleLogs {
   type        = boolean,
   default     = true,
