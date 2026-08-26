@@ -195,8 +195,8 @@ function logutils.GetVehicleInfo(vehicle)
     return info
 end
 
--- GetSafehouseShrotNotation returns Safehouse area in "x,y,w,h" format.
-function logutils.GetSafehouseShrotNotation(safehouse)
+-- GetSafehouseShortNotation returns Safehouse area in "x,y,w,h" format.
+function logutils.GetSafehouseShortNotation(safehouse)
     if not safehouse then
         return "0,0,0,0"
     end
@@ -228,4 +228,32 @@ function logutils.GetOptionFromName(currentContext, name)
     end
 
     return nil
+end
+
+-- ExecAfterTicks executes function fn after n ticks.
+-- If n == 0 immediately executes fn.
+-- If n < 0 does nothing.
+-- Not supported args to callback function.
+function logutils.ExecAfterTicks(fn, n)
+    if n == 0 then
+        fn()
+        return
+    elseif n < 0 then
+        return
+    end
+
+    local c = 0
+    local ticker = {}
+
+    ticker.OnTick = function()
+        c = c + 1
+
+        if c == n then
+            Events.OnTick.Remove(ticker.OnTick);
+
+            fn();
+        end
+    end
+
+    Events.OnTick.Add(ticker.OnTick);
 end

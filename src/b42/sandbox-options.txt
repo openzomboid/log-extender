@@ -34,3 +34,17 @@ option LogExtender.BrushToolLogs {
   page        = LogExtender,
   translation = BrushToolLogs
 }
+
+option LogExtender.SafehouseLogs {
+  type        = boolean,
+  default     = true,
+  page        = LogExtender,
+  translation = SafehouseLogs
+}
+
+option LogExtender.SafehouseAdminTools {
+  type        = boolean,
+  default     = true,
+  page        = LogExtender,
+  translation = LogExtender_SafehouseAdminTools
+}
