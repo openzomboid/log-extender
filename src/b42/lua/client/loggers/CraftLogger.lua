@@ -5,3 +5,43 @@
 --
 
 local CraftLogger = {}
+
+function CraftLogger.IsEnabledOnServer()
+    return SandboxVars.LogExtender.CraftLogs
+end
+
+
+-- TimedActionPerform overrides the original ISBaseTimedAction:perform function to gain access to player events.
+function CraftLogger.TimedActionPerform()
+    local originalPerform = ISBaseTimedAction.perform
+
+    ISBaseTimedAction.perform = function(self)
+        originalPerform(self)
+
+        local character = self.character
+
+        if character and self.Type then
+            local location = logutils.GetLocation(character)
+
+            if self.Type == "ISCraftAction" then
+                local recipe = self.recipe
+                local recipeName = recipe:getOriginalname()
+                local result = recipe:getResult()
+                local resultType = result:getFullType()
+                local resultCount = result:getCount()
+    
+                local message = logutils.GetLogLinePrefix(character, "crafted") .. " " .. resultCount .. " " .. resultType .. " with recipe \"" .. recipeName .. "\" (" .. location .. ")"
+                logutils.WriteLog(logutils.filemask.craft, message)
+            end
+        end
+    end
+end
+
+-- OnGameStart adds callback for OnGameStart global event.
+CraftLogger.OnGameStart = function()
+    if SandboxVars.LogExtender.TimedActions then
+        CraftLogger.TimedActionPerform()
+    end
+end
+
+Events.OnGameStart.Add(CraftLogger.OnGameStart)

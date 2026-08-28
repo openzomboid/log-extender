@@ -46,5 +46,12 @@ option LogExtender.SafehouseAdminTools {
   type        = boolean,
   default     = true,
   page        = LogExtender,
-  translation = LogExtender_SafehouseAdminTools
+  translation = SafehouseAdminTools
+}
+
+option LogExtender.CraftLogs {
+  type        = boolean,
+  default     = true,
+  page        = LogExtender,
+  translation = CraftLogs
 }

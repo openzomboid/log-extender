@@ -4,5 +4,6 @@
     "Sandbox_PlayerTickLogs": "Additionally write player log every game hour",
     "Sandbox_VehicleLogs": "Enable _vehicle.txt logs",
     "Sandbox_VehicleAdminTools": "Enable logging of admin actions on vehicle",
-    "Sandbox_BrushToolLogs": "Enable _brushtool.txt logs"
+    "Sandbox_BrushToolLogs": "Enable _brushtool.txt logs",
+    "Sandbox_CraftLogs": "Enable _craft.txt logs"
 }

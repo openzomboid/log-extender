@@ -4,5 +4,6 @@
     "Sandbox_PlayerTickLogs": "Дополнительно писать лог игрока каждый игровой час",
     "Sandbox_VehicleLogs": "Включить логи _vehicle.txt",
     "Sandbox_VehicleAdminTools": "Включить логирование действий админов над машинами",
-    "Sandbox_BrushToolLogs": "Включить логи _brushtool.txt"
+    "Sandbox_BrushToolLogs": "Включить логи _brushtool.txt",
+    "Sandbox_CraftLogs": "Включить логи _craft.txt"
 }
