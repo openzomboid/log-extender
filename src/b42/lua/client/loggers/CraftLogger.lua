@@ -32,6 +32,19 @@ function CraftLogger.TimedActionPerform()
     
                 local message = logutils.GetLogLinePrefix(character, "crafted") .. " " .. resultCount .. " " .. resultType .. " with recipe \"" .. recipeName .. "\" (" .. location .. ")"
                 logutils.WriteLog(logutils.filemask.craft, message)
+            elseif self.Type == "ISHandcraftAction" then
+                local recipe = self.craftRecipe
+                local recipeName = recipe:getName()
+
+                local items = recipe:getOutputs()
+
+                for i=0,items:size()-1 do
+                    local result = items:get(i)
+                    local resultType = result:getFullType()
+
+                    local message = logutils.GetLogLinePrefix(character, "crafted") .. " 1 " .. resultType .. " with recipe \"" .. recipeName .. "\" (" .. location .. ")"
+                    logutils.WriteLog(logutils.filemask.craft, message)
+                end
             end
         end
     end
@@ -39,7 +52,7 @@ end
 
 -- OnGameStart adds callback for OnGameStart global event.
 CraftLogger.OnGameStart = function()
-    if SandboxVars.LogExtender.TimedActions then
+    if CraftLogger.IsEnabledOnServer() then
         CraftLogger.TimedActionPerform()
     end
 end
