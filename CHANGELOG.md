@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.14.0] - 2026-08-31
+### Added
+- Added skipping player tick log when character is dead.
+- Added death log to player file.
+
 ### Changed
 - Log Extender has been adapted for b42 (WIP):
   - Adapted _player.txt logs for build 42
@@ -13,6 +18,9 @@ All notable changes to this project will be documented in this file.
   - Adapted _safehouse.txt logs for build 42
   - Adapted _craft.txt logs for build 42
 - Changed License from Apache to MIT.
+
+## Removed
+- Removed functions `writeLog`, `getLogLinePrefix`, `getLocation`, `getPlayerSafehouses`, `getPlayerPerks`, `getPlayerTraits`, `getPlayerStats`, `getPlayerHealth`, `getVehicleInfo` from LogExtenderClient. These functions were deprecated on v0.12 and moved to logutils.
 
 ## [v0.13.0] - 2024-06-09 - Unreleased
 ### Added
@@ -163,7 +171,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.13.0...HEAD
+[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.14.0...HEAD
+[v0.13.0]: https://github.com/openzomboid/log-extender/compare/v0.13.0...v0.14.0
 [v0.13.0]: https://github.com/openzomboid/log-extender/compare/v0.12.0...v0.13.0
 [v0.12.0]: https://github.com/openzomboid/log-extender/compare/v0.11.1...v0.12.0
 [v0.11.1]: https://github.com/openzomboid/log-extender/compare/v0.11.0...v0.11.1
