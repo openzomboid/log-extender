@@ -40,9 +40,24 @@ function CraftLogger.TimedActionPerform()
 
                 for i=0,items:size()-1 do
                     local result = items:get(i)
-                    local resultType = result:getFullType()
+                    local resultType = "Unknown"
+                    local resultCount = 1
 
-                    local message = logutils.GetLogLinePrefix(character, "crafted") .. " 1 " .. resultType .. " with recipe \"" .. recipeName .. "\" (" .. location .. ")"
+                    if result then
+                        if result:getResourceType() == ResourceType.Item then
+                            local outputMapper = result:getOutputMapper()
+                            local outputItem = outputMapper:getOutputItem(self.logic:getRecipeData(), true)
+                            resultType = outputItem:getModuleName() .. "." .. outputItem:getName()
+                        elseif result:getResourceType() == ResourceType.Fluid then
+                            -- TODO: Research is in needed to get resultType if ResourceType is Fluid
+                        elseif result:getResourceType() == ResourceType.Energy then
+                            -- TODO: Research is in needed to get resultType if ResourceType is Energy
+                        end
+
+                        resultCount = result.getIntAmount and result:getIntAmount() or "1"
+                    end
+
+                    local message = logutils.GetLogLinePrefix(character, "crafted") .. " " .. resultCount .. " " .. resultType .. " with recipe \"" .. recipeName .. "\" (" .. location .. ")"
                     logutils.WriteLog(logutils.filemask.craft, message)
                 end
             end

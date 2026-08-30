@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
   - Adapted _vehicle.txt logs for build 42
   - Adapted _brushtool.txt logs for build 42
   - Adapted _safehouse.txt logs for build 42
+  - Adapted _craft.txt logs for build 42
 - Changed License from Apache to MIT.
 
 ## [v0.13.0] - 2024-06-09 - Unreleased
