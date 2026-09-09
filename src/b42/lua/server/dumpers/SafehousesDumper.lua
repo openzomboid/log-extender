@@ -9,7 +9,7 @@ local logger = ConsoleLogger and ConsoleLogger.new() or {
     Debug = function(msg) print("ConsoleLogger DEBUG: " .. msg) end
 }
 
-if isClient() then logger.Debug("SafehousesDumper called from client"); return end
+if isClient() then return end
 
 local SafehousesDumper = {
     safehouses = {}
@@ -29,12 +29,11 @@ function SafehousesDumper.WriteFile(filename, data)
     if data ~= nil then
         local encodeddata = json:encode_pretty(data, nil, json_pretty_options)
         if encodeddata ~= nil then
-            logger.Debug("SafehousesDumper.WriteFile: write to file".. filename)
             writer:write(encodeddata)
         end
     end
 
-    logger.Debug("SafehousesDumper.WriteFile: close file ".. filename)
+    logger.Debug("SafehousesDumper.WriteFile: write to file ".. filename)
     writer:close()
 
     return true
@@ -42,13 +41,9 @@ end
 
 -- FillSafehouses queries the global game world engine database to find safehouses and write them to file.
 function SafehousesDumper.FillSafehouses()
-    if not SandboxVars.LogExtender.SafehousesDumper then
-        logger.Debug("SafehousesDumper.FillSafehouses: Not enabled on server")
-
+    if SandboxVars.LogExtender.SafehousesDumper == 0 then
         return
     end
-
-    logger.Debug("SafehousesDumper.FillSafehouses: tick")
 
     local safehouses = {}
 
@@ -57,7 +52,7 @@ function SafehousesDumper.FillSafehouses()
         local safehouse = safehouseList:get(i - 1)
 
         if instanceof(safehouse, 'SafeHouse') then
-            logger.Debug("SafehousesDumper.FillSafehouses: valid safehouse")
+            local key = tostring(safehouse:getX()) .. "," .. tostring(safehouse:getY()) .. "," .. tostring(safehouse:getW()) .. "," .. tostring(safehouse:getH())
 
             local members = {}
             if safehouse:getPlayers() then
@@ -68,38 +63,46 @@ function SafehousesDumper.FillSafehouses()
                 end
             end
 
-            local key = tostring(safehouse:getX()) .. "," .. tostring(safehouse:getY()) .. "," .. tostring(safehouse:getW()) .. "," .. tostring(safehouse:getH())
+            local formattedVisited = ""
+            if safehouse:getLastVisited() and safehouse:getLastVisited() > 0 then
+                formattedVisited = os.date("%Y-%m-%d %H:%M:%S", math.floor(safehouse:getLastVisited() / 1000))
+            end
 
             safehouses[key] = {
-                id       = safehouse:getId(),
-                title    = safehouse:getTitle(),
-                owner    = safehouse:getOwner(),
-                created  = safehouse:getDatetimeCreated(),
-                --created  = safehouse:getDatetimeCreatedStr(),
-                visited  = safehouse:getLastVisited(),
-                members  = members,
-                location = safehouse:getLocation(),
-                x        = safehouse:getX(),
-                y        = safehouse:getY(),
-                w        = safehouse:getW(),
-                h        = safehouse:getH()
+                id         = safehouse:getId(),
+                title      = safehouse:getTitle(),
+                owner      = safehouse:getOwner(),
+                created    = safehouse:getDatetimeCreated(),
+                createdstr = safehouse:getDatetimeCreatedStr(),
+                visited    = safehouse:getLastVisited(),
+                visitedstr = formattedVisited,
+                members    = members,
+                location   = safehouse:getLocation(),
+                x          = safehouse:getX(),
+                y          = safehouse:getY(),
+                w          = safehouse:getW(),
+                h          = safehouse:getH()
             }
         end
     end
 
-    logger.Debug("SafehousesDumper.FillSafehouses: save")
+    logger.Debug("SafehousesDumper.FillSafehouses: save " .. tostring(safehouseList:size()) .. " safehouses")
 
     SafehousesDumper.WriteFile("safehouses.json", safehouses)
 end
 
 function SafehousesDumper.OnServerStarted()
-    logger.Debug("SafehousesDumper.OnServerStarted")
+    local opt = SandboxVars.LogExtender.SafehousesDumper
+
+    if opt == 1 then
+        return
+    elseif opt == 2 then
+        Events.EveryTenMinutes.Add(SafehousesDumper.FillSafehouses)
+    elseif opt == 3 then
+        Events.EveryHours.Add(SafehousesDumper.FillSafehouses)
+    end
 
     SafehousesDumper.FillSafehouses()
-
-    --Events.EveryOneMinute.Add(SafehousesDumper.FillSafehouses)
-    --Events.EveryTenMinutes.Add(SafehousesDumper.FillSafehouses)
-    Events.EveryHours.Add(SafehousesDumper.FillSafehouses)
 end
 
 Events.OnServerStarted.Add(SafehousesDumper.OnServerStarted)

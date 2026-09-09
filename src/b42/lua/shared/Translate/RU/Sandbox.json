@@ -7,5 +7,8 @@
     "Sandbox_BrushToolLogs": "Включить логи _brushtool.txt",
     "Sandbox_CraftLogs": "Включить логи _craft.txt",
 
-    "Sandbox_SafehousesDumper": "Сохранять все приваты каждый игровой час"
+    "Sandbox_SafehousesDumper": "Сохранять все приваты",
+    "Sandbox_SafehousesDumper_option1": "Отключено",
+    "Sandbox_SafehousesDumper_option2": "Каждые 10 игровых минут (часто)",
+    "Sandbox_SafehousesDumper_option3": "Каждый 1 игровой час (нормально)"
 }

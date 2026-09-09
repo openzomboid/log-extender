@@ -57,8 +57,9 @@ option LogExtender.CraftLogs {
 }
 
 option LogExtender.SafehousesDumper {
-  type        = boolean,
-  default     = true,
+  type        = enum,
+  default     = 3,
+  numValues   = 3,
   page        = LogExtender,
-  translation = SafehousesDumper
+  translation = SafehousesDumper,
 }

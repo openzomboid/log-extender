@@ -7,5 +7,8 @@
     "Sandbox_BrushToolLogs": "Enable _brushtool.txt logs",
     "Sandbox_CraftLogs": "Enable _craft.txt logs",
 
-    "Sandbox_SafehousesDumper": "Enable safehouses dumper"
+    "Sandbox_SafehousesDumper": "Safehouses dumper",
+    "Sandbox_SafehousesDumper_option1": "Disabled",
+    "Sandbox_SafehousesDumper_option2": "Every 10 in-game minutes (fast)",
+    "Sandbox_SafehousesDumper_option3": "Every 1 in-game hour (normal)"
 }
