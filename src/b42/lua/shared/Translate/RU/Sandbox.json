@@ -5,5 +5,7 @@
     "Sandbox_VehicleLogs": "Включить логи _vehicle.txt",
     "Sandbox_VehicleAdminTools": "Включить логирование действий админов над машинами",
     "Sandbox_BrushToolLogs": "Включить логи _brushtool.txt",
-    "Sandbox_CraftLogs": "Включить логи _craft.txt"
+    "Sandbox_CraftLogs": "Включить логи _craft.txt",
+
+    "Sandbox_SafehousesDumper": "Сохранять все приваты каждый игровой час"
 }

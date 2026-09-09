@@ -55,3 +55,10 @@ option LogExtender.CraftLogs {
   page        = LogExtender,
   translation = CraftLogs
 }
+
+option LogExtender.SafehousesDumper {
+  type        = boolean,
+  default     = true,
+  page        = LogExtender,
+  translation = SafehousesDumper
+}
