@@ -15,13 +15,13 @@ end
 function PlayerLogger.DumpPlayer(character, action)
     if character == nil then return nil end
 
-    local message = logutils.GetLogLinePrefix(character, action)
+    local message = ""
 
     local perks = logutils.GetPlayerPerks(character)
     if perks ~= nil then
-        message = message .. " perks={" .. table.concat(perks, ",") .. "}"
+        message = message .. "perks={" .. table.concat(perks, ",") .. "}"
     else
-        message = message .. " perks={}"
+        message = message .. "perks={}"
     end
 
     local traits = logutils.GetPlayerTraits(character)
@@ -89,10 +89,7 @@ function PlayerLogger.DumpPlayer(character, action)
         message = message .. " safehouse owner=() safehouse member=()"
     end
 
-    local location = logutils.GetLocation(character)
-    message = message .. " (" .. location .. ")"
-
-    logutils.WriteLog(logutils.filemask.player, message)
+    logutils.WriteLog2(logutils.filemask.player, action, message)
 end
 
 -- OnCreatePlayer adds callback for player OnCreatePlayerData event.

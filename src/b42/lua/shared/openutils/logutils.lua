@@ -43,6 +43,27 @@ function _logutils.WriteLog(filemask, message)
     sendClientCommand("LogExtender", "write", { mask = filemask, message = message })
 end
 
+-- WriteLog sends command to server for writting log line to file.
+function _logutils.WriteLog2(filemask, action, message)
+    local character = getPlayer()
+    local prefix = logutils.GetLogLinePrefix(character, action) .. " "
+    local location = logutils.GetLocation(character)
+    --message = prefix .. message .. " (" .. location .. ")"
+    message = prefix .. message .. " at " .. location
+
+    sendClientCommand("LogExtender", "write", { mask = filemask, message = message })
+end
+
+-- WriteLog sends command to server for writting log line to file.
+function _logutils.WriteLogAdmin(action, message)
+    local character = getPlayer()
+    local prefix = character:getUsername() .. " " .. action .. " "
+    local location = logutils.GetLocation(character)
+    message = prefix .. message .. " at " .. location
+
+    sendClientCommand("LogExtender", "write", { mask = logutils.filemask.admin, message = message })
+end
+
 -- GetLogLinePrefix generates prefix for each log lines.
 -- for ease of use, we assume that the player’s existence has been verified previously.
 function _logutils.GetLogLinePrefix(character, action)
@@ -257,13 +278,13 @@ function _logutils.ExecAfterTicks(fn, n)
         c = c + 1
 
         if c == n then
-            Events.OnTick.Remove(ticker.OnTick);
+            Events.OnTick.Remove(ticker.OnTick)
 
-            fn();
+            fn()
         end
     end
 
-    Events.OnTick.Add(ticker.OnTick);
+    Events.OnTick.Add(ticker.OnTick)
 end
 
 logutils = {}

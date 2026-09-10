@@ -16,7 +16,7 @@ function SafehouseLogger.DumpSafehouse(character, action, safehouse, target)
         return nil
     end
 
-    local message = logutils.GetLogLinePrefix(character, action)
+    local message = ""
 
     if safehouse then
         local area = {}
@@ -35,7 +35,7 @@ function SafehouseLogger.DumpSafehouse(character, action, safehouse, target)
             }
         end
 
-        message = message .. ' ' .. area.zone
+        message = message .. area.zone
         message = message .. ' owner="' .. owner .. '"'
 
         if action == "release safehouse" then
@@ -63,9 +63,7 @@ function SafehouseLogger.DumpSafehouse(character, action, safehouse, target)
         message = message .. ' target="' .. target .. '"'
     end
 
-    message = message .. " (" .. logutils.GetLocation(character) .. ")"
-
-    logutils.WriteLog(logutils.filemask.safehouse, message)
+    logutils.WriteLog2(logutils.filemask.safehouse, action, message)
 end
 
 -- OnTakeSafeHouse rewrites original ISWorldObjectContextMenu.onTakeSafeHouse and
@@ -113,8 +111,7 @@ function SafehouseLogger.OnChangeSafeHouseOwner()
             end
 
             if owner ~= character:getUsername() then
-                local message = character:getUsername() .. " change safehouse " .. logutils.GetSafehouseShortNotation(self.safehouse) .. " at " .. logutils.GetLocation(character)
-                logutils.WriteLog(logutils.filemask.admin, message)
+                logutils.WriteLogAdmin("change safehouse", logutils.GetSafehouseShortNotation(self.safehouse))
             end
         end
     end
@@ -134,8 +131,7 @@ function SafehouseLogger.OnReleaseSafeHouse()
                 SafehouseLogger.DumpSafehouse(character, "release safehouse", button.parent.ui.safehouse, nil)
 
                 if owner ~= character:getUsername() then
-                    local message = character:getUsername() .. " release safehouse " .. logutils.GetSafehouseShortNotation(button.parent.ui.safehouse) .. " at " .. logutils.GetLocation(character)
-                    logutils.WriteLog(logutils.filemask.admin, message)
+                    logutils.WriteLogAdmin("release safehouse", logutils.GetSafehouseShortNotation(button.parent.ui.safehouse))
                 end
             end
         end
@@ -153,7 +149,7 @@ function SafehouseLogger.OnReleaseSafeHouseCommand()
         local command = ISChat.instance.textEntry:getText()
 
         if string.find(command, "/releasesafehouse", 1, true) then
-            local character = getSpecificPlayer(0)
+            local character = getPlayer()
             local safehouse = nil
 
             local title = command:gsub("/releasesafehouse ", "", 1):gsub('"', "")
@@ -249,22 +245,24 @@ SafehouseLogger.OnAdminAddSafeHouse = function()
         local setH = math.floor(math.abs(self.Y1 - self.Y2) + 1)
 
         local character = getPlayer()
-        local safehouse = nil
-
-        local safehouseList = SafeHouse.getSafehouseList()
-        for i = 0, safehouseList:size() - 1 do
-            if safehouseList:get(i):getOwner() == self.ownerEntry:getInternalText() and safehouseList:get(i):getX() == setX and safehouseList:get(i):getY() == setY then
-                safehouse = safehouseList:get(i)
-                break
-            end
-        end
 
         if SafehouseLogger.IsEnabledOnServer() then
-            SafehouseLogger.DumpSafehouse(character, "create safehouse", safehouse, self.ownerEntry:getInternalText())
+            logutils.ExecAfterTicks(function()
+                local safehouse = nil
+
+                local safehouseList = SafeHouse.getSafehouseList()
+                for i = 0, safehouseList:size() - 1 do
+                    if safehouseList:get(i):getOwner() == self.ownerEntry:getInternalText() and safehouseList:get(i):getX() == setX and safehouseList:get(i):getY() == setY then
+                        safehouse = safehouseList:get(i)
+                        break
+                    end
+                end
+
+                SafehouseLogger.DumpSafehouse(character, "create safehouse", safehouse, self.ownerEntry:getInternalText())
+            end, 10)
         end
 
-        local message = character:getUsername() .. " create safehouse " .. tostring(setX) .. "," .. tostring(setY) .. "," .. tostring(setW) .. "," .. tostring(setH) .. " at " .. logutils.GetLocation(character)
-        logutils.WriteLog(logutils.filemask.admin, message)
+        logutils.WriteLogAdmin("create safehouse", tostring(setX) .. "," .. tostring(setY) .. "," .. tostring(setW) .. "," .. tostring(setH))
     end
 end
 

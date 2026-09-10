@@ -17,12 +17,12 @@ function VehicleLogger.IsEnabledOnServer()
 end
 
 -- DumpVehicle writes vehicles info to log file.
-function VehicleLogger.DumpVehicle(player, action, vehicle, vehicle2)
-    if player == nil then
+function VehicleLogger.DumpVehicle(character, action, vehicle, vehicle2)
+    if character == nil then
         return nil
     end
 
-    local message = logutils.GetLogLinePrefix(player, action)
+    local message = ""
 
     if vehicle then
         local info = logutils.GetVehicleInfo(vehicle)
@@ -39,12 +39,6 @@ function VehicleLogger.DumpVehicle(player, action, vehicle, vehicle2)
     if vehicle2 then
         local info = logutils.GetVehicleInfo(vehicle2)
 
-        if action == 'attach' then
-            message = message .. ' to'
-        elseif action == 'detach' then
-            message = message .. ' from'
-        end
-
         message = message .. ' vehicle={'
                 .. '"id":' .. info.ID .. ','
                 .. '"type":"' .. info.Type .. '",'
@@ -52,10 +46,7 @@ function VehicleLogger.DumpVehicle(player, action, vehicle, vehicle2)
                 .. '}'
     end
 
-    local location = logutils.GetLocation(player)
-    message = message .. " at " .. location
-
-    logutils.WriteLog(logutils.filemask.vehicle, message)
+    logutils.WriteLog2(logutils.filemask.vehicle, action, message)
 end
 
 -- VehicleEnter adds callback for OnEnterVehicle event.
@@ -90,7 +81,7 @@ VehicleLogger.VehicleAttach = function()
         if player then
             VehicleLogger.vehicleAttachmentA = self.vehicleA
             VehicleLogger.vehicleAttachmentB = self.vehicleB
-            VehicleLogger.DumpVehicle(player, "attach", self.vehicleA, self.vehicleB)
+            VehicleLogger.DumpVehicle(player, "attach to", self.vehicleA, self.vehicleB)
         end
     end
 end
@@ -110,7 +101,7 @@ VehicleLogger.VehicleDetach = function()
         local player = self.character
 
         if player then
-            VehicleLogger.DumpVehicle(player, "detach", self.vehicle, vehicleB)
+            VehicleLogger.DumpVehicle(player, "detach from", self.vehicle, vehicleB)
             VehicleLogger.vehicleAttachmentA = nil
             VehicleLogger.vehicleAttachmentB = nil
         end
@@ -143,28 +134,14 @@ VehicleLogger.ISSpawnVehicleUI_onClick = function()
         local character = self.player
 
         if button.internal == "SPAWN" then
-            local action = "spawned vehicle"
-
-            local message = character:getUsername() .. " " .. action .. " " .. tostring(self:getVehicle()) .. " at " .. logutils.GetLocation(character)
-
-            logutils.WriteLog(logutils.filemask.admin, message)
+            logutils.WriteLogAdmin("spawned vehicle", tostring(self:getVehicle()))
         elseif button.internal == "GETKEY" then
             if self.vehicle ~= nil then
-                local action = "got vehicle key"
-                local info = logutils.GetVehicleInfo(self.vehicle)
-
-                local message = character:getUsername() .. " " .. action .. " " .. info.Type .. " at " .. logutils.GetLocation(character)
-
-                logutils.WriteLog(logutils.filemask.admin, message)
+                logutils.WriteLogAdmin("got vehicle key", logutils.GetVehicleInfo(self.vehicle).Type)
             end
         elseif button.internal == "REPAIR" then
             if self.vehicle ~= nil then
-                local action = "repaired vehicle"
-                local info = logutils.GetVehicleInfo(self.vehicle)
-
-                local message = character:getUsername() .. " " .. action .. " " .. info.Type .. " at " .. logutils.GetLocation(character)
-
-                logutils.WriteLog(logutils.filemask.admin, message)
+                logutils.WriteLogAdmin("repaired vehicle", logutils.GetVehicleInfo(self.vehicle).Type)
             end
         end
     end
@@ -174,11 +151,7 @@ VehicleLogger.DebugContextMenuCheats = function()
     local originalOnAddVehicle = DebugContextMenu.onAddVehicle
 
     DebugContextMenu.onAddVehicle = function(character)
-        local action = "spawned vehicle"
-
-        local message = character:getUsername() .. " " .. action .. " " .. "random" .. " at " .. logutils.GetLocation(character)
-
-        logutils.WriteLog(logutils.filemask.admin, message)
+        logutils.WriteLogAdmin("spawned vehicle", "random")
 
         originalOnAddVehicle(character)
     end
@@ -186,12 +159,7 @@ VehicleLogger.DebugContextMenuCheats = function()
     local originalOnRemoveVehicle = DebugContextMenu.onRemoveVehicle
 
     DebugContextMenu.onRemoveVehicle = function(character, vehicle)
-        local action = "removed vehicle"
-        local info = logutils.GetVehicleInfo(vehicle)
-
-        local message = character:getUsername() .. " " .. action .. " " .. info.Type .. " at " .. logutils.GetLocation(character)
-
-        logutils.WriteLog(logutils.filemask.admin, message)
+        logutils.WriteLogAdmin("removed vehicle", logutils.GetVehicleInfo(vehicle).Type)
 
         originalOnRemoveVehicle(character, vehicle)
     end
@@ -205,8 +173,6 @@ VehicleLogger.OnAddVehicleCommand = function()
     ISChat.onCommandEntered = function(self)
         local command = ISChat.instance.textEntry:getText():gsub("%s+", " ")
         if luautils.stringStarts(string.lower(command), "/addvehicle") then
-            local action = "spawned vehicle"
-            local character = getSpecificPlayer(0)
             local splitCommand = luautils.split(command, " ")
 
             if #splitCommand == 2 or #splitCommand == 3 then
@@ -232,9 +198,7 @@ VehicleLogger.OnAddVehicleCommand = function()
                             end
 
                             if doLogMessage then
-                                local message = character:getUsername() .. " " .. action .. " " .. code .. " at " .. logutils.GetLocation(character)
-
-                                logutils.WriteLog(logutils.filemask.admin, message)
+                                logutils.WriteLogAdmin("spawned vehicle", code)
                             end
 
                             break
@@ -253,12 +217,7 @@ VehicleLogger.OnCheatRemove = function()
 
     ISVehicleMechanics.onCheatRemoveAux = function(dummy, button, character, vehicle)
         if button.internal ~= "NO" then
-            local action = "removed vehicle"
-            local info = logutils.GetVehicleInfo(vehicle)
-
-            local message = character:getUsername() .. " " .. action .. " " .. info.Type .. " at " .. logutils.GetLocation(character)
-
-            logutils.WriteLog(logutils.filemask.admin, message)
+            logutils.WriteLogAdmin("removed vehicle", logutils.GetVehicleInfo(vehicle).Type)
         end
 
         onCheatRemoveAuxOriginal(dummy, button, character, vehicle)
@@ -269,12 +228,7 @@ VehicleLogger.OnCheatRepair = function()
     local onCheatRepairOriginal = ISVehicleMechanics.onCheatRepair
 
     ISVehicleMechanics.onCheatRepair = function(character, vehicle)
-        local action = "repaired vehicle"
-        local info = logutils.GetVehicleInfo(vehicle)
-
-        local message = character:getUsername() .. " " .. action .. " " .. info.Type .. " at " .. logutils.GetLocation(character)
-
-        logutils.WriteLog(logutils.filemask.admin, message)
+        logutils.WriteLogAdmin("repaired vehicle", logutils.GetVehicleInfo(vehicle).Type)
 
         onCheatRepairOriginal(character, vehicle)
     end
@@ -284,12 +238,8 @@ VehicleLogger.OnCheatRepairPart = function()
     local onCheatRepairPartOriginal = ISVehicleMechanics.onCheatRepairPart
 
     ISVehicleMechanics.onCheatRepairPart = function(character, part)
-        local action = "repaired vehicle part"
-        local info = logutils.GetVehicleInfo(part:getVehicle())
-
-        local message = character:getUsername() .. " " .. action .. " " .. info.Type .. " at " .. logutils.GetLocation(character)
-
-        logutils.WriteLog(logutils.filemask.admin, message)
+        -- TODO: Add part to log message
+        logutils.WriteLogAdmin("repaired part of vehicle", logutils.GetVehicleInfo(part:getVehicle()).Type)
 
         onCheatRepairPartOriginal(character, part)
     end
@@ -299,12 +249,8 @@ VehicleLogger.OnCheatSetCondition = function()
     local onCheatSetConditionAuxOriginal = ISVehicleMechanics.onCheatSetConditionAux
 
     ISVehicleMechanics.onCheatSetConditionAux = function(target, button, character, part)
-        local action = "set vehicle part condition"
-        local info = logutils.GetVehicleInfo(part:getVehicle())
-
-        local message = character:getUsername() .. " " .. action .. " " .. info.Type .. " at " .. logutils.GetLocation(character)
-
-        logutils.WriteLog(logutils.filemask.admin, message)
+        -- TODO: Add part to log message
+        logutils.WriteLogAdmin("set vehicle part condition", logutils.GetVehicleInfo(part:getVehicle()).Type)
 
         onCheatSetConditionAuxOriginal(target, button, character, part)
     end
@@ -314,12 +260,7 @@ VehicleLogger.OnCheatGetKey = function()
     local onCheatGetKeyOriginal = ISVehicleMechanics.onCheatGetKey
 
     ISVehicleMechanics.onCheatGetKey = function(character, vehicle)
-        local action = "got vehicle key"
-        local info = logutils.GetVehicleInfo(vehicle)
-
-        local message = character:getUsername() .. " " .. action .. " " .. info.Type .. " at " .. logutils.GetLocation(character)
-
-        logutils.WriteLog(logutils.filemask.admin, message)
+        logutils.WriteLogAdmin("got vehicle key", logutils.GetVehicleInfo(vehicle).Type)
 
         onCheatGetKeyOriginal(character, vehicle)
     end

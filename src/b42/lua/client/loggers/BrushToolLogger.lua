@@ -32,9 +32,6 @@ function BrushToolLogger.ISBrushToolTileCursor_create(self, x, y, z, north, spri
 
     local square = getCell():getGridSquare(x, y, z)
     local obj = IsoObject.new(square, sprite)
-
-    local character = getPlayer()
-    local location = logutils.GetLocation(character)
     local objLocation = logutils.GetLocation(obj)
 
     local objName = obj:getName() or obj:getObjectName() -- IsoObject
@@ -42,8 +39,9 @@ function BrushToolLogger.ISBrushToolTileCursor_create(self, x, y, z, north, spri
         objName = instanceof(obj, 'IsoThumpable') and "IsoThumpable" or "undefined"
     end
 
-    local message = logutils.GetLogLinePrefix(character, "added " .. objName) .. " (" .. sprite .. ") at " .. objLocation .. " (" .. location .. ")"
-    logutils.WriteLog(logutils.filemask.brushtool, message)
+    local action = "added " .. objName
+    local message = "(" .. sprite .. ") at " .. objLocation
+    logutils.WriteLog2(logutils.filemask.brushtool, action, message)
 end
 
 -- onDestroyTile contains overridden select callback triggered when destroying a tile the
@@ -51,8 +49,6 @@ end
 -- is private and cannot be intercepted.
 -- Adds log records to the brushtool.txt log file when objects are destroyed.
 function BrushToolLogger.onDestroyTile(obj)
-    local character = getPlayer()
-    local location = logutils.GetLocation(character)
     local objLocation = logutils.GetLocation(obj)
     local texture = obj:getTextureName()
     local objName = obj:getName() or obj:getObjectName()
@@ -66,8 +62,9 @@ function BrushToolLogger.onDestroyTile(obj)
         obj:getSquare():transmitRemoveItemFromSquare(obj)
     end
 
-    local message = logutils.GetLogLinePrefix(character, "removed " .. objName) .. " (" .. texture .. ") at " .. objLocation .. " (" .. location .. ")"
-    logutils.WriteLog(logutils.filemask.brushtool, message)
+    local action = "removed " .. objName
+    local message = "(" .. texture .. ") at " .. objLocation
+    logutils.WriteLog2(logutils.filemask.brushtool, action, message)
 end
 
 -- doBrushToolOptions listens to context menu creation to intercept the 'Destroy tile' sub-options.

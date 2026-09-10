@@ -21,18 +21,16 @@ function CraftLogger.TimedActionPerform()
         local character = self.character
 
         if character and self.Type then
-            local location = logutils.GetLocation(character)
-
-            if self.Type == "ISCraftAction" then
+            if self.Type == "ISCraftAction" then -- Old b41 action
                 local recipe = self.recipe
                 local recipeName = recipe:getOriginalname()
                 local result = recipe:getResult()
                 local resultType = result:getFullType()
                 local resultCount = result:getCount()
     
-                local message = logutils.GetLogLinePrefix(character, "crafted") .. " " .. resultCount .. " " .. resultType .. " with recipe \"" .. recipeName .. "\" (" .. location .. ")"
-                logutils.WriteLog(logutils.filemask.craft, message)
-            elseif self.Type == "ISHandcraftAction" then
+                local message = resultCount .. " " .. resultType .. " with recipe \"" .. recipeName .. "\""
+                logutils.WriteLog2(logutils.filemask.craft, "crafted", message)
+            elseif self.Type == "ISHandcraftAction" then -- New b42 action
                 local recipe = self.craftRecipe
                 local recipeName = recipe:getName()
 
@@ -50,15 +48,17 @@ function CraftLogger.TimedActionPerform()
                             resultType = outputItem:getModuleName() .. "." .. outputItem:getName()
                         elseif result:getResourceType() == ResourceType.Fluid then
                             -- TODO: Research is in needed to get resultType if ResourceType is Fluid
+                            resultType = "Fluid"
                         elseif result:getResourceType() == ResourceType.Energy then
                             -- TODO: Research is in needed to get resultType if ResourceType is Energy
+                            resultType = "Energy"
                         end
 
                         resultCount = result.getIntAmount and result:getIntAmount() or "1"
                     end
 
-                    local message = logutils.GetLogLinePrefix(character, "crafted") .. " " .. resultCount .. " " .. resultType .. " with recipe \"" .. recipeName .. "\" (" .. location .. ")"
-                    logutils.WriteLog(logutils.filemask.craft, message)
+                    local message = resultCount .. " " .. resultType .. " with recipe \"" .. recipeName .. "\""
+                    logutils.WriteLog(logutils.filemask.craft, "crafted", message)
                 end
             end
         end
