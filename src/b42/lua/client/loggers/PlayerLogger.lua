@@ -90,7 +90,7 @@ function PlayerLogger.DumpPlayer(character, action)
         message = message .. " safehouse owner=() safehouse member=()"
     end
 
-    logutils.WriteLog2(logutils.filemask.player, action, message)
+    logutils.WriteLog(logutils.filemask.player, action, message)
 end
 
 -- OnCreatePlayer adds callback for player OnCreatePlayerData event.

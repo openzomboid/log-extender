@@ -29,7 +29,7 @@ function CraftLogger.TimedActionPerform()
                 local resultCount = result:getCount()
     
                 local message = resultCount .. " " .. resultType .. " with recipe \"" .. recipeName .. "\""
-                logutils.WriteLog2(logutils.filemask.craft, "crafted", message)
+                logutils.WriteLog(logutils.filemask.craft, "crafted", message)
             elseif self.Type == "ISHandcraftAction" then -- New b42 action
                 local recipe = self.craftRecipe
                 local recipeName = recipe:getName()

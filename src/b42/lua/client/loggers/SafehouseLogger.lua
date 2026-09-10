@@ -63,7 +63,7 @@ function SafehouseLogger.DumpSafehouse(character, action, safehouse, target)
         message = message .. ' target="' .. target .. '"'
     end
 
-    logutils.WriteLog2(logutils.filemask.safehouse, action, message)
+    logutils.WriteLog(logutils.filemask.safehouse, action, message)
 end
 
 -- OnTakeSafeHouse rewrites original ISWorldObjectContextMenu.onTakeSafeHouse and

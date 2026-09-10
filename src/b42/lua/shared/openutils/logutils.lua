@@ -39,16 +39,10 @@ local _logutils = {
 }
 
 -- WriteLog sends command to server for writting log line to file.
-function _logutils.WriteLog(filemask, message)
-    sendClientCommand("LogExtender", "write", { mask = filemask, message = message })
-end
-
--- WriteLog sends command to server for writting log line to file.
-function _logutils.WriteLog2(filemask, action, message)
+function _logutils.WriteLog(filemask, action, message)
     local character = getPlayer()
     local prefix = logutils.GetLogLinePrefix(character, action) .. " "
     local location = logutils.GetLocation(character)
-    --message = prefix .. message .. " (" .. location .. ")"
     message = prefix .. message .. " at " .. location
 
     sendClientCommand("LogExtender", "write", { mask = filemask, message = message })

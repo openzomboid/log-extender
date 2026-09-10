@@ -41,7 +41,7 @@ function BrushToolLogger.ISBrushToolTileCursor_create(self, x, y, z, north, spri
 
     local action = "added " .. objName
     local message = "(" .. sprite .. ") at " .. objLocation
-    logutils.WriteLog2(logutils.filemask.brushtool, action, message)
+    logutils.WriteLog(logutils.filemask.brushtool, action, message)
 end
 
 -- onDestroyTile contains overridden select callback triggered when destroying a tile the
@@ -64,7 +64,7 @@ function BrushToolLogger.onDestroyTile(obj)
 
     local action = "removed " .. objName
     local message = "(" .. texture .. ") at " .. objLocation
-    logutils.WriteLog2(logutils.filemask.brushtool, action, message)
+    logutils.WriteLog(logutils.filemask.brushtool, action, message)
 end
 
 -- doBrushToolOptions listens to context menu creation to intercept the 'Destroy tile' sub-options.

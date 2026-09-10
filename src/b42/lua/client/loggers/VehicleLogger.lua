@@ -46,7 +46,7 @@ function VehicleLogger.DumpVehicle(character, action, vehicle, vehicle2)
                 .. '}'
     end
 
-    logutils.WriteLog2(logutils.filemask.vehicle, action, message)
+    logutils.WriteLog(logutils.filemask.vehicle, action, message)
 end
 
 -- VehicleEnter adds callback for OnEnterVehicle event.
