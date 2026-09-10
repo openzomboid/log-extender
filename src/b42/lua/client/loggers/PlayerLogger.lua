@@ -12,6 +12,7 @@ function PlayerLogger.IsEnabledOnServer()
 end
 
 -- DumpPlayer writes player perks and safehouse coordinates to log file.
+-- TODO: Add faction.
 function PlayerLogger.DumpPlayer(character, action)
     if character == nil then return nil end
 
