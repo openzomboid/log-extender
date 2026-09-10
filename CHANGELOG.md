@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 ## [v0.15.0] - Unreleased
 ### Added
 - Added Safehouses dumper.
+- Added protection from changes to logutils.
 
 ## [v0.14.0] - 2026-08-31
 ### Added

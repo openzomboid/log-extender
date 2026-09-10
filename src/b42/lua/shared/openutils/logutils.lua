@@ -4,8 +4,14 @@
 -- that can be found in the LICENSE file.
 --
 
-logutils = {
-    version = "0.14.0", -- in semantic versioning (http://semver.org/)
+-- Fallback logger initialization if ConsoleLogger is not present in the global environment.
+local logger = ConsoleLogger and ConsoleLogger.new() or {
+    Debug = function(msg) print("ConsoleLogger DEBUG: " .. msg) end,
+    Warning = function(msg) print("ConsoleLogger WARNING: " .. msg) end
+}
+
+local _logutils = {
+    version = "0.15.0", -- in semantic versioning (http://semver.org/)
     pzversion = getCore():getVersionNumber(),
 
     -- Placeholders for Project Zomboid log file names.
@@ -28,28 +34,30 @@ logutils = {
 
         map_alternative = "map_alternative",
     },
+
+    character = {}
 }
 
 -- WriteLog sends command to server for writting log line to file.
-function logutils.WriteLog(filemask, message)
+function _logutils.WriteLog(filemask, message)
     sendClientCommand("LogExtender", "write", { mask = filemask, message = message })
 end
 
 -- GetLogLinePrefix generates prefix for each log lines.
 -- for ease of use, we assume that the player’s existence has been verified previously.
-function logutils.GetLogLinePrefix(player, action)
-    return getCurrentUserSteamID() .. " \"" .. player:getUsername() .. "\" " .. action
+function _logutils.GetLogLinePrefix(character, action)
+    return getCurrentUserSteamID() .. " \"" .. character:getUsername() .. "\" " .. action
 end
 
 -- GetLocation returns players or vehicle location in "x,x,z" format.
-function logutils.GetLocation(obj)
+function _logutils.GetLocation(obj)
     return math.floor(obj:getX()) .. "," .. math.floor(obj:getY()) .. "," .. math.floor(obj:getZ())
 end
 
 -- GetPlayerSafehouses iterates in server safehouse list and returns
 -- area coordinates of player's houses.
-function logutils.GetPlayerSafehouses(player)
-    if player == nil then
+function _logutils.GetPlayerSafehouses(character)
+    if character == nil then
         return nil
     end
 
@@ -68,11 +76,11 @@ function logutils.GetPlayerSafehouses(player)
             Bottom = safehouse:getX2() .. "x" .. safehouse:getY2()
         }
 
-        if player:getUsername() == owner then
+        if character:getUsername() == owner then
             safehouses.Owner[#safehouses.Owner + 1] = area
         elseif members:size() > 0 then
             for j = 0, members:size() - 1 do
-                if members:get(j) == player:getUsername() then
+                if members:get(j) == character:getUsername() then
                     safehouses.Member[#safehouses.Member + 1] = area
                     break
                 end
@@ -84,7 +92,7 @@ function logutils.GetPlayerSafehouses(player)
 end
 
 -- GetPlayerPerks returns player perks table.
-function logutils.GetPlayerPerks(character)
+function _logutils.GetPlayerPerks(character)
     if character == nil then
         return nil
     end
@@ -112,7 +120,7 @@ function logutils.GetPlayerPerks(character)
 end
 
 -- GetPlayerTraits returns player traits table.
-function logutils.GetPlayerTraits(character)
+function _logutils.GetPlayerTraits(character)
     if character == nil then return nil end
 
     local traits = {}
@@ -130,7 +138,7 @@ function logutils.GetPlayerTraits(character)
 end
 
 -- GetPlayerStats returns some player additional info.
-function logutils.GetPlayerStats(character)
+function _logutils.GetPlayerStats(character)
     if character == nil then
         return nil
     end
@@ -152,7 +160,7 @@ function logutils.GetPlayerStats(character)
 end
 
 -- GetPlayerHealth returns some player health information.
-function logutils.GetPlayerHealth(character)
+function _logutils.GetPlayerHealth(character)
     if character == nil then
         return nil
     end
@@ -169,7 +177,7 @@ end
 
 -- GetVehicleInfo returns some vehicles information such as id, type and center
 -- coordinate.
-function logutils.GetVehicleInfo(vehicle)
+function _logutils.GetVehicleInfo(vehicle)
     local info = {
         ID = "0",
         Type = "unknown",
@@ -196,7 +204,7 @@ function logutils.GetVehicleInfo(vehicle)
 end
 
 -- GetSafehouseShortNotation returns Safehouse area in "x,y,w,h" format.
-function logutils.GetSafehouseShortNotation(safehouse)
+function _logutils.GetSafehouseShortNotation(safehouse)
     if not safehouse then
         return "0,0,0,0"
     end
@@ -209,7 +217,7 @@ function logutils.GetSafehouseShortNotation(safehouse)
     return tostring(x) .. "," .. tostring(y) .. "," .. tostring(w) .. "," .. tostring(h)
 end
 
-function logutils.GetOptionFromName(currentContext, name)
+function _logutils.GetOptionFromName(currentContext, name)
     if not currentContext or not currentContext.options then return end
 
     for _, option in ipairs(currentContext.options) do
@@ -234,7 +242,7 @@ end
 -- If n == 0 immediately executes fn.
 -- If n < 0 does nothing.
 -- Not supported args to callback function.
-function logutils.ExecAfterTicks(fn, n)
+function _logutils.ExecAfterTicks(fn, n)
     if n == 0 then
         fn()
         return
@@ -257,3 +265,16 @@ function logutils.ExecAfterTicks(fn, n)
 
     Events.OnTick.Add(ticker.OnTick);
 end
+
+logutils = {}
+
+setmetatable(logutils, {
+    __index = _logutils,
+
+    __newindex = function(t, key, value)
+        logger.Warning("Attempt to modify the protected library 'logutils'!")
+    end,
+
+    -- Restrict to call getmetatable() and setmetatable()
+    __metatable = "Access Denied"
+})
