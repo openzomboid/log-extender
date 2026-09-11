@@ -23,6 +23,7 @@ local _logutils = {
         brushtool = "brushtool",
         safehouse = "safehouse",
         craft = "craft",
+        animal = "animal",
 
         admin = "admin",
         user = "user",

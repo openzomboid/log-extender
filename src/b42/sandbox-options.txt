@@ -56,6 +56,13 @@ option LogExtender.CraftLogs {
   translation = CraftLogs
 }
 
+option LogExtender.AnimalLogs {
+  type        = boolean,
+  default     = true,
+  page        = LogExtender,
+  translation = AnimalLogs
+}
+
 option LogExtender.SafehousesDumper {
   type        = enum,
   default     = 3,
