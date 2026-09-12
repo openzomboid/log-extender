@@ -30,11 +30,11 @@ function AnimalLogger.IsEnabledOnServer()
 end
 
 function AnimalLogger.GetAnimalID(animal)
-    if animal == nil then
+    if animal == nil or not animal.getAnimalID then
         return 0
     end
 
-    return animal.animalId or 0
+    return animal:getAnimalID() or 0
 end
 
 function AnimalLogger.GetAnimalType(animal)
@@ -78,7 +78,7 @@ function AnimalLogger.WriteAnimalAction(action, animal)
     local id = AnimalLogger.GetAnimalID(animal)
     local name = AnimalLogger.GetAnimalType(animal)
 
-    local message = '"' .. name .. '"'
+    local message = '"' .. name .. '" with id ' .. tostring(id)
 
     logutils.WriteLog(logutils.filemask.animal, action, message)
 end
@@ -97,7 +97,7 @@ function AnimalLogger.OnGameStart()
 
                 local _perform = actionClass.perform
                 actionClass.perform = function(self)
-                    logger.Debug("AnimalLogger: called perform in class " .. action.class)
+                    logger.Debug("AnimalLogger: called 'perform' wrapper in class " .. action.class)
 
                     local animal = AnimalLogger.GetAnimalFromTimedAction(self)
 
@@ -106,30 +106,16 @@ function AnimalLogger.OnGameStart()
                 end
             end
 
-            if actionClass.complete then
-                logger.Debug("AnimalLogger: animal action " .. action.class .. " 'complete' wrapper registered")
-
-                local _complete = actionClass.complete
-                actionClass.complete = function(self)
-                    logger.Debug("AnimalLogger: called complete in class " .. action.class)
-
-                    local animal = AnimalLogger.GetAnimalFromTimedAction(self)
-
-                    AnimalLogger.WriteAnimalAction(action.name, animal)
-                    return _complete(self)
-                end
-            end
-
             if action.alt and actionClass.stop then
                 logger.Debug("AnimalLogger: animal action " .. action.class .. " 'stop' wrapper registered")
 
                 local _stop = actionClass.stop
                 actionClass.stop = function(self)
-                    logger.Debug("AnimalLogger: called stop in class " .. action.class)
+                    logger.Debug("AnimalLogger: called 'stop' wrapper in class " .. action.class)
 
                     local animal = AnimalLogger.GetAnimalFromTimedAction(self)
 
-                    local ok, delta = pcall(function() return self.action:getJobDelta() end)
+                    local _, delta = pcall(function() return self.action:getJobDelta() end)
                     if delta >= 0.9 then
                         AnimalLogger.WriteAnimalAction(action.name, animal)
                     end
