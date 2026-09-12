@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [v0.15.0] - Unreleased
+## [v0.15.0] - 2026-09-13
 ### Fixed
 - Fixed translations of SafehouseLogs and SafehouseAdminTools sandbox options.
 
@@ -183,8 +183,9 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.14.0...HEAD
-[v0.13.0]: https://github.com/openzomboid/log-extender/compare/v0.13.0...v0.14.0
+[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.15.0...HEAD
+[v0.15.0]: https://github.com/openzomboid/log-extender/compare/v0.14.0...v0.15.0
+[v0.14.0]: https://github.com/openzomboid/log-extender/compare/v0.13.0...v0.14.0
 [v0.13.0]: https://github.com/openzomboid/log-extender/compare/v0.12.0...v0.13.0
 [v0.12.0]: https://github.com/openzomboid/log-extender/compare/v0.11.1...v0.12.0
 [v0.11.1]: https://github.com/openzomboid/log-extender/compare/v0.11.0...v0.11.1
