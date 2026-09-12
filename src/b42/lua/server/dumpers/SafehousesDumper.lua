@@ -4,19 +4,19 @@
 -- that can be found in the LICENSE file.
 --
 
+if isClient() then return end
+
 -- Fallback logger initialization if ConsoleLogger is not present in the global environment.
 local logger = ConsoleLogger and ConsoleLogger.new() or {
     Debug = function(msg) print("ConsoleLogger DEBUG: " .. msg) end
 }
 
-if isClient() then return end
+local json = require "vendor/json/json"
+local json_pretty_options = {pretty = true, indent = "  ", align_keys = false, array_newline = true}
 
 local SafehousesDumper = {
     safehouses = {}
 }
-
-local json = require "vendor/json/json"
-local json_pretty_options = {pretty = true, indent = "  ", align_keys = false, array_newline = true}
 
 -- WriteFile saves values to file in Zomboid/Lua directory.
 function SafehousesDumper.WriteFile(filename, data)

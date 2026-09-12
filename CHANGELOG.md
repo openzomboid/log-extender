@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Added Safehouses dumper.
+- Added Factions dumper.
 - Added protection from changes to logutils.
 
 ### Changed

@@ -12,14 +12,14 @@ local logger = ConsoleLogger and ConsoleLogger.new() or {
 local AnimalLogger = {
     actions = {
         { class = "ISKillAnimal",              name = "killed" },
-        { class = "ISKillAnimalInInventory",   name = "killed in inventory",  alt = true},
-        { class = "ISPickupAnimal",            name = "picked up",            alt = true }, -- TODO: no drop action
-        { class = "ISButcherAnimal",           name = "butchered" }, -- TODO: not working, FIXME
+        { class = "ISKillAnimalInInventory",   name = "killed in inventory",  stop = true},
+        { class = "ISPickupAnimal",            name = "picked up",            stop = true }, -- TODO: Add drop action (is's not specific animals action)
+        { class = "ISButcherAnimal",           name = "butchered",            start = true},
         { class = "ISPutAnimalOnHook",         name = "putted to hook" },
         { class = "ISRemoveAnimalFromHook",    name = "released from hook" },
-        { class = "ISAddAnimalInTrailer",      name = "putted to trailer",    alt = true },
+        { class = "ISAddAnimalInTrailer",      name = "putted to trailer",    stop = true },
         { class = "ISRemoveAnimalFromTrailer", name = "released from trailer" },
-        { class = "ISAttachAnimalToPlayer",    name = "attached" }, -- TODO: when detach writes attached, FIXME
+        { class = "ISAttachAnimalToPlayer",    name = "attached",             remove = "detached" },
         { class = "ISPutAnimalInHutch",        name = "putted to hutch" },
         { class = "ISHutchGrabAnimal",         name = "released from hutch" }
     }
@@ -39,11 +39,11 @@ end
 
 function AnimalLogger.GetAnimalType(animal)
     if animal == nil then
-        return "Unknown Animal"
+        return "unknown animal"
     end
 
-    local animalPrefix = "Unknown"
-    local animalType = "Animal"
+    local animalPrefix = "unknown"
+    local animalType = "animal"
 
     if animal.getData and animal:getData().getBreed and animal:getData():getBreed().getName then
         local raw = animal:getData():getBreed():getName()
@@ -101,12 +101,32 @@ function AnimalLogger.OnGameStart()
 
                     local animal = AnimalLogger.GetAnimalFromTimedAction(self)
 
+                    local actionName = action.name
+                    if action.remove and self.remove then
+                        actionName = action.remove
+                    end
+
                     _perform(self)
+                    AnimalLogger.WriteAnimalAction(actionName, animal)
+                end
+            end
+
+            if action.start and actionClass.start then
+                logger.Debug("AnimalLogger: animal action " .. action.class .. " 'start' wrapper registered")
+
+                local _start = actionClass.start
+                actionClass.start = function(self)
+                    logger.Debug("AnimalLogger: called 'start' wrapper in class " .. action.class)
+
+                    local animal = AnimalLogger.GetAnimalFromTimedAction(self) or self.body
+
+                    _start(self)
+
                     AnimalLogger.WriteAnimalAction(action.name, animal)
                 end
             end
 
-            if action.alt and actionClass.stop then
+            if action.stop and actionClass.stop then
                 logger.Debug("AnimalLogger: animal action " .. action.class .. " 'stop' wrapper registered")
 
                 local _stop = actionClass.stop

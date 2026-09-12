@@ -13,5 +13,10 @@
     "Sandbox_SafehousesDumper": "Сохранять все приваты",
     "Sandbox_SafehousesDumper_option1": "Отключено",
     "Sandbox_SafehousesDumper_option2": "Каждые 10 игровых минут (часто)",
-    "Sandbox_SafehousesDumper_option3": "Каждый 1 игровой час (нормально)"
+    "Sandbox_SafehousesDumper_option3": "Каждый 1 игровой час (нормально)",
+
+    "Sandbox_FactionsDumper": "Сохранять все фракции",
+    "Sandbox_FactionsDumper_option1": "Отключено",
+    "Sandbox_FactionsDumper_option2": "Каждые 10 игровых минут (часто)",
+    "Sandbox_FactionsDumper_option3": "Каждый 1 игровой час (нормально)"
 }

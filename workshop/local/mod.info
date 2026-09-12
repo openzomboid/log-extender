@@ -1,4 +1,7 @@
 name=Log Extender Local
 id=LogExtenderLocal
-poster=poster.png
+author=outdead
+modversion=0.15.0
 description=Adds more logs to the Logs directory the Project Zomboid game.
+poster=poster.png
+homepage=https://github.com/openzomboid/log-extender

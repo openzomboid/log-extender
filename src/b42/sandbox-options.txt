@@ -70,3 +70,11 @@ option LogExtender.SafehousesDumper {
   page        = LogExtender,
   translation = SafehousesDumper,
 }
+
+option LogExtender.FactionsDumper {
+  type        = enum,
+  default     = 3,
+  numValues   = 3,
+  page        = LogExtender,
+  translation = FactionsDumper,
+}

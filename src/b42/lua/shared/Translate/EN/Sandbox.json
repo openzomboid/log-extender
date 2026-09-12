@@ -13,5 +13,10 @@
     "Sandbox_SafehousesDumper": "Safehouses dumper",
     "Sandbox_SafehousesDumper_option1": "Disabled",
     "Sandbox_SafehousesDumper_option2": "Every 10 in-game minutes (fast)",
-    "Sandbox_SafehousesDumper_option3": "Every 1 in-game hour (normal)"
+    "Sandbox_SafehousesDumper_option3": "Every 1 in-game hour (normal)",
+
+    "Sandbox_FactionsDumper": "Factions dumper",
+    "Sandbox_FactionsDumper_option1": "Disabled",
+    "Sandbox_FactionsDumper_option2": "Every 10 in-game minutes (fast)",
+    "Sandbox_FactionsDumper_option3": "Every 1 in-game hour (normal)"
 }
