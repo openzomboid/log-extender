@@ -93,7 +93,7 @@ function AnimalLogger.OnGameStart()
 
         if actionClass then
             if actionClass.perform then
-                logger.Debug("AnimalLogger: animal action " .. action.class .. " perform registered")
+                logger.Debug("AnimalLogger: animal action " .. action.class .. " 'perform' wrapper registered")
 
                 local _perform = actionClass.perform
                 actionClass.perform = function(self)
@@ -107,7 +107,7 @@ function AnimalLogger.OnGameStart()
             end
 
             if actionClass.complete then
-                logger.Debug("AnimalLogger: animal action " .. action.class .. " complete registered")
+                logger.Debug("AnimalLogger: animal action " .. action.class .. " 'complete' wrapper registered")
 
                 local _complete = actionClass.complete
                 actionClass.complete = function(self)
@@ -121,7 +121,7 @@ function AnimalLogger.OnGameStart()
             end
 
             if action.alt and actionClass.stop then
-                logger.Debug("AnimalLogger: animal action " .. action.class .. " stop registered")
+                logger.Debug("AnimalLogger: animal action " .. action.class .. " 'stop' wrapper registered")
 
                 local _stop = actionClass.stop
                 actionClass.stop = function(self)
@@ -138,7 +138,7 @@ function AnimalLogger.OnGameStart()
                 end
             end
         else
-            logger.Debug("AnimalLogger: animal action " .. action.class .. " not found or has no perform")
+            logger.Debug("AnimalLogger: animal action " .. action.class .. " not found")
         end
     end
 end
