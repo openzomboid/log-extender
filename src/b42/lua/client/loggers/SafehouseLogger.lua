@@ -233,7 +233,7 @@ end
 
 -- OnAdminAddSafeHouse rewrites original ISWorldObjectContextMenu.onTakeSafeHouse and
 -- adds logs for player take safehouse action.
-SafehouseLogger.OnAdminAddSafeHouse = function()
+function SafehouseLogger.OnAdminAddSafeHouse()
     local originalOnClick = ISAddSafeZoneUI.onClick
 
     ISAddSafeZoneUI.onClick = function(self, button)
@@ -262,12 +262,14 @@ SafehouseLogger.OnAdminAddSafeHouse = function()
             end, 10)
         end
 
-        logutils.WriteLogAdmin("create safehouse", tostring(setX) .. "," .. tostring(setY) .. "," .. tostring(setW) .. "," .. tostring(setH))
+        if SandboxVars.LogExtender.SafehouseAdminTools then
+            logutils.WriteLogAdmin("create safehouse", tostring(setX) .. "," .. tostring(setY) .. "," .. tostring(setW) .. "," .. tostring(setH))
+        end
     end
 end
 
 function SafehouseLogger.OnGameStart()
-    if SandboxVars.LogExtender.SafehouseAdminTools then
+    if SafehouseLogger.IsEnabledOnServer() or SandboxVars.LogExtender.SafehouseAdminTools then
         SafehouseLogger.OnAdminAddSafeHouse()
     end
 end

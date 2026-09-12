@@ -14,12 +14,12 @@ local AnimalLogger = {
         { class = "ISKillAnimal",              name = "killed" },
         { class = "ISKillAnimalInInventory",   name = "killed in inventory",  alt = true},
         { class = "ISPickupAnimal",            name = "picked up",            alt = true }, -- TODO: no drop action
-        { class = "ISButcherAnimal",           name = "butchered" },
+        { class = "ISButcherAnimal",           name = "butchered" }, -- TODO: not working, FIXME
         { class = "ISPutAnimalOnHook",         name = "putted to hook" },
         { class = "ISRemoveAnimalFromHook",    name = "released from hook" },
         { class = "ISAddAnimalInTrailer",      name = "putted to trailer",    alt = true },
         { class = "ISRemoveAnimalFromTrailer", name = "released from trailer" },
-        { class = "ISAttachAnimalToPlayer",    name = "attached" }, -- TODO: detached writes attached, FIXME
+        { class = "ISAttachAnimalToPlayer",    name = "attached" }, -- TODO: when detach writes attached, FIXME
         { class = "ISPutAnimalInHutch",        name = "putted to hutch" },
         { class = "ISHutchGrabAnimal",         name = "released from hutch" }
     }

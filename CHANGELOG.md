@@ -6,12 +6,15 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ## [v0.15.0] - Unreleased
+### Fixed
+- Fixed translations of SafehouseLogs and SafehouseAdminTools sandbox options.
+
 ### Added
 - Added Safehouses dumper.
 - Added protection from changes to logutils.
 
-## Changed
-- Changed format of character's coordinate in brushtool, craft, player and safehouse logs. Old:`.. (x,y,z).`, new `.. at x,y,z.` 
+### Changed
+- Changed format of character's coordinate in brushtool, craft, player and safehouse logs. Old:`.. (x,y,z).`, new `.. at x,y,z.`.
 
 ## [v0.14.0] - 2026-08-31
 ### Added

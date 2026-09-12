@@ -5,6 +5,8 @@
     "Sandbox_VehicleLogs": "Включить логи _vehicle.txt",
     "Sandbox_VehicleAdminTools": "Включить логирование действий админов над машинами",
     "Sandbox_BrushToolLogs": "Включить логи _brushtool.txt",
+    "Sandbox_SafehouseLogs": "Вкючить логи _safehouse.txt",
+    "Sandbox_SafehouseAdminTools": "Включить логирование действий админов над убежищами",
     "Sandbox_CraftLogs": "Включить логи _craft.txt",
     "Sandbox_AnimalLogs": "Включить логи _animal.txt",
 

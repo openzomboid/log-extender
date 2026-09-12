@@ -5,6 +5,8 @@
     "Sandbox_VehicleLogs": "Enable _vehicle.txt logs",
     "Sandbox_VehicleAdminTools": "Enable logging of admin actions on vehicle",
     "Sandbox_BrushToolLogs": "Enable _brushtool.txt logs",
+    "Sandbox_SafehouseLogs": "Enable _safehouse.txt logs",
+    "Sandbox_SafehouseAdminTools": "Enable logging of admin actions on safehouses",
     "Sandbox_CraftLogs": "Enable _craft.txt logs",
     "Sandbox_AnimalLogs": "Enable _animal.txt logs",
 
