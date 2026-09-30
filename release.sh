@@ -11,10 +11,16 @@ MOD_NAME="LogExtender"
 
 # MOD_VERSION of current mod.
 # Follows semantic versioning, SEE: http://semver.org/.
-MOD_VERSION="$1"
-if [ -z "${MOD_VERSION}" ]; then echo "MOD_VERSION is not set. Use ./release.sh 0.0.0 stage" >&2; exit 1; fi
+MOD_VERSION=$(head -n 1 VERSION);
 
-STAGE="$2"
+semver_regex='^[0-9]+\.[0-9]+\.[0-9]+$'
+
+if ! [[ "$MOD_VERSION" =~ $semver_regex ]]; then
+    echo "[  ER  ] MOD_VERSION is not correct"
+    exit
+fi
+
+STAGE="$1"
 if [ -z "${STAGE}" ]; then STAGE="prod"; fi
 
 case ${STAGE} in
