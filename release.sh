@@ -13,19 +13,15 @@ MOD_NAME="LogExtender"
 # Follows semantic versioning, SEE: http://semver.org/.
 MOD_VERSION=$(head -n 1 VERSION);
 
-semver_regex='^[0-9]+\.[0-9]+\.[0-9]+$'
-
-if ! [[ "$MOD_VERSION" =~ $semver_regex ]]; then
-    echo "[  ER  ] MOD_VERSION is not correct"
-    exit
+if ! [[ "$MOD_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "[  ER  ] MOD_VERSION '$MOD_VERSION' is not correct"; exit 1
 fi
 
-STAGE="$1"
-if [ -z "${STAGE}" ]; then STAGE="prod"; fi
+STAGE="$1"; if [ -z "${STAGE}" ]; then STAGE="prod"; fi
 
 case ${STAGE} in
   local|test|prod)
-    echo "[ INFO ] Preparing ${STAGE} release v${MOD_VERSION}" ;;
+    echo "[ INFO ] Preparing ${MOD_NAME} v${MOD_VERSION} release to ${STAGE} env" ;;
   *)
     echo "[  ER  ] Incorrect stage \"${STAGE}\"" >&2; exit 1  ;;
 esac
@@ -44,16 +40,22 @@ ZOMBOID_WORKSHOP_MOD_DIR=${ZOMBOID_WORKSHOP_DIR}/"${MOD_NAME}"
 WORKDIR=.tmp/release
 
 function remove_old_release() {
+  echo "[ INFO ] Removing old release files"
+
   rm -rf ${WORKDIR:?}
   rm -rf ${ZOMBOID_WORKSHOP_MOD_DIR:?}
 }
 
 function create_folders() {
+  echo "[ INFO ] Creating release folders"
+
   mkdir -p ${WORKDIR}
   touch ${WORKDIR}/checksum.txt
 }
 
 function make_release() {
+  echo "[ INFO ] Making release"
+
   local dir_workshop=${RELEASE_DIR_WORKSHOP}
   local dir_mod_home="${RELEASE_DIR_WORKSHOP_MOD_NAME}"
 
@@ -82,11 +84,13 @@ function make_release() {
 }
 
 function compress_release() {
+  echo "[ INFO ] Compressing release files"
+
   local dir_workshop=${RELEASE_DIR_WORKSHOP}
 
   cd "${dir_workshop}/Contents/mods/" && {
-    tar -zcvf "../../../${RELEASE_NAME}.tar.gz" "${MOD_NAME}"
-    zip -r "../../../${RELEASE_NAME}.zip" "${MOD_NAME}"
+    tar -zcf "../../../${RELEASE_NAME}.tar.gz" "${MOD_NAME}"
+    zip -rq "../../../${RELEASE_NAME}.zip" "${MOD_NAME}"
   }
 
   cd ../../../ && {
@@ -96,7 +100,9 @@ function compress_release() {
   }
 }
 
-function install_release() {
+function inject_release() {
+  echo "[ INFO ] Injecting release files to Zomboid/Workshop folder"
+
   cp -r ${WORKDIR:?}/"${RELEASE_NAME:?}" ${ZOMBOID_WORKSHOP_MOD_DIR}
   rm -r ${WORKDIR:?}/"${RELEASE_NAME}"
 }
@@ -105,4 +111,4 @@ remove_old_release && \
   create_folders && \
   make_release && \
   compress_release && \
-  install_release
+  inject_release
