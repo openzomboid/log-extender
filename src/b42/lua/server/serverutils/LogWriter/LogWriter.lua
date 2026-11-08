@@ -18,6 +18,12 @@ function LogWriter.onClientCommand(module, command, character, args)
     if command == "write" then
         -- TODO: Add Username/SteamID validation. Check consistency of sender and target user in args
         writeLog(args.mask, args.message)
+    elseif command == "writeBatch" then
+        if args.lines and type(args.lines) == "table" then
+            for i = 1, #args.lines do
+                writeLog(args.mask, args.lines[i])
+            end
+        end
     end
 end
 
