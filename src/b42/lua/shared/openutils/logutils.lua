@@ -11,7 +11,7 @@ local logger = ConsoleLogger and ConsoleLogger.new() or {
 }
 
 local _logutils = {
-    version = "0.15.0", -- in semantic versioning (http://semver.org/)
+    version = "0.16.0", -- in semantic versioning (http://semver.org/)
     pzversion = getCore():getVersionNumber(),
 
     -- Placeholders for Project Zomboid log file names.
@@ -191,11 +191,14 @@ function _logutils.GetPlayerHealth(character)
     return health
 end
 
--- GetVehicleInfo returns some vehicles information such as id, type and center
--- coordinate.
+-- GetVehicleInfo returns some vehicles information such as id, keyID, sqlID,
+-- uid, type and center coordinate.
 function _logutils.GetVehicleInfo(vehicle)
     local info = {
         ID = "0",
+        KeyID = "-1",
+        SqlID = "-1",
+        UID = "",
         Type = "unknown",
         Center = "10,10,0", -- Unexisting coordinate.
     }
@@ -212,7 +215,13 @@ function _logutils.GetVehicleInfo(vehicle)
         type = script:getName() or "unknown"
     end
 
+    local keyID = (vehicle.getKeyId and vehicle:getKeyId()) or vehicle.keyId or -1
+    local sqlID = (vehicle.getSqlId and vehicle:getSqlId()) or vehicle.sqlId or -1
+
     info.ID = tostring(id)
+    info.KeyId = tostring(keyID)
+    info.SqlId = tostring(sqlID)
+    info.UID = uid or ""
     info.Type = type
     info.Center = logutils.GetLocation(vehicle:getCurrentSquare())
 

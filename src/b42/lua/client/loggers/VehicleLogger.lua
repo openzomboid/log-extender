@@ -1,19 +1,47 @@
 --
--- Copyright (c) 2024 outdead.
+-- Copyright (c) 2026 outdead.
 -- Use of this source code is governed by the MIT license
 -- that can be found in the LICENSE file.
 --
 
 local VehicleLogger = {
-    -- Store vehicle object when user enter to it.
-    vehicle = nil,
-    -- Store vehicle object when user attach it.
-    vehicleAttachmentA = nil,
-    vehicleAttachmentB = nil,
+    vehicle = nil, -- Store vehicle object when user enter to it.
+    vehicleAttachmentA = nil, -- Store vehicle object when user attach it.
+    vehicleAttachmentB = nil, -- Store vehicle object when user attach it.
+    initialized = false,
+    recentAttacks = {},
 }
 
 function VehicleLogger.IsEnabledOnServer()
     return SandboxVars.LogExtender.VehicleLogs
+end
+
+-- FormatVehicleJSON formats vehicle information into standard JSON string.
+function VehicleLogger.FormatVehicleJSON(vehicle)
+    if not vehicle then
+        return "{}"
+    end
+
+    local info = logutils.GetVehicleInfo(vehicle)
+    local s = '{"id":' .. info.ID
+
+    if info.KeyId and info.KeyId ~= "-1" and info.KeyId ~= "0" then
+        s = s .. ',"key_id":' .. info.KeyId
+    end
+
+    if info.SqlId and info.SqlId ~= "-1" and info.SqlId ~= "0" then
+        s = s .. ',"sql_id":' .. info.SqlId
+    end
+
+    s = s .. ',"type":"' .. info.Type .. '"'
+
+    if info.Center then
+        s = s .. ',"center":"' .. info.Center .. '"'
+    end
+
+    s = s .. '}'
+
+    return s
 end
 
 -- DumpVehicle writes vehicles info to log file.
@@ -25,25 +53,13 @@ function VehicleLogger.DumpVehicle(character, action, vehicle, vehicle2)
     local message = ""
 
     if vehicle then
-        local info = logutils.GetVehicleInfo(vehicle)
-
-        message = message .. ' vehicle={'
-                .. '"id":' .. info.ID .. ','
-                .. '"type":"' .. info.Type .. '",'
-                .. '"center":"' .. info.Center .. '"'
-                .. '}'
+        message = message .. 'vehicle=' .. VehicleLogger.FormatVehicleJSON(vehicle)
     else
-        message = message .. " vehicle={}"
+        message = message .. "vehicle={}"
     end
 
     if vehicle2 then
-        local info = logutils.GetVehicleInfo(vehicle2)
-
-        message = message .. ' vehicle={'
-                .. '"id":' .. info.ID .. ','
-                .. '"type":"' .. info.Type .. '",'
-                .. '"center":"' .. info.Center .. '"'
-                .. '}'
+        message = message .. ' vehicle=' .. VehicleLogger.FormatVehicleJSON(vehicle2)
     end
 
     logutils.WriteLog(logutils.filemask.vehicle, action, message)
@@ -62,15 +78,18 @@ end
 -- VehicleExit adds callback for OnExitVehicle event.
 VehicleLogger.VehicleExit = function(player)
     if player and instanceof(player, 'IsoPlayer') and player:isLocalPlayer() then
-        if VehicleLogger.vehicle ~= nil then
-            VehicleLogger.DumpVehicle(player, "exit", VehicleLogger.vehicle, nil)
-            VehicleLogger.vehicle = nil
+        local vehicle = VehicleLogger.vehicle or player:getVehicle()
+        if vehicle ~= nil then
+            VehicleLogger.DumpVehicle(player, "exit", vehicle, nil)
         end
+        
+        VehicleLogger.vehicle = nil
     end
 end
 
 -- VehicleAttach adds callback for ISAttachTrailerToVehicle event.
 VehicleLogger.VehicleAttach = function()
+    if not ISAttachTrailerToVehicle or not ISAttachTrailerToVehicle.perform then return end
     local originalPerform = ISAttachTrailerToVehicle.perform
 
     ISAttachTrailerToVehicle.perform = function(self)
@@ -78,7 +97,7 @@ VehicleLogger.VehicleAttach = function()
 
         local player = self.character
 
-        if player then
+        if player and player:isLocalPlayer() then
             VehicleLogger.vehicleAttachmentA = self.vehicleA
             VehicleLogger.vehicleAttachmentB = self.vehicleB
             VehicleLogger.DumpVehicle(player, "attach to", self.vehicleA, self.vehicleB)
@@ -88,6 +107,7 @@ end
 
 -- VehicleDetach adds callback for ISDetachTrailerFromVehicle event.
 VehicleLogger.VehicleDetach = function()
+    if not ISDetachTrailerFromVehicle or not ISDetachTrailerFromVehicle.perform then return end
     local originalPerform = ISDetachTrailerFromVehicle.perform
 
     ISDetachTrailerFromVehicle.perform = function(self)
@@ -100,7 +120,7 @@ VehicleLogger.VehicleDetach = function()
 
         local player = self.character
 
-        if player then
+        if player and player:isLocalPlayer() then
             VehicleLogger.DumpVehicle(player, "detach from", self.vehicle, vehicleB)
             VehicleLogger.vehicleAttachmentA = nil
             VehicleLogger.vehicleAttachmentB = nil
@@ -108,11 +128,247 @@ VehicleLogger.VehicleDetach = function()
     end
 end
 
-if VehicleLogger.IsEnabledOnServer() then
-    Events.OnEnterVehicle.Add(VehicleLogger.VehicleEnter)
-    Events.OnExitVehicle.Add(VehicleLogger.VehicleExit)
-    VehicleLogger.VehicleAttach()
-    VehicleLogger.VehicleDetach()
+-- VehicleSmashWindow adds logs for Smashing windows actions.
+VehicleLogger.VehicleSmashWindow = function()
+    if ISSmashVehicleWindow and ISSmashVehicleWindow.perform then
+        local originalPerform = ISSmashVehicleWindow.perform
+        
+        ISSmashVehicleWindow.perform = function(self)
+            originalPerform(self)
+            
+            if self.character and self.character:isLocalPlayer() and self.vehicle and self.part then
+                local weapon = self.character:getPrimaryHandItem()
+                local toolName = (weapon and instanceof(weapon, "HandWeapon")) and ('"' .. weapon:getFullType() .. '"') or '"Bare hands"'
+                local pId = self.part:getId() or "Window"
+                local message = 'of vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle) .. ' part="' .. pId .. '" using=' .. toolName
+                
+                logutils.WriteLog(logutils.filemask.vehicle, "smashed window", message)
+            end
+        end
+    end
+
+    if ISSmashWindow and ISSmashWindow.perform then
+        local originalPerform = ISSmashWindow.perform
+        
+        ISSmashWindow.perform = function(self)
+            originalPerform(self)
+            
+            if self.character and self.character:isLocalPlayer() and self.vehiclePart ~= nil then
+                local veh = self.vehiclePart:getVehicle()
+                local weapon = self.character:getPrimaryHandItem()
+                local toolName = (weapon and instanceof(weapon, "HandWeapon")) and ('"' .. weapon:getFullType() .. '"') or '"Bare hands"'
+                local pId = self.vehiclePart:getId() or "Window"
+                local message = 'of vehicle=' .. VehicleLogger.FormatVehicleJSON(veh) .. ' part="' .. pId .. '" using=' .. toolName
+                
+                logutils.WriteLog(logutils.filemask.vehicle, "smashed window", message)
+            end
+        end
+    end
+end
+
+-- VehicleSiphonGas adds logs for Taking gasoline from vehicle actions.
+VehicleLogger.VehicleSiphonGas = function()
+    if ISTakeGasolineFromVehicle and ISTakeGasolineFromVehicle.perform then
+        local originalPerform = ISTakeGasolineFromVehicle.perform
+        
+        ISTakeGasolineFromVehicle.perform = function(self)
+            originalPerform(self)
+            
+            if self.character and self.character:isLocalPlayer() and self.vehicle then
+                local message = 'gasoline from vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle)
+                logutils.WriteLog(logutils.filemask.vehicle, "siphoned", message)
+            end
+        end
+    end
+end
+
+-- VehicleSiphonGas adds logs for Adding gasoline from vehicle actions.
+VehicleLogger.VehicleRefuel = function()
+    if ISAddGasolineToVehicle and ISAddGasolineToVehicle.perform then
+        local originalPerform = ISAddGasolineToVehicle.perform
+        
+        ISAddGasolineToVehicle.perform = function(self)
+            originalPerform(self)
+            
+            if self.character and self.character:isLocalPlayer() and self.vehicle then
+                local itemType = (self.item and self.item.getFullType and self.item:getFullType()) or "Base.PetrolCan"
+                local message = 'gasoline into vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle) .. ' from item="' .. itemType .. '"'
+                logutils.WriteLog(logutils.filemask.vehicle, "refueled", message)
+            end
+        end
+    end
+
+    if ISRefuelFromGasPump and ISRefuelFromGasPump.perform then
+        local originalPerform = ISRefuelFromGasPump.perform
+        
+        ISRefuelFromGasPump.perform = function(self)
+            originalPerform(self)
+            if self.character and self.character:isLocalPlayer() and self.vehicle then
+                local message = 'gasoline into vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle) .. ' from gas pump'
+                logutils.WriteLog(logutils.filemask.vehicle, "refueled", message)
+            end
+        end
+    end
+end
+
+-- VehicleHotwire adds logs for Hotwire actions.
+VehicleLogger.VehicleHotwire = function()
+    if ISHotwireVehicle and ISHotwireVehicle.perform then
+        local originalPerform = ISHotwireVehicle.perform
+        
+        ISHotwireVehicle.perform = function(self)
+            originalPerform(self)
+            
+            if self.character and self.character:isLocalPlayer() then
+                local veh = self.character:getVehicle()
+                if veh then
+                    local message = 'vehicle=' .. VehicleLogger.FormatVehicleJSON(veh)
+                    logutils.WriteLog(logutils.filemask.vehicle, "hotwired", message)
+                end
+            end
+        end
+    end
+end
+
+-- VehicleParts adds logs for vehicle parts actions.
+VehicleLogger.VehicleParts = function()
+    if ISUninstallVehiclePart and ISUninstallVehiclePart.perform then
+        local originalPerform = ISUninstallVehiclePart.perform
+        
+        ISUninstallVehiclePart.perform = function(self)
+            originalPerform(self)
+            
+            if self.character and self.character:isLocalPlayer() and self.vehicle and self.part then
+                local pId = self.part:getId() or "unknown"
+                local message = 'part "' .. pId .. '" from vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle)
+                logutils.WriteLog(logutils.filemask.vehicle, "uninstalled", message)
+            end
+        end
+    end
+
+    if ISInstallVehiclePart and ISInstallVehiclePart.perform then
+        local originalPerform = ISInstallVehiclePart.perform
+        
+        ISInstallVehiclePart.perform = function(self)
+            originalPerform(self)
+            
+            if self.character and self.character:isLocalPlayer() and self.vehicle and self.part then
+                local pId = self.part:getId() or "unknown"
+                local message = 'part "' .. pId .. '" on vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle)
+                logutils.WriteLog(logutils.filemask.vehicle, "installed", message)
+            end
+        end
+    end
+end
+
+-- VehicleTirePressure adds logs for vehicle Tires actions.
+VehicleLogger.VehicleTirePressure = function()
+    if ISDeflateTire and ISDeflateTire.perform then
+        local originalPerform = ISDeflateTire.perform
+        
+        ISDeflateTire.perform = function(self)
+            originalPerform(self)
+            
+            if self.character and self.character:isLocalPlayer() and self.vehicle and self.part then
+                local pId = self.part:getId() or "Tire"
+                local message = 'part "' .. pId .. '" of vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle)
+                logutils.WriteLog(logutils.filemask.vehicle, "deflated tire", message)
+            end
+        end
+    end
+
+    if ISInflateTire and ISInflateTire.perform then
+        local originalPerform = ISInflateTire.perform
+        
+        ISInflateTire.perform = function(self)
+            originalPerform(self)
+            
+            if self.character and self.character:isLocalPlayer() and self.vehicle and self.part then
+                local pId = self.part:getId() or "Tire"
+                local message = 'part "' .. pId .. '" of vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle)
+                logutils.WriteLog(logutils.filemask.vehicle, "inflated tire", message)
+            end
+        end
+    end
+end
+
+-- OnWeaponSwing adds logs for weapons actions.
+VehicleLogger.OnWeaponSwing = function(character, weapon)
+    if not character or not character:isLocalPlayer() then return end
+    if not VehicleLogger.IsEnabledOnServer() then return end
+
+    local cell = getCell()
+    local vehicles = cell and cell:getVehicles()
+    if not vehicles then return end
+
+    local count = (vehicles.size and vehicles:size()) or (type(vehicles) == "table" and #vehicles) or 0
+    if count == 0 then return end
+
+    VehicleLogger.recentAttacks = {
+        weapon = weapon,
+        snapshots = {}
+    }
+
+    for i = 0, count - 1 do
+        local veh = (vehicles.get and vehicles:get(i)) or vehicles[i + 1]
+        if veh then
+            local distSq = (character:getX() - veh:getX())^2 + (character:getY() - veh:getY())^2
+            
+            if distSq <= 400 then
+                local vehId = veh:getId()
+                local pCount = (veh.getPartCount and veh:getPartCount()) or 0
+                local partConds = {}
+                
+                for p = 0, pCount - 1 do
+                    local part = veh:getPartByIndex(p)
+                    if part and part:getId() then
+                        partConds[part:getId()] = part:getCondition()
+                    end
+                end
+                
+                VehicleLogger.recentAttacks.snapshots[vehId] = {
+                    vehicle = veh,
+                    conditions = partConds
+                }
+            end
+        end
+    end
+end
+
+VehicleLogger.OnPlayerAttackFinished = function(character)
+    if not character or not character:isLocalPlayer() then return end
+    if not VehicleLogger.IsEnabledOnServer() then return end
+    if not VehicleLogger.recentAttacks or not VehicleLogger.recentAttacks.snapshots then return end
+
+    local weapon = VehicleLogger.recentAttacks.weapon
+    local isRanged = weapon and weapon.isRanged and weapon:isRanged()
+    local action = isRanged and "attacked (ranged)" or "attacked (melee)"
+    local weaponName = (weapon and weapon.getFullType) and ('"' .. weapon:getFullType() .. '"') or '"Bare hands"'
+
+    for vehId, data in pairs(VehicleLogger.recentAttacks.snapshots) do
+        local veh = data.vehicle
+        if veh and veh.getPartCount then
+            for p = 0, veh:getPartCount() - 1 do
+                local part = veh:getPartByIndex(p)
+                if part and part:getId() then
+                    local pId = part:getId()
+                    local preCond = data.conditions[pId]
+                    local curCond = part:getCondition()
+                    if preCond and curCond < preCond then
+                        local dmg = preCond - curCond
+                        local hpStr = "hp=" .. tostring(curCond) .. "/100"
+                        if curCond <= 0 then
+                            hpStr = hpStr .. " (destroyed)"
+                        end
+                        local message = 'vehicle=' .. VehicleLogger.FormatVehicleJSON(veh) .. ' part="' .. pId .. '" dmg=' .. tostring(dmg) .. ' ' .. hpStr .. ' using=' .. weaponName
+                        logutils.WriteLog(logutils.filemask.vehicle, action, message)
+                    end
+                end
+            end
+        end
+    end
+
+    VehicleLogger.recentAttacks = {}
 end
 
 --
@@ -122,6 +378,7 @@ end
 -- ISSpawnVehicleUI_onClick adds logs record to admin.txt file after spawn, repair
 -- vehicle and add key from vehicle in Spawn Vehicle interface.
 VehicleLogger.ISSpawnVehicleUI_onClick = function()
+    if not ISSpawnVehicleUI or not ISSpawnVehicleUI.onClick then return end
     local originalOnClick = ISSpawnVehicleUI.onClick
 
     ISSpawnVehicleUI.onClick = function(self, button)
@@ -148,26 +405,33 @@ VehicleLogger.ISSpawnVehicleUI_onClick = function()
 end
 
 VehicleLogger.DebugContextMenuCheats = function()
-    local originalOnAddVehicle = DebugContextMenu.onAddVehicle
+    if not DebugContextMenu then return end
 
-    DebugContextMenu.onAddVehicle = function(character)
-        logutils.WriteLogAdmin("spawned vehicle", "random")
+    if DebugContextMenu.onAddVehicle then
+        local originalOnAddVehicle = DebugContextMenu.onAddVehicle
 
-        originalOnAddVehicle(character)
+        DebugContextMenu.onAddVehicle = function(character)
+            logutils.WriteLogAdmin("spawned vehicle", "random")
+
+            originalOnAddVehicle(character)
+        end
     end
 
-    local originalOnRemoveVehicle = DebugContextMenu.onRemoveVehicle
+    if DebugContextMenu.onRemoveVehicle then
+        local originalOnRemoveVehicle = DebugContextMenu.onRemoveVehicle
 
-    DebugContextMenu.onRemoveVehicle = function(character, vehicle)
-        logutils.WriteLogAdmin("removed vehicle", logutils.GetVehicleInfo(vehicle).Type)
+        DebugContextMenu.onRemoveVehicle = function(character, vehicle)
+            logutils.WriteLogAdmin("removed vehicle", logutils.GetVehicleInfo(vehicle).Type)
 
-        originalOnRemoveVehicle(character, vehicle)
+            originalOnRemoveVehicle(character, vehicle)
+        end
     end
 end
 
 -- OnAddVehicleCommand adds logs record to admin.txt file after spawn vehicle
 -- from chat command.
 VehicleLogger.OnAddVehicleCommand = function()
+    if not ISChat or not ISChat.onCommandEntered then return end
     local onCommandEnteredOriginal = ISChat.onCommandEntered
 
     ISChat.onCommandEntered = function(self)
@@ -213,6 +477,7 @@ VehicleLogger.OnAddVehicleCommand = function()
 end
 
 VehicleLogger.OnCheatRemove = function()
+    if not ISVehicleMechanics or not ISVehicleMechanics.onCheatRemoveAux then return end
     local onCheatRemoveAuxOriginal = ISVehicleMechanics.onCheatRemoveAux
 
     ISVehicleMechanics.onCheatRemoveAux = function(dummy, button, character, vehicle)
@@ -225,6 +490,7 @@ VehicleLogger.OnCheatRemove = function()
 end
 
 VehicleLogger.OnCheatRepair = function()
+    if not ISVehicleMechanics or not ISVehicleMechanics.onCheatRepair then return end
     local onCheatRepairOriginal = ISVehicleMechanics.onCheatRepair
 
     ISVehicleMechanics.onCheatRepair = function(character, vehicle)
@@ -235,6 +501,7 @@ VehicleLogger.OnCheatRepair = function()
 end
 
 VehicleLogger.OnCheatRepairPart = function()
+    if not ISVehicleMechanics or not ISVehicleMechanics.onCheatRepairPart then return end
     local onCheatRepairPartOriginal = ISVehicleMechanics.onCheatRepairPart
 
     ISVehicleMechanics.onCheatRepairPart = function(character, part)
@@ -246,6 +513,7 @@ VehicleLogger.OnCheatRepairPart = function()
 end
 
 VehicleLogger.OnCheatSetCondition = function()
+    if not ISVehicleMechanics or not ISVehicleMechanics.onCheatSetConditionAux then return end
     local onCheatSetConditionAuxOriginal = ISVehicleMechanics.onCheatSetConditionAux
 
     ISVehicleMechanics.onCheatSetConditionAux = function(target, button, character, part)
@@ -257,6 +525,7 @@ VehicleLogger.OnCheatSetCondition = function()
 end
 
 VehicleLogger.OnCheatGetKey = function()
+    if not ISVehicleMechanics or not ISVehicleMechanics.onCheatGetKey then return end
     local onCheatGetKeyOriginal = ISVehicleMechanics.onCheatGetKey
 
     ISVehicleMechanics.onCheatGetKey = function(character, vehicle)
@@ -266,13 +535,36 @@ VehicleLogger.OnCheatGetKey = function()
     end
 end
 
-if SandboxVars.LogExtender.VehicleAdminTools then
-    VehicleLogger.ISSpawnVehicleUI_onClick()
-    VehicleLogger.DebugContextMenuCheats()
-    VehicleLogger.OnAddVehicleCommand()
-    VehicleLogger.OnCheatRemove()
-    VehicleLogger.OnCheatRepair()
-    VehicleLogger.OnCheatRepairPart()
-    VehicleLogger.OnCheatSetCondition()
-    VehicleLogger.OnCheatGetKey()
+-- OnGameStart adds callback for OnGameStart global event.
+VehicleLogger.OnGameStart = function()
+    if VehicleLogger.initialized then return end
+    VehicleLogger.initialized = true
+
+    if VehicleLogger.IsEnabledOnServer() then
+        Events.OnEnterVehicle.Add(VehicleLogger.VehicleEnter)
+        Events.OnExitVehicle.Add(VehicleLogger.VehicleExit)
+        VehicleLogger.VehicleAttach()
+        VehicleLogger.VehicleDetach()
+        VehicleLogger.VehicleSmashWindow()
+        VehicleLogger.VehicleSiphonGas()
+        VehicleLogger.VehicleRefuel()
+        VehicleLogger.VehicleHotwire()
+        VehicleLogger.VehicleParts()
+        VehicleLogger.VehicleTirePressure()
+        Events.OnWeaponSwing.Add(VehicleLogger.OnWeaponSwing)
+        Events.OnPlayerAttackFinished.Add(VehicleLogger.OnPlayerAttackFinished)
+    end
+
+    if SandboxVars.LogExtender and SandboxVars.LogExtender.VehicleAdminTools then
+        VehicleLogger.ISSpawnVehicleUI_onClick()
+        VehicleLogger.DebugContextMenuCheats()
+        VehicleLogger.OnAddVehicleCommand()
+        VehicleLogger.OnCheatRemove()
+        VehicleLogger.OnCheatRepair()
+        VehicleLogger.OnCheatRepairPart()
+        VehicleLogger.OnCheatSetCondition()
+        VehicleLogger.OnCheatGetKey()
+    end
 end
+
+Events.OnGameStart.Add(VehicleLogger.OnGameStart)
