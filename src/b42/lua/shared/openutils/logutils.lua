@@ -219,9 +219,8 @@ function _logutils.GetVehicleInfo(vehicle)
     local sqlID = (vehicle.getSqlId and vehicle:getSqlId()) or vehicle.sqlId or -1
 
     info.ID = tostring(id)
-    info.KeyId = tostring(keyID)
-    info.SqlId = tostring(sqlID)
-    info.UID = uid or ""
+    info.KeyID = tostring(keyID)
+    info.SqlID = tostring(sqlID)
     info.Type = type
     info.Center = logutils.GetLocation(vehicle:getCurrentSquare())
 

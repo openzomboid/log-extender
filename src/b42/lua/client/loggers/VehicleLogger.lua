@@ -25,12 +25,12 @@ function VehicleLogger.FormatVehicleJSON(vehicle)
     local info = logutils.GetVehicleInfo(vehicle)
     local s = '{"id":' .. info.ID
 
-    if info.KeyId and info.KeyId ~= "-1" and info.KeyId ~= "0" then
-        s = s .. ',"key_id":' .. info.KeyId
+    if info.KeyID and info.KeyID ~= "-1" and info.KeyID ~= "0" then
+        s = s .. ',"key_id":' .. info.KeyID
     end
 
-    if info.SqlId and info.SqlId ~= "-1" and info.SqlId ~= "0" then
-        s = s .. ',"sql_id":' .. info.SqlId
+    if info.SqlID and info.SqlID ~= "-1" and info.SqlID ~= "0" then
+        s = s .. ',"sql_id":' .. info.SqlID
     end
 
     s = s .. ',"type":"' .. info.Type .. '"'
