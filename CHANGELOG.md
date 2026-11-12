@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+- Added Window Smashing, Siphoning, Refueling, Hotwire, Mechanics and Tires & Combat logs to VehicleLogger.
+- Added "writeBatch" command to LogWriter.
+
 ## [v0.15.0] - 2026-09-13
 ### Fixed
 - Fixed translations of SafehouseLogs and SafehouseAdminTools sandbox options.
