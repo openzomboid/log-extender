@@ -16,34 +16,6 @@ function VehicleLogger.IsEnabledOnServer()
     return SandboxVars.LogExtender.VehicleLogs
 end
 
--- FormatVehicleJSON formats vehicle information into standard JSON string.
-function VehicleLogger.FormatVehicleJSON(vehicle)
-    if not vehicle then
-        return "{}"
-    end
-
-    local info = logutils.GetVehicleInfo(vehicle)
-    local s = '{"id":' .. info.ID
-
-    if info.KeyID and info.KeyID ~= "-1" and info.KeyID ~= "0" then
-        s = s .. ',"key_id":' .. info.KeyID
-    end
-
-    if info.SqlID and info.SqlID ~= "-1" and info.SqlID ~= "0" then
-        s = s .. ',"sql_id":' .. info.SqlID
-    end
-
-    s = s .. ',"type":"' .. info.Type .. '"'
-
-    if info.Center then
-        s = s .. ',"center":"' .. info.Center .. '"'
-    end
-
-    s = s .. '}'
-
-    return s
-end
-
 -- DumpVehicle writes vehicles info to log file.
 function VehicleLogger.DumpVehicle(character, action, vehicle, vehicle2)
     if character == nil then
@@ -53,13 +25,13 @@ function VehicleLogger.DumpVehicle(character, action, vehicle, vehicle2)
     local message = ""
 
     if vehicle then
-        message = message .. 'vehicle=' .. VehicleLogger.FormatVehicleJSON(vehicle)
+        message = message .. 'vehicle=' .. logutils.FormatVehicleJSON(vehicle)
     else
         message = message .. "vehicle={}"
     end
 
     if vehicle2 then
-        message = message .. ' vehicle=' .. VehicleLogger.FormatVehicleJSON(vehicle2)
+        message = message .. ' vehicle=' .. logutils.FormatVehicleJSON(vehicle2)
     end
 
     logutils.WriteLog(logutils.filemask.vehicle, action, message)
@@ -140,7 +112,7 @@ VehicleLogger.VehicleSmashWindow = function()
                 local weapon = self.character:getPrimaryHandItem()
                 local toolName = (weapon and instanceof(weapon, "HandWeapon")) and ('"' .. weapon:getFullType() .. '"') or '"Bare hands"'
                 local pId = self.part:getId() or "Window"
-                local message = 'of vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle) .. ' part="' .. pId .. '" using=' .. toolName
+                local message = 'of vehicle=' .. logutils.FormatVehicleJSON(self.vehicle) .. ' part="' .. pId .. '" using=' .. toolName
                 
                 logutils.WriteLog(logutils.filemask.vehicle, "smashed window", message)
             end
@@ -158,7 +130,7 @@ VehicleLogger.VehicleSmashWindow = function()
                 local weapon = self.character:getPrimaryHandItem()
                 local toolName = (weapon and instanceof(weapon, "HandWeapon")) and ('"' .. weapon:getFullType() .. '"') or '"Bare hands"'
                 local pId = self.vehiclePart:getId() or "Window"
-                local message = 'of vehicle=' .. VehicleLogger.FormatVehicleJSON(veh) .. ' part="' .. pId .. '" using=' .. toolName
+                local message = 'of vehicle=' .. logutils.FormatVehicleJSON(veh) .. ' part="' .. pId .. '" using=' .. toolName
                 
                 logutils.WriteLog(logutils.filemask.vehicle, "smashed window", message)
             end
@@ -175,7 +147,7 @@ VehicleLogger.VehicleSiphonGas = function()
             originalPerform(self)
             
             if self.character and self.character:isLocalPlayer() and self.vehicle then
-                local message = 'gasoline from vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle)
+                local message = 'gasoline from vehicle=' .. logutils.FormatVehicleJSON(self.vehicle)
                 logutils.WriteLog(logutils.filemask.vehicle, "siphoned", message)
             end
         end
@@ -192,7 +164,7 @@ VehicleLogger.VehicleRefuel = function()
             
             if self.character and self.character:isLocalPlayer() and self.vehicle then
                 local itemType = (self.item and self.item.getFullType and self.item:getFullType()) or "Base.PetrolCan"
-                local message = 'gasoline into vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle) .. ' from item="' .. itemType .. '"'
+                local message = 'gasoline into vehicle=' .. logutils.FormatVehicleJSON(self.vehicle) .. ' from item="' .. itemType .. '"'
                 logutils.WriteLog(logutils.filemask.vehicle, "refueled", message)
             end
         end
@@ -204,7 +176,7 @@ VehicleLogger.VehicleRefuel = function()
         ISRefuelFromGasPump.perform = function(self)
             originalPerform(self)
             if self.character and self.character:isLocalPlayer() and self.vehicle then
-                local message = 'gasoline into vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle) .. ' from gas pump'
+                local message = 'gasoline into vehicle=' .. logutils.FormatVehicleJSON(self.vehicle) .. ' from gas pump'
                 logutils.WriteLog(logutils.filemask.vehicle, "refueled", message)
             end
         end
@@ -222,7 +194,7 @@ VehicleLogger.VehicleHotwire = function()
             if self.character and self.character:isLocalPlayer() then
                 local veh = self.character:getVehicle()
                 if veh then
-                    local message = 'vehicle=' .. VehicleLogger.FormatVehicleJSON(veh)
+                    local message = 'vehicle=' .. logutils.FormatVehicleJSON(veh)
                     logutils.WriteLog(logutils.filemask.vehicle, "hotwired", message)
                 end
             end
@@ -240,7 +212,7 @@ VehicleLogger.VehicleParts = function()
             
             if self.character and self.character:isLocalPlayer() and self.vehicle and self.part then
                 local pId = self.part:getId() or "unknown"
-                local message = 'part "' .. pId .. '" from vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle)
+                local message = 'part "' .. pId .. '" from vehicle=' .. logutils.FormatVehicleJSON(self.vehicle)
                 logutils.WriteLog(logutils.filemask.vehicle, "uninstalled", message)
             end
         end
@@ -254,7 +226,7 @@ VehicleLogger.VehicleParts = function()
             
             if self.character and self.character:isLocalPlayer() and self.vehicle and self.part then
                 local pId = self.part:getId() or "unknown"
-                local message = 'part "' .. pId .. '" on vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle)
+                local message = 'part "' .. pId .. '" on vehicle=' .. logutils.FormatVehicleJSON(self.vehicle)
                 logutils.WriteLog(logutils.filemask.vehicle, "installed", message)
             end
         end
@@ -271,7 +243,7 @@ VehicleLogger.VehicleTirePressure = function()
             
             if self.character and self.character:isLocalPlayer() and self.vehicle and self.part then
                 local pId = self.part:getId() or "Tire"
-                local message = 'part "' .. pId .. '" of vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle)
+                local message = 'part "' .. pId .. '" of vehicle=' .. logutils.FormatVehicleJSON(self.vehicle)
                 logutils.WriteLog(logutils.filemask.vehicle, "deflated tire", message)
             end
         end
@@ -285,7 +257,7 @@ VehicleLogger.VehicleTirePressure = function()
             
             if self.character and self.character:isLocalPlayer() and self.vehicle and self.part then
                 local pId = self.part:getId() or "Tire"
-                local message = 'part "' .. pId .. '" of vehicle=' .. VehicleLogger.FormatVehicleJSON(self.vehicle)
+                local message = 'part "' .. pId .. '" of vehicle=' .. logutils.FormatVehicleJSON(self.vehicle)
                 logutils.WriteLog(logutils.filemask.vehicle, "inflated tire", message)
             end
         end
@@ -360,7 +332,7 @@ VehicleLogger.OnPlayerAttackFinished = function(character)
                         if curCond <= 0 then
                             hpStr = hpStr .. " (destroyed)"
                         end
-                        local message = 'vehicle=' .. VehicleLogger.FormatVehicleJSON(veh) .. ' part="' .. pId .. '" dmg=' .. tostring(dmg) .. ' ' .. hpStr .. ' using=' .. weaponName
+                        local message = 'vehicle=' .. logutils.FormatVehicleJSON(veh) .. ' part="' .. pId .. '" dmg=' .. tostring(dmg) .. ' ' .. hpStr .. ' using=' .. weaponName
                         logutils.WriteLog(logutils.filemask.vehicle, action, message)
                     end
                 end

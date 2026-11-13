@@ -147,6 +147,60 @@ function AnimalLogger.OnGameStart()
             logger.Debug("AnimalLogger: animal action " .. action.class .. " not found")
         end
     end
+
+    Events.OnWeaponHitCharacter.Add(AnimalLogger.OnWeaponHitCharacter)
+    Events.OnCharacterDeath.Add(AnimalLogger.OnCharacterDeath)
+end
+
+function AnimalLogger.OnWeaponHitCharacter(wielder, target, weapon, damage)
+    if not AnimalLogger.IsEnabledOnServer() then return end
+    if not wielder or not instanceof(wielder, "IsoPlayer") or not wielder:isLocalPlayer() then return end
+    if not target or not instanceof(target, "IsoAnimal") then return end
+
+    local id = AnimalLogger.GetAnimalID(target)
+    local name = AnimalLogger.GetAnimalType(target)
+
+    local isRanged = weapon and weapon.isRanged and weapon:isRanged()
+    local action = isRanged and "attacked (ranged)" or "attacked (melee)"
+
+    local weaponName = (weapon and weapon.getFullType) and ('"' .. weapon:getFullType() .. '"') or '"Bare hands"'
+    local dmg = math.floor((damage or 0) * 10) / 10
+    local curHp = math.floor((target:getHealth() or 0) * 100)
+    local maxHp = math.floor((target.getMaxHealth and target:getMaxHealth() or 100) * 10) / 10
+
+    local hpStr = string.format("hp=%.1f/%.1f", curHp, maxHp)
+    if target:isDead() or curHp <= 0 then
+        hpStr = hpStr .. " (killed)"
+    end
+
+    local message = '"' .. name .. '" with id ' .. tostring(id) .. ' using ' .. weaponName .. ' damage=' .. tostring(dmg) .. ' ' .. hpStr
+    logutils.WriteLog(logutils.filemask.animal, action, message)
+end
+
+function AnimalLogger.OnCharacterDeath(character)
+    if not AnimalLogger.IsEnabledOnServer() then return end
+
+    if not character or not instanceof(character, "IsoAnimal") then return end
+
+    local killer = character.getAttackedBy and character:getAttackedBy() or nil
+
+    if not killer or not instanceof(killer, "IsoPlayer") then
+        killer = getPlayer()
+    end
+
+    if not killer or not instanceof(killer, "IsoPlayer") or not killer:isLocalPlayer() then return end
+
+    local vehicle = killer:getVehicle()
+    if not vehicle then return end
+
+    if vehicle:getDriver() ~= killer then return end
+
+    local id = AnimalLogger.GetAnimalID(character)
+    local name = AnimalLogger.GetAnimalType(character)
+    local vehicleName = vehicle:getScriptName() or "Unknown Vehicle"
+
+    local message = string.format('"%s" with id %s (vehicle "%s")', name, tostring(id), vehicleName)
+    logutils.WriteLog(logutils.filemask.animal, "killed by vehicle", message)
 end
 
 Events.OnGameStart.Add(AnimalLogger.OnGameStart)

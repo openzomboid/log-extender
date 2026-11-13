@@ -227,6 +227,34 @@ function _logutils.GetVehicleInfo(vehicle)
     return info
 end
 
+-- FormatVehicleJSON formats vehicle information into standard JSON string.
+function _logutils.FormatVehicleJSON(vehicle)
+    if not vehicle then
+        return "{}"
+    end
+
+    local info = logutils.GetVehicleInfo(vehicle)
+    local s = '{"id":' .. info.ID
+
+    if info.KeyID and info.KeyID ~= "-1" and info.KeyID ~= "0" then
+        s = s .. ',"key_id":' .. info.KeyID
+    end
+
+    if info.SqlID and info.SqlID ~= "-1" and info.SqlID ~= "0" then
+        s = s .. ',"sql_id":' .. info.SqlID
+    end
+
+    s = s .. ',"type":"' .. info.Type .. '"'
+
+    if info.Center then
+        s = s .. ',"center":"' .. info.Center .. '"'
+    end
+
+    s = s .. '}'
+
+    return s
+end
+
 -- GetSafehouseShortNotation returns Safehouse area in "x,y,w,h" format.
 function _logutils.GetSafehouseShortNotation(safehouse)
     if not safehouse then
