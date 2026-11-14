@@ -9,6 +9,7 @@
     "Sandbox_SafehouseAdminTools": "Enable logging of admin actions on safehouses",
     "Sandbox_CraftLogs": "Enable _craft.txt logs",
     "Sandbox_AnimalLogs": "Enable _animal.txt logs",
+    "Sandbox_ItemLogs": "Enable _item.txt logs",
 
     "Sandbox_SafehousesDumper": "Safehouses dumper",
     "Sandbox_SafehousesDumper_option1": "Disabled",

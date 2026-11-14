@@ -9,6 +9,7 @@
     "Sandbox_SafehouseAdminTools": "Включить логирование действий админов над убежищами",
     "Sandbox_CraftLogs": "Включить логи _craft.txt",
     "Sandbox_AnimalLogs": "Включить логи _animal.txt",
+    "Sandbox_ItemLogs": "Включить логи _item.txt",
 
     "Sandbox_SafehousesDumper": "Сохранять все приваты",
     "Sandbox_SafehousesDumper_option1": "Отключено",
