@@ -70,6 +70,13 @@ option LogExtender.ItemLogs {
   translation = ItemLogs
 }
 
+option LogExtender.MapLogs {
+  type        = boolean,
+  default     = true,
+  page        = LogExtender,
+  translation = MapLogs
+}
+
 option LogExtender.SafehousesDumper {
   type        = enum,
   default     = 3,
