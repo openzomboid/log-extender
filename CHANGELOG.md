@@ -5,9 +5,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.16.0] - 2026-11-24
 ### Added
-- Added Window Smashing, Siphoning, Refueling, Hotwire, Mechanics and Tires & Combat logs to VehicleLogger.
 - Added "writeBatch" command to LogWriter.
+- Added logs for weapon strikes against animals and vehicle collisions with animals.
+- Added Window Smashing, Siphoning, Refueling, Hotwire, Mechanics and Tires & Combat logs to VehicleLogger.
 - Added item logs (WIP)
 - Added map logs
 
@@ -190,7 +192,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.15.0...HEAD
+[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.16.0...HEAD
+[v0.15.0]: https://github.com/openzomboid/log-extender/compare/v0.15.0...v0.16.0
 [v0.15.0]: https://github.com/openzomboid/log-extender/compare/v0.14.0...v0.15.0
 [v0.14.0]: https://github.com/openzomboid/log-extender/compare/v0.13.0...v0.14.0
 [v0.13.0]: https://github.com/openzomboid/log-extender/compare/v0.12.0...v0.13.0
