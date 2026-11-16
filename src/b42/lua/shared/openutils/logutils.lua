@@ -318,6 +318,111 @@ function _logutils.ExecAfterTicks(fn, n)
     Events.OnTick.Add(ticker.OnTick)
 end
 
+function _logutils.GetThumpableName(obj)
+    if not obj then return "object" end
+
+    if obj.getName then
+        local name = obj:getName()
+        if name and name ~= "" and name ~= "None" then
+            return name
+        end
+    end
+
+    if obj.getSprite and obj:getSprite() then
+        local sName = obj:getSprite():getName()
+        if sName and sName ~= "" then
+            return sName
+        end
+    end
+
+    if obj.getObjectName then
+        local oName = obj:getObjectName()
+        if oName and oName ~= "" then
+            return oName
+        end
+    end
+
+    return "object"
+end
+
+function _logutils.GetThumpableHealth(obj)
+    if not obj then return nil end
+    
+    if obj.getHealth then
+        local ok, val = pcall(function() return obj:getHealth() end)
+        if ok and type(val) == "number" then return val end
+    end
+
+    return nil
+end
+
+function _logutils.GetThumpableMaxHealth(obj)
+    if not obj then return 0 end
+    
+    if obj.getMaxHealth then
+        local ok, val = pcall(function() return obj:getMaxHealth() end)
+        if ok and type(val) == "number" then return val end
+    end
+
+    return 0
+end
+
+function _logutils.ScanBreakablesAround(centerSq)
+    local list = {}
+    local cell = getCell()
+    if not centerSq or not cell then return list end
+
+    local cx, cy, cz = centerSq:getX(), centerSq:getY(), centerSq:getZ()
+    
+    for dx = -1, 1 do
+        for dy = -1, 1 do
+            local sq = cell:getGridSquare(cx + dx, cy + dy, cz)
+            
+            if sq then
+                local objects = sq:getObjects()
+                
+                if objects then
+                    for i = 0, objects:size() - 1 do
+                        local obj = objects:get(i)
+                        if obj then
+                            local hp = _logutils.GetThumpableHealth(obj)
+                            if hp and hp > 0 then
+                                table.insert(list, {
+                                    obj = obj,
+                                    name = _logutils.GetThumpableName(obj),
+                                    hp = hp,
+                                    maxHp = _logutils.GetThumpableMaxHealth(obj)
+                                })
+                            end
+
+                            -- Barricades
+                            if obj.getBarricadeOnSameSquare then
+                                local ok1, b1 = pcall(function() return obj:getBarricadeOnSameSquare() end)
+                                local ok2, b2 = pcall(function() return obj:getBarricadeOnOppositeSquare() end)
+                                
+                                for _, bar in ipairs({ ok1 and b1 or nil, ok2 and b2 or nil }) do
+                                    local bhp = _logutils.GetThumpableHealth(bar)
+                                    
+                                    if bhp and bhp > 0 then
+                                        table.insert(list, {
+                                            obj = bar,
+                                            name = _logutils.GetThumpableName(bar) .. " (barricade)",
+                                            hp = bhp,
+                                            maxHp = _logutils.GetThumpableMaxHealth(bar)
+                                        })
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    return list
+end
+
 logutils = {}
 
 setmetatable(logutils, {

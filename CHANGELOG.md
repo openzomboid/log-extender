@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 - Added Window Smashing, Siphoning, Refueling, Hotwire, Mechanics and Tires & Combat logs to VehicleLogger.
 - Added "writeBatch" command to LogWriter.
 - Added item logs (WIP)
-- Added map logs (WIP)
+- Added map logs
 
 ## [v0.15.0] - 2026-09-13
 ### Fixed

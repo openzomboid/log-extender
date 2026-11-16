@@ -5,7 +5,8 @@
 --
 
 local MapLogger = {
-    IsMoveablesActionAlreadyStopped = false
+    IsMoveablesActionAlreadyStopped = false,
+    LastSwingMs = 0
 }
 
 function MapLogger.IsEnabledOnServer()
@@ -14,33 +15,6 @@ function MapLogger.IsEnabledOnServer()
     end
 
     return false
-end
-
-function MapLogger.GetThumpableName(obj)
-    if not obj then return "object" end
-
-    if obj.getName then
-        local name = obj:getName()
-        if name and name ~= "" and name ~= "None" then
-            return name
-        end
-    end
-
-    if obj.getSprite and obj:getSprite() then
-        local sName = obj:getSprite():getName()
-        if sName and sName ~= "" then
-            return sName
-        end
-    end
-
-    if obj.getObjectName then
-        local oName = obj:getObjectName()
-        if oName and oName ~= "" then
-            return oName
-        end
-    end
-
-    return "object"
 end
 
 function MapLogger.OnGameStart()
@@ -161,7 +135,7 @@ function MapLogger.OnGameStart()
 
             local character = self.character
             if character and character:isLocalPlayer() then
-                local objName = MapLogger.GetThumpableName(self.item)
+                local objName = logutils.GetThumpableName(self.item)
                 local weaponName = (self.sledge and self.sledge.getFullType) and ('"' .. self.sledge:getFullType() .. '"') or '"Base.Sledgehammer"'
                 logutils.WriteLog(logutils.filemask.map, "destroyed", objName .. ' with ' .. weaponName)
             end
@@ -196,7 +170,7 @@ function MapLogger.OnGameStart()
                 local bType = "wooden_plank"
                 if self.isMetal then bType = "metal_sheet"
                 elseif self.isMetalBar then bType = "metal_bars" end
-                local targetName = MapLogger.GetThumpableName(self.item)
+                local targetName = logutils.GetThumpableName(self.item)
                 logutils.WriteLog(logutils.filemask.map, "barricaded", targetName .. ' with ' .. bType)
             end
         end
@@ -210,7 +184,7 @@ function MapLogger.OnGameStart()
 
             local character = self.character
             if character and character:isLocalPlayer() then
-                local targetName = MapLogger.GetThumpableName(self.item)
+                local targetName = logutils.GetThumpableName(self.item)
                 logutils.WriteLog(logutils.filemask.map, "unbarricaded", targetName)
             end
         end
@@ -244,7 +218,7 @@ function MapLogger.OnGameStart()
 
             local character = self.character
             if character and character:isLocalPlayer() and self.object then
-                local objName = MapLogger.GetThumpableName(self.object)
+                local objName = logutils.GetThumpableName(self.object)
                 local weapon = character:getPrimaryHandItem()
                 local toolName = (weapon and weapon.getFullType) and ('"' .. weapon:getFullType() .. '"') or '"Base.Crowbar"'
                 logutils.WriteLog(logutils.filemask.map, "forced open", objName .. ' with ' .. toolName)
@@ -252,69 +226,65 @@ function MapLogger.OnGameStart()
         end
     end
 
-    -- 11. Engine Events: Hits on Thumpables (with actual HP)
-    Events.OnWeaponHitThumpable.Add(MapLogger.OnWeaponHitThumpable)
+    -- 11. Hits on Thumpables (with actual HP) and Thumpable Destroyed (by Player or Animal)
+    Events.OnWeaponSwing.Add(MapLogger.OnAnySwing)
+    if Events.OnWeaponSwingHitPoint then
+        Events.OnWeaponSwingHitPoint.Add(MapLogger.OnAnySwing)
+    end
 
-    -- 12. Engine Events: Thumpable Destroyed (by Player or Animal)
-    Events.OnDestroyIsoThumpable.Add(MapLogger.OnDestroyIsoThumpable)
-
-    -- 13. Engine Events: Explosions
+    -- 12. Explosions
     Events.OnThrowableExplode.Add(MapLogger.OnThrowableExplode)
 
-    -- 14. Engine Events: Grid Burnt
+    -- 13. Grid Burnt
     Events.OnGridBurnt.Add(MapLogger.OnGridBurnt)
 end
 
-function MapLogger.OnWeaponHitThumpable(character, weapon, thumpable)
-    if not MapLogger.IsEnabledOnServer() then return end
-    if not character or not character:isLocalPlayer() or not thumpable then return end
+function MapLogger.OnAnySwing(character, weapon)
+    if not MapLogger.IsEnabledOnServer() then
+        return
+    end
 
-    local objName = MapLogger.GetThumpableName(thumpable)
+    if not character or not instanceof(character, "IsoPlayer") or not character:isLocalPlayer() then return end
+
+    local now = getTimestampMs and getTimestampMs() or 0
+    if now > 0 and (now - MapLogger.LastSwingMs) < 150 then return end
+    MapLogger.LastSwingMs = now
+
+    local sq = character:getSquare()
+    local tracked = logutils.ScanBreakablesAround(sq)
+
+    if #tracked == 0 then return end
+
     local weaponName = (weapon and weapon.getFullType) and ('"' .. weapon:getFullType() .. '"') or '"Bare hands"'
-    local dmg = (weapon and weapon.getDoorDamage and weapon:getDoorDamage()) or 1
+    local ticks = 0
 
-    local curHp = thumpable.getHealth and thumpable:getHealth() or 0
-    local maxHp = thumpable.getMaxHealth and thumpable:getMaxHealth() or 0
+    local function checkAfter()
+        ticks = ticks + 1
+        if ticks < 15 then return end
+        Events.OnTick.Remove(checkAfter)
 
-    local hpStr = ""
-    if maxHp > 0 then
-        hpStr = string.format("hp=%d/%d", curHp, maxHp)
-    elseif curHp > 0 then
-        hpStr = string.format("hp=%d", curHp)
+        for _, item in ipairs(tracked) do
+            local obj = item.obj
+            local exists = obj and obj.getSquare and obj:getSquare() ~= nil
+            local curHp = exists and logutils.GetThumpableHealth(obj) or 0
+
+            if curHp and curHp < item.hp then
+                local dmg = math.floor(item.hp - curHp)
+                local hpStr = item.maxHp > 0
+                        and string.format("hp=%d/%d", math.max(0, curHp), item.maxHp)
+                        or string.format("hp=%d", math.max(0, curHp))
+
+                local message = string.format('%s with %s damage=%d %s', item.name, weaponName, dmg, hpStr)
+                logutils.WriteLog(logutils.filemask.map, "attacked", message)
+
+                if curHp <= 0 or not exists then
+                    logutils.WriteLog(logutils.filemask.map, "destroyed", item.name .. ' with ' .. weaponName)
+                end
+            end
+        end
     end
 
-    local message = objName .. ' with ' .. weaponName .. ' damage=' .. tostring(dmg) .. ' ' .. hpStr
-    logutils.WriteLog(logutils.filemask.map, "attacked", message)
-end
-
-function MapLogger.OnDestroyIsoThumpable(arg1, arg2)
-    if not MapLogger.IsEnabledOnServer() then return end
-
-    local thumpable = nil
-    local character = nil
-    if arg1 and (instanceof(arg1, "IsoThumpable") or instanceof(arg1, "IsoObject")) then
-        thumpable = arg1
-        character = arg2
-    else
-        character = arg1
-        thumpable = arg2
-    end
-
-    if not thumpable then return end
-
-    local objName = MapLogger.GetThumpableName(thumpable)
-    local loc = thumpable.getSquare and logutils.GetLocation(thumpable:getSquare()) or "0,0,0"
-
-    if character and instanceof(character, "IsoPlayer") and character:isLocalPlayer() then
-        local weapon = character:getPrimaryHandItem()
-        local weaponName = (weapon and weapon.getFullType) and ('"' .. weapon:getFullType() .. '"') or '"Bare hands"'
-        logutils.WriteLog(logutils.filemask.map, "destroyed", objName .. ' with ' .. weaponName)
-    elseif character and instanceof(character, "IsoAnimal") then
-        local aId = character.getAnimalID and character:getAnimalID() or 0
-        local aType = character.getAnimalType and character:getAnimalType() or "animal"
-        local rawLine = '0 "animal" "' .. aType .. '" with id ' .. tostring(aId) .. ' destroyed ' .. objName .. ' at ' .. loc
-        sendClientCommand("LogExtender", "write", { mask = logutils.filemask.map, message = rawLine })
-    end
+    Events.OnTick.Add(checkAfter)
 end
 
 function MapLogger.OnThrowableExplode(trap, square)
