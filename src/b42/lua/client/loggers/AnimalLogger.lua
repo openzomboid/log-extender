@@ -179,12 +179,18 @@ end
 
 function AnimalLogger.OnCharacterDeath(character)
     if not AnimalLogger.IsEnabledOnServer() then return end
-
     if not character or not instanceof(character, "IsoAnimal") then return end
 
     local killer = character.getAttackedBy and character:getAttackedBy() or nil
 
+    -- If the attacker is known and is NOT the local player (e.g., another player shot the animal), return.
+    if killer and instanceof(killer, "IsoPlayer") and not killer:isLocalPlayer() then
+        logger.Debug("AnimalLogger: OnCharacterDeath: Killer \"" .. killer:getUsername() .. "\" is not interrest")
+        return
+    end
+
     if not killer or not instanceof(killer, "IsoPlayer") then
+        logger.Debug("AnimalLogger: OnCharacterDeath: get killer from getPlayer()")
         killer = getPlayer()
     end
 
@@ -192,8 +198,15 @@ function AnimalLogger.OnCharacterDeath(character)
 
     local vehicle = killer:getVehicle()
     if not vehicle then return end
-
     if vehicle:getDriver() ~= killer then return end
+
+    -- Distance check for long vehicles (trucks/trailers): measure distance from both the player and the vehicle center (max 5-6 tiles)
+    local distFromPlayer = killer:DistTo(character)
+    local distFromVehicle = vehicle:DistTo(character)
+    if distFromPlayer > 6.5 and distFromVehicle > 6.0 then
+        logger.Debug("AnimalLogger: OnCharacterDeath: killer's distance check failed")
+        return
+    end
 
     local id = AnimalLogger.GetAnimalID(character)
     local name = AnimalLogger.GetAnimalType(character)

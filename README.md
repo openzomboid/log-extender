@@ -100,4 +100,4 @@ If you think you have found a bug, write about it in the [bug reporting topic](h
 the Steam workshop or create issue in [github repository](https://github.com/openzomboid/log-extender).
 
 ## License
-Apache License 2.0, see [LICENCE](LICENSE)
+MIT License, see [LICENCE](LICENSE)

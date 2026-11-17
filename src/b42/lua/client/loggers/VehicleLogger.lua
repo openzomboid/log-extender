@@ -273,36 +273,42 @@ VehicleLogger.OnWeaponSwing = function(character, weapon)
     local vehicles = cell and cell:getVehicles()
     if not vehicles then return end
 
-    local count = (vehicles.size and vehicles:size()) or (type(vehicles) == "table" and #vehicles) or 0
-    if count == 0 then return end
+    if vehicles.isEmpty and vehicles:isEmpty() then return end
+    if vehicles.size and vehicles:size() == 0 then return end
+    if type(vehicles) == "table" and #vehicles == 0 then return end
 
     VehicleLogger.recentAttacks = {
         weapon = weapon,
         snapshots = {}
     }
 
-    for i = 0, count - 1 do
-        local veh = (vehicles.get and vehicles:get(i)) or vehicles[i + 1]
-        if veh then
-            local distSq = (character:getX() - veh:getX())^2 + (character:getY() - veh:getY())^2
-            
-            if distSq <= 400 then
-                local vehId = veh:getId()
-                local pCount = (veh.getPartCount and veh:getPartCount()) or 0
-                local partConds = {}
-                
-                for p = 0, pCount - 1 do
-                    local part = veh:getPartByIndex(p)
-                    if part and part:getId() then
-                        partConds[part:getId()] = part:getCondition()
-                    end
+    local function processVehicle(veh)
+        if not veh then return end
+
+        local distSq = (character:getX() - veh:getX())^2 + (character:getY() - veh:getY())^2
+        if distSq <= 400 then
+            local vehId = veh:getId()
+            local pCount = (veh.getPartCount and veh:getPartCount()) or 0
+            local partConds = {}
+
+            for p = 0, pCount - 1 do
+                local part = veh:getPartByIndex(p)
+                if part and part:getId() then
+                    partConds[part:getId()] = part:getCondition()
                 end
-                
-                VehicleLogger.recentAttacks.snapshots[vehId] = {
-                    vehicle = veh,
-                    conditions = partConds
-                }
             end
+
+            VehicleLogger.recentAttacks.snapshots[vehId] = {
+                vehicle = veh,
+                conditions = partConds
+            }
+        end
+    end
+
+    if vehicles.iterator then
+        local it = vehicles:iterator()
+        while it:hasNext() do
+            processVehicle(it:next())
         end
     end
 end
