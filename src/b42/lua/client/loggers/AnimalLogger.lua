@@ -22,7 +22,8 @@ local AnimalLogger = {
         { class = "ISAttachAnimalToPlayer",    name = "attached",             remove = "detached" },
         { class = "ISPutAnimalInHutch",        name = "putted to hutch" },
         { class = "ISHutchGrabAnimal",         name = "released from hutch" }
-    }
+    },
+    pendingHits = {}
 }
 
 function AnimalLogger.IsEnabledOnServer()
@@ -149,6 +150,7 @@ function AnimalLogger.OnGameStart()
     end
 
     Events.OnWeaponHitCharacter.Add(AnimalLogger.OnWeaponHitCharacter)
+    Events.OnTick.Add(AnimalLogger.ProcessPendingHits)
     Events.OnCharacterDeath.Add(AnimalLogger.OnCharacterDeath)
 end
 
@@ -157,24 +159,63 @@ function AnimalLogger.OnWeaponHitCharacter(wielder, target, weapon, damage)
     if not wielder or not instanceof(wielder, "IsoPlayer") or not wielder:isLocalPlayer() then return end
     if not target or not instanceof(target, "IsoAnimal") then return end
 
-    local id = AnimalLogger.GetAnimalID(target)
-    local name = AnimalLogger.GetAnimalType(target)
+    local dmgVal = damage or 0
+    if dmgVal <= 0 then return end
 
-    local isRanged = weapon and weapon.isRanged and weapon:isRanged()
-    local action = isRanged and "attacked (ranged)" or "attacked (melee)"
+    local animalId = AnimalLogger.GetAnimalID(target)
+    local dmgRounded = math.floor(dmgVal * 10) / 10
+    local health = target:getHealth() or 0
 
-    local weaponName = (weapon and weapon.getFullType) and ('"' .. weapon:getFullType() .. '"') or '"Bare hands"'
-    local dmg = math.floor((damage or 0) * 10) / 10
-    local curHp = math.floor((target:getHealth() or 0) * 100)
-    local maxHp = math.floor((target.getMaxHealth and target:getMaxHealth() or 100) * 10) / 10
-
-    local hpStr = string.format("hp=%.1f/%.1f", curHp, maxHp)
-    if target:isDead() or curHp <= 0 then
-        hpStr = hpStr .. " (killed)"
+    for _, entry in ipairs(AnimalLogger.pendingHits) do
+        if entry.id == animalId and entry.initialHp == health then
+            logger.Debug("AnimalLogger: OnWeaponHitCharacter: same event")
+            return
+        end
     end
 
-    local message = '"' .. name .. '" with id ' .. tostring(id) .. ' using ' .. weaponName .. ' damage=' .. tostring(dmg) .. ' ' .. hpStr
-    logutils.WriteLog(logutils.filemask.animal, action, message)
+    table.insert(AnimalLogger.pendingHits, {
+        target      = target,
+        id          = animalId,
+        name        = AnimalLogger.GetAnimalType(target),
+        isRanged    = weapon and weapon.isRanged and weapon:isRanged(),
+        weaponName  = (weapon and weapon.getFullType) and ('"' .. weapon:getFullType() .. '"') or '"Bare hands"',
+        dmg         = dmgRounded,
+        initialHp   = target:getHealth() or 0,
+        ticksWaited = 0
+    })
+end
+
+function AnimalLogger.ProcessPendingHits()
+    if #AnimalLogger.pendingHits == 0 then return end
+
+    for i = #AnimalLogger.pendingHits, 1, -1 do
+        local entry = AnimalLogger.pendingHits[i]
+        entry.ticksWaited = entry.ticksWaited + 1
+
+        local target = entry.target
+        local currentRawHp = target:getHealth() or 0
+        local isGoneOrDead = target:isDead() or currentRawHp <= 0 or (target:getSquare() == nil)
+        local hpChanged = math.abs(currentRawHp - entry.initialHp) > 0.0001
+
+        if isGoneOrDead or hpChanged or entry.ticksWaited >= 30 then
+            local action = entry.isRanged and "attacked (ranged)" or "attacked (melee)"
+
+            local curHp = isGoneOrDead and 0 or math.floor(currentRawHp * 100)
+            local maxHp = math.floor((target.getMaxHealth and target:getMaxHealth() or 100) * 10) / 10
+
+            local hpStr = string.format("hp=%.1f/%.1f", curHp, maxHp)
+            if isGoneOrDead then
+                hpStr = hpStr .. " (killed)"
+            end
+
+            logger.Debug("AnimalLogger: ProcessPendingHits: write log on " .. tostring(entry.ticksWaited) .. " tick")
+            local message = '"' .. entry.name .. '" with id ' .. tostring(entry.id) .. ' using ' .. entry.weaponName .. ' damage=' .. tostring(entry.dmg) .. ' ' .. hpStr
+            logutils.WriteLog(logutils.filemask.animal, action, message)
+
+            entry = nil
+            table.remove(AnimalLogger.pendingHits, i)
+        end
+    end
 end
 
 function AnimalLogger.OnCharacterDeath(character)

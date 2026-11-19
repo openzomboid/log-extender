@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - Fixed mod version in mod.info.
+- Fixed animal hit logs.
 - Fixed false-positive animal kill by vehicle log record.
 - Fixed vehicle attacked logs.
 
