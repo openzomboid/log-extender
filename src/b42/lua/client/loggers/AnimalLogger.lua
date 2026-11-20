@@ -163,11 +163,9 @@ function AnimalLogger.OnWeaponHitCharacter(wielder, target, weapon, damage)
     if dmgVal <= 0 then return end
 
     local animalId = AnimalLogger.GetAnimalID(target)
-    local dmgRounded = math.floor(dmgVal * 10) / 10
-    local health = target:getHealth() or 0
 
     for _, entry in ipairs(AnimalLogger.pendingHits) do
-        if entry.id == animalId and entry.initialHp == health then
+        if entry.id == animalId and entry.ticksWaited <= 2 then
             logger.Debug("AnimalLogger: OnWeaponHitCharacter: same event")
             return
         end
@@ -179,7 +177,7 @@ function AnimalLogger.OnWeaponHitCharacter(wielder, target, weapon, damage)
         name        = AnimalLogger.GetAnimalType(target),
         isRanged    = weapon and weapon.isRanged and weapon:isRanged(),
         weaponName  = (weapon and weapon.getFullType) and ('"' .. weapon:getFullType() .. '"') or '"Bare hands"',
-        dmg         = dmgRounded,
+        dmg         = dmgVal,
         initialHp   = target:getHealth() or 0,
         ticksWaited = 0
     })
@@ -197,19 +195,19 @@ function AnimalLogger.ProcessPendingHits()
         local isGoneOrDead = target:isDead() or currentRawHp <= 0 or (target:getSquare() == nil)
         local hpChanged = math.abs(currentRawHp - entry.initialHp) > 0.0001
 
-        if isGoneOrDead or hpChanged or entry.ticksWaited >= 30 then
+        if isGoneOrDead or hpChanged or entry.ticksWaited >= 300 then
             local action = entry.isRanged and "attacked (ranged)" or "attacked (melee)"
 
             local curHp = isGoneOrDead and 0 or math.floor(currentRawHp * 100)
             local maxHp = math.floor((target.getMaxHealth and target:getMaxHealth() or 100) * 10) / 10
-
+            local damageStr = string.format("hp=%.2f", entry.dmg)
             local hpStr = string.format("hp=%.1f/%.1f", curHp, maxHp)
             if isGoneOrDead then
                 hpStr = hpStr .. " (killed)"
             end
 
             logger.Debug("AnimalLogger: ProcessPendingHits: write log on " .. tostring(entry.ticksWaited) .. " tick")
-            local message = '"' .. entry.name .. '" with id ' .. tostring(entry.id) .. ' using ' .. entry.weaponName .. ' damage=' .. tostring(entry.dmg) .. ' ' .. hpStr
+            local message = '"' .. entry.name .. '" with id ' .. tostring(entry.id) .. ' using ' .. entry.weaponName .. ' damage=' .. damageStr .. ' ' .. hpStr
             logutils.WriteLog(logutils.filemask.animal, action, message)
 
             entry = nil
@@ -235,17 +233,23 @@ function AnimalLogger.OnCharacterDeath(character)
         killer = getPlayer()
     end
 
-    if not killer or not instanceof(killer, "IsoPlayer") or not killer:isLocalPlayer() then return end
+    if not killer or not instanceof(killer, "IsoPlayer") or not killer:isLocalPlayer() then
+        logger.Debug("AnimalLogger: OnCharacterDeath: killer is not local player")
+        return
+    end
 
     local vehicle = killer:getVehicle()
     if not vehicle then return end
-    if vehicle:getDriver() ~= killer then return end
+    if vehicle:getDriver() ~= killer then
+        logger.Debug("AnimalLogger: OnCharacterDeath: killer is not a driver")
+        return
+    end
 
     -- Distance check for long vehicles (trucks/trailers): measure distance from both the player and the vehicle center (max 5-6 tiles)
     local distFromPlayer = killer:DistTo(character)
     local distFromVehicle = vehicle:DistTo(character)
     if distFromPlayer > 6.5 and distFromVehicle > 6.0 then
-        logger.Debug("AnimalLogger: OnCharacterDeath: killer's distance check failed")
+        logger.Debug("AnimalLogger: OnCharacterDeath: killer's distance is very far")
         return
     end
 
