@@ -13,11 +13,37 @@ local logger = ConsoleLogger and ConsoleLogger.new() or {
     Debug = function(msg) print("ConsoleLogger DEBUG: " .. tostring(msg)) end
 }
 
+-- hasPendingTransferActions checks the character's action queue
+local function hasPendingTransferActions(character)
+    if not character then return false end
+
+    local q = ISTimedActionQueue and ISTimedActionQueue.queues and ISTimedActionQueue.queues[character]
+    if not q or not q.queue then return false end
+
+    for i = 1, #q.queue do
+        local act = q.queue[i]
+
+        if act and (act.Type == "ISInventoryTransferAction" or act.Type == "ISDropItemAction" or act.Type == "ISDropWorldItemAction" or act.Type == "ISGrabItemAction") then
+            return true
+        end
+    end
+
+    return false
+end
+
 local ItemLogger = {
     buffer = {},
-    flushScheduled = false,
     hooked = false,
-    OriginalFunctions = {}
+    OriginalFunctions = {},
+
+    -- Debounce configuration
+    DEBOUNCE_DELAY_MS = 350,  -- Pause after last item before flush (ms)
+    MAX_HOLD_TIME_MS  = 3000, -- Force flush batch during extended looting (3s)
+    MAX_BUFFER_SIZE   = 50,   -- Buffer entry limit
+
+    lastItemTime = 0,
+    firstItemTime = 0,
+    isTickerActive = false
 }
 
 function ItemLogger.IsEnabledOnServer()
@@ -28,14 +54,16 @@ function ItemLogger.GetContainerName(container, character)
     if not container then return "container" end
 
     if character and container.isInCharacterInventory and container:isInCharacterInventory(character) then
-        -- Различаем основной инвентарь и надетые сумки/рюкзаки, если нужно
+        -- Distinguish between the main inventory and equipped bags/backpacks
         if container == character:getInventory() then
             return "inventory"
         end
+
         local bagItem = container.getContainingItem and container:getContainingItem()
         if bagItem and bagItem.getFullType then
             return "bag (" .. bagItem:getFullType() .. ")"
         end
+
         return "inventory"
     end
 
@@ -69,20 +97,61 @@ function ItemLogger.QueueItem(action, fullType, location)
     if not ItemLogger.IsEnabledOnServer() then return end
     if not fullType or fullType == "" then return end
 
+    local now = getTimestampMs()
+    if #ItemLogger.buffer == 0 then
+        ItemLogger.firstItemTime = now
+    end
+    ItemLogger.lastItemTime = now
+
     table.insert(ItemLogger.buffer, {
         action = action,
         fullType = fullType,
         location = location or "unknown"
     })
 
-    if not ItemLogger.flushScheduled then
-        ItemLogger.flushScheduled = true
-        logutils.ExecAfterTicks(ItemLogger.FlushBuffer, 1)
+    if #ItemLogger.buffer >= ItemLogger.MAX_BUFFER_SIZE then
+        ItemLogger.FlushBuffer()
+        return
+    end
+
+    -- Enable the ticker only when there is data in the buffer (Zero Idle Overhead)
+    if not ItemLogger.isTickerActive then
+        ItemLogger.isTickerActive = true
+        Events.OnTick.Add(ItemLogger.OnTick)
+    end
+end
+
+function ItemLogger.OnTick()
+    if #ItemLogger.buffer == 0 then
+        if ItemLogger.isTickerActive then
+            ItemLogger.isTickerActive = false
+            Events.OnTick.Remove(ItemLogger.OnTick)
+        end
+        return
+    end
+
+    local now = getTimestampMs()
+    local character = getPlayer()
+
+    -- Flush on timeout when looting hundreds of items
+    if (now - ItemLogger.firstItemTime) >= ItemLogger.MAX_HOLD_TIME_MS then
+        ItemLogger.FlushBuffer()
+        return
+    end
+
+    -- Flush if the action queue is empty and 350 ms debounce elapsed
+    local hasPending = hasPendingTransferActions(character)
+    if not hasPending and (now - ItemLogger.lastItemTime) >= ItemLogger.DEBOUNCE_DELAY_MS then
+        ItemLogger.FlushBuffer()
     end
 end
 
 function ItemLogger.FlushBuffer()
-    ItemLogger.flushScheduled = false
+    if ItemLogger.isTickerActive then
+        ItemLogger.isTickerActive = false
+        Events.OnTick.Remove(ItemLogger.OnTick)
+    end
+
     if #ItemLogger.buffer == 0 then return end
 
     local character = getPlayer()
@@ -98,6 +167,7 @@ function ItemLogger.FlushBuffer()
 
     for _, entry in ipairs(ItemLogger.buffer) do
         local key = entry.action .. "|||" .. entry.fullType .. "|||" .. entry.location
+
         if not aggregated[key] then
             aggregated[key] = {
                 action = entry.action,
@@ -112,6 +182,8 @@ function ItemLogger.FlushBuffer()
     end
 
     ItemLogger.buffer = {}
+    ItemLogger.firstItemTime = 0
+    ItemLogger.lastItemTime = 0
 
     local lines = {}
     for _, key in ipairs(order) do
@@ -209,12 +281,13 @@ function ItemLogger.OnDropWorldItemPerform(self)
             ItemLogger.QueueItem("dropped on floor", fullType, location)
         end
     end
+
     return ItemLogger.OriginalFunctions.ISDropWorldItemAction_perform(self)
 end
 
 function ItemLogger.OnGrabItemPerform(self)
     if ItemLogger.IsEnabledOnServer() and self.character and self.character:isLocalPlayer() and self.item then
-        local worldItem = self.item -- в ISGrabItemAction это IsoWorldInventoryObject
+        local worldItem = self.item -- In ISGrabItemAction it's IsoWorldInventoryObject
         local invItem = worldItem.getItem and worldItem:getItem() or worldItem
         if invItem and invItem.getFullType then
             local sq = worldItem.getSquare and worldItem:getSquare()
@@ -222,6 +295,7 @@ function ItemLogger.OnGrabItemPerform(self)
             ItemLogger.QueueItem("grabbed from world", invItem:getFullType(), location)
         end
     end
+
     return ItemLogger.OriginalFunctions.ISGrabItemAction_perform(self)
 end
 

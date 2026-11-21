@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - Fixed animal hit logs.
 - Fixed false-positive animal kill by vehicle log record.
 - Fixed vehicle attacked logs.
+- Fixed items batch logs (WIP).
 
 ## [v0.16.0] - 2026-11-24
 ### Added
