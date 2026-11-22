@@ -160,8 +160,6 @@ function ItemLogger.FlushBuffer()
         return
     end
 
-    local prefix = logutils.GetLogLinePrefix(character, "")
-
     local aggregated = {}
     local order = {}
 
@@ -189,7 +187,9 @@ function ItemLogger.FlushBuffer()
     for _, key in ipairs(order) do
         local item = aggregated[key]
         local countStr = item.count > 1 and (tostring(item.count) .. "x ") or ""
-        local msg = prefix .. " " .. item.action .. " " .. countStr .. '"' .. item.fullType .. '" at ' .. item.location
+        local prefix = logutils.GetLogLinePrefix(character, item.action)
+        local msg = prefix .. " " .. countStr .. '"' .. item.fullType .. '" at ' .. item.location
+
         table.insert(lines, msg)
     end
 
@@ -240,6 +240,7 @@ function ItemLogger.OnInventoryTransferPerform(self)
     if ItemLogger.IsEnabledOnServer() and self.item then
         ItemLogger.LogTransfer(self.character, self.item, self.srcContainer, self.destContainer)
     end
+
     return ItemLogger.OriginalFunctions.ISInventoryTransferAction_perform(self)
 end
 
@@ -248,6 +249,7 @@ function ItemLogger.OnDropItemPerform(self)
         local location = logutils.GetLocation(self.character)
         ItemLogger.QueueItem("dropped on floor", self.item:getFullType(), location)
     end
+
     return ItemLogger.OriginalFunctions.ISDropItemAction_perform(self)
 end
 
@@ -258,6 +260,7 @@ function ItemLogger.OnDropWorldItemPerform(self)
 
         if self.isPlaceItem then
             local surfaceName = "surface"
+
             if self.sq then
                 local objects = self.sq:getObjects()
                 if objects then
@@ -276,6 +279,7 @@ function ItemLogger.OnDropWorldItemPerform(self)
                     end
                 end
             end
+
             ItemLogger.QueueItem("placed on " .. surfaceName, fullType, location)
         else
             ItemLogger.QueueItem("dropped on floor", fullType, location)
