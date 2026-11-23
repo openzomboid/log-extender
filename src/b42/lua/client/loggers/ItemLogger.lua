@@ -13,7 +13,7 @@ local logger = ConsoleLogger and ConsoleLogger.new() or {
     Debug = function(msg) print("ConsoleLogger DEBUG: " .. tostring(msg)) end
 }
 
--- hasPendingTransferActions checks the character's action queue
+-- hasPendingTransferActions checks the character's action queue.
 local function hasPendingTransferActions(character)
     if not character then return false end
 
