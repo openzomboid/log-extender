@@ -200,7 +200,7 @@ function AnimalLogger.ProcessPendingHits()
 
             local curHp = isGoneOrDead and 0 or math.floor(currentRawHp * 100)
             local maxHp = math.floor((target.getMaxHealth and target:getMaxHealth() or 100) * 10) / 10
-            local damageStr = string.format("hp=%.2f", entry.dmg)
+            local damageStr = string.format("%.2f", entry.dmg)
             local hpStr = string.format("hp=%.1f/%.1f", curHp, maxHp)
             if isGoneOrDead then
                 hpStr = hpStr .. " (killed)"
