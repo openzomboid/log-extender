@@ -206,7 +206,7 @@ function ItemLogger.LogTransfer(character, item, srcContainer, destContainer)
 
     local srcName = ItemLogger.GetContainerName(srcContainer, character)
     local destName = ItemLogger.GetContainerName(destContainer, character)
-    if srcName == destName then return end
+    if srcName == destName and (srcName == "inventory" or srcName == "floor") then return end
 
     local location = logutils.GetLocation(character)
     local fullType = item:getFullType()
@@ -237,11 +237,37 @@ function ItemLogger.LogTransfer(character, item, srcContainer, destContainer)
 end
 
 function ItemLogger.OnInventoryTransferPerform(self)
-    if ItemLogger.IsEnabledOnServer() and self.item then
-        ItemLogger.LogTransfer(self.character, self.item, self.srcContainer, self.destContainer)
+    local isEnabled = ItemLogger.IsEnabledOnServer()
+    local character = self.character
+    local srcContainer = self.srcContainer
+    local destContainer = self.destContainer
+    local batch = self.queueList and self.queueList[1]
+    local singleItem = self.item
+    local wasMissing = self.dontAdd
+
+    local res = ItemLogger.OriginalFunctions.ISInventoryTransferAction_perform(self)
+
+    if isEnabled and character and character:isLocalPlayer() then
+        local items = (batch and batch.items) or (singleItem and { singleItem }) or nil
+        if items then
+            local isSp = not isClient()
+            for i = 1, #items do
+                local item = items[i]
+                if item then
+                    local transferred = (not isSp) or (
+                            not wasMissing and
+                                    (not srcContainer or not srcContainer:contains(item)) and
+                                    (destContainer ~= nil and (destContainer:getType() == "floor" or destContainer:contains(item)))
+                    )
+                    if transferred then
+                        ItemLogger.LogTransfer(character, item, srcContainer, destContainer)
+                    end
+                end
+            end
+        end
     end
 
-    return ItemLogger.OriginalFunctions.ISInventoryTransferAction_perform(self)
+    return res
 end
 
 function ItemLogger.OnDropItemPerform(self)
@@ -290,17 +316,43 @@ function ItemLogger.OnDropWorldItemPerform(self)
 end
 
 function ItemLogger.OnGrabItemPerform(self)
-    if ItemLogger.IsEnabledOnServer() and self.character and self.character:isLocalPlayer() and self.item then
-        local worldItem = self.item -- In ISGrabItemAction it's IsoWorldInventoryObject
-        local invItem = worldItem.getItem and worldItem:getItem() or worldItem
-        if invItem and invItem.getFullType then
-            local sq = worldItem.getSquare and worldItem:getSquare()
-            local location = sq and logutils.GetLocation(sq) or logutils.GetLocation(self.character)
-            ItemLogger.QueueItem("grabbed from world", invItem:getFullType(), location)
+    local entries = nil
+    if ItemLogger.IsEnabledOnServer() and self.character and self.character:isLocalPlayer() then
+        local batch = self.queueList and self.queueList[1]
+        local items = (batch and batch.items) or (self.item and { self.item }) or nil
+        if items then
+            entries = {}
+            for i = 1, #items do
+                local worldItem = items[i]
+                local invItem = worldItem and (worldItem.getItem and worldItem:getItem() or worldItem)
+                if invItem and invItem.getFullType then
+                    local sq = worldItem.getSquare and worldItem:getSquare()
+                    if not worldItem.getSquare or sq ~= nil then
+                        table.insert(entries, {
+                            invItem = invItem,
+                            fullType = invItem:getFullType(),
+                            location = sq and logutils.GetLocation(sq) or logutils.GetLocation(self.character)
+                        })
+                    end
+                end
+            end
         end
     end
 
-    return ItemLogger.OriginalFunctions.ISGrabItemAction_perform(self)
+    local res = ItemLogger.OriginalFunctions.ISGrabItemAction_perform(self)
+
+    if entries then
+        local isSp = not isClient()
+        local dest = self.destContainer
+        for i = 1, #entries do
+            local e = entries[i]
+            if (not isSp) or (dest and dest:contains(e.invItem)) then
+                ItemLogger.QueueItem("grabbed from world", e.fullType, e.location)
+            end
+        end
+    end
+
+    return res
 end
 
 function ItemLogger.InitHooks()
