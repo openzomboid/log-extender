@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [v0.16.2] - 2026-11-26
+### Fixed
+- Fixed items batch logs.
+
 ## [v0.16.1] - 2026-11-25
 ### Fixed
 - Fixed mod version in mod.info.
@@ -200,8 +204,9 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Add basic implementation.
 
-[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.16.1...HEAD
-[v0.16.0]: https://github.com/openzomboid/log-extender/compare/v0.16.0...v0.16.1
+[Unreleased]: https://github.com/openzomboid/log-extender/compare/v0.16.2...HEAD
+[v0.16.2]: https://github.com/openzomboid/log-extender/compare/v0.16.1...v0.16.2
+[v0.16.1]: https://github.com/openzomboid/log-extender/compare/v0.16.0...v0.16.1
 [v0.16.0]: https://github.com/openzomboid/log-extender/compare/v0.15.0...v0.16.0
 [v0.15.0]: https://github.com/openzomboid/log-extender/compare/v0.14.0...v0.15.0
 [v0.14.0]: https://github.com/openzomboid/log-extender/compare/v0.13.0...v0.14.0
